@@ -548,6 +548,9 @@ class EquationParser implements Constants {
                 return C_PI;
             case "E":
                 return C_E;
+            case "NULL":
+            case "null":
+                return C_NULL;
         }
         return null;
     }

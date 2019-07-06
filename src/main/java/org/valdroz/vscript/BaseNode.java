@@ -49,25 +49,11 @@ public class BaseNode implements RunBlock, Constants {
         if (operation == NT_VALUE)
             return value;
         else if (operation == NT_VARIABLE || operation == NT_LOCAL_VARIABLE) {
-            if (variableName.equals("true")) {
-                value.setValue(1.0);
-                return value;
-            } else if (variableName.equals("false")) {
-                value.setValue(0.0);
-                return value;
-            } else if (variableName.equals("PI")) {
-                value.setValue(3.1415926535897932384626433832795);
-                return value;
-            } else if (variableName.equals("NULL") || variableName.equals("null")) {
-                value.makeNull();
-                return value;
+            if (getPreferredNode() != null) {
+                int index = (int) getPreferredNode().execute(variantContainer).toDouble();
+                return variantContainer.getVariant(this.variableName).getArrayItem(index);
             } else {
-                if (getPreferredNode() != null) {
-                    int index = (int) getPreferredNode().execute(variantContainer).toDouble();
-                    return variantContainer.getVariant(this.variableName).getArrayItem(index);
-                } else {
-                    return variantContainer.getVariant(this.variableName);
-                }
+                return variantContainer.getVariant(this.variableName);
             }
         }
 
