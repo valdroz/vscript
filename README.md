@@ -1,4 +1,4 @@
-# Vscript - very equation interpreter 
+# Vscript - equation interpreter 
 What started as a student project now turned in to simple and handy expression evaluator, or even scripting engine. 
 
 ## Syntax
