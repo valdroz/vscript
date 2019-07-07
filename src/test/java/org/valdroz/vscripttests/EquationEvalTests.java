@@ -23,39 +23,61 @@ public class EquationEvalTests {
 
         Variant var = new EquationEval("3 + movie.price * sqrt(4)").eval(container);
 
-        assertThat("Expected 13", var.getDouble(), is(13.0));
+        assertThat(var.getDouble(), is(13.0));
     }
+
+    @Test
+    public void textEquationEvaluatorWithMore() {
+        DefaultVariantContainer container = new DefaultVariantContainer();
+        container.setVariant("movie.price", new Variant(5));
+
+        Variant var = new EquationEval("(3 + movie.price * sqrt(4)) >= 13.0").eval(container);
+        assertThat(var.toBoolean(), is(true));
+
+        var = new EquationEval("(3 + movie.price * sqrt(4)) == 13.0").eval(container);
+        assertThat(var.toBoolean(), is(true));
+
+        var = new EquationEval("(3 + movie.price * sqrt(4)) <= 13.0").eval(container);
+        assertThat(var.toBoolean(), is(true));
+
+        var = new EquationEval("(3 + movie.price * sqrt(4)) < 13.0").eval(container);
+        assertThat(var.toBoolean(), is(false));
+
+        var = new EquationEval("(3 + movie.price * sqrt(4)) >= 13.1").eval(container);
+        assertThat(var.toBoolean(), is(false));
+    }
+
 
     @Test
     public void textEquationEvaluatorBooleans() {
         Variant var = new EquationEval("true + true").eval();
-        assertThat("Expected 2", var.getDouble(), is(2.0));
+        assertThat(var.getDouble(), is(2.0));
     }
 
     @Test
     public void textEquationEvaluatorBooleans2() {
         Variant var = new EquationEval("true && true").eval();
-        assertThat("Expected 1", var.getDouble(), is(1.0));
+        assertThat(var.getDouble(), is(1.0));
     }
 
 
     @Test
     public void textEquationEvaluatorString() {
         Variant var = new EquationEval("\"2\" + 1").eval();
-        assertThat("Expected 21", var.getString(), is("21"));
+        assertThat(var.getString(), is("21"));
     }
 
     @Test
     public void textEquationEvaluatorNegativeAndPriority() {
         Variant var = new EquationEval("-1.0 * (2.5 + 3.5)").eval();
-        assertThat("Expected -6", var.getDouble(), is(-6.0));
+        assertThat(var.getDouble(), is(-6.0));
     }
 
     @Test
     public void textEquationEvaluatorAssignment() {
         DefaultVariantContainer container = new DefaultVariantContainer();
         new EquationEval("a = -1.0 * (2.5 + 3.5)").eval(container);
-        assertThat("Expected -6", container.getVariant("a").getDouble(), is(-6.0));
+        assertThat(container.getVariant("a").getDouble(), is(-6.0));
     }
 
     @Test
@@ -67,7 +89,7 @@ public class EquationEvalTests {
     @Test
     public void textEquationEvaluatorEqualPriorityPlusOpr() {
         Variant var = new EquationEval("1+2+3").eval();
-        assertThat("Expected 6", var.getDouble(), is(6.0));
+        assertThat(var.getDouble(), is(6.0));
     }
 
     @Test
@@ -81,25 +103,25 @@ public class EquationEvalTests {
     @Test
     public void textEquationEvaluatorEqualPriorityMultiDivOpr() {
         Variant var = new EquationEval("2*3*4").eval();
-        assertThat("Expected 24", var.getDouble(), is(24.0));
+        assertThat(var.getDouble(), is(24.0));
     }
 
     @Test
     public void textEquationEvaluatorEqualPrioritySumMul() {
         Variant var = new EquationEval("2+3*4").eval();
-        assertThat("Expected 14", var.getDouble(), is(14.0));
+        assertThat(var.getDouble(), is(14.0));
     }
 
     @Test
     public void textEquationEvaluatorEqualPriorityMulSum() {
         Variant var = new EquationEval("3*4+2").eval();
-        assertThat("Expected 14", var.getDouble(), is(14.0));
+        assertThat(var.getDouble(), is(14.0));
     }
 
     @Test
     public void textEquationEvaluatorPriority() {
         Variant var = new EquationEval(" false + 1 && true").eval();
-        assertThat("Expected 1", var.getDouble(), is(1.0));
+        assertThat(var.getDouble(), is(1.0));
     }
 
 

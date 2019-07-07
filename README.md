@@ -55,3 +55,14 @@ Misc. functions:
 - isstring(x)		- Returns `1` if value is string, `0` otherwise.
 - isarray(x)		- Returns `1` if value is array, `0` otherwise.
 
+## Example
+
+```java
+
+DefaultVariantContainer container = new DefaultVariantContainer();
+container.setVariant("movie.price", new Variant(5));
+
+Variant var = new EquationEval("(3 + movie.price * sqrt(4)) >= 13.0").eval(container);
+assertThat(var.toBoolean(), is(true));
+
+```
