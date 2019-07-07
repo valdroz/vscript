@@ -3,6 +3,7 @@ package org.valdroz.vscripttests;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.valdroz.vscript.BaseNode;
 import org.valdroz.vscript.DefaultVariantContainer;
 import org.valdroz.vscript.EquationEval;
 import org.valdroz.vscript.Variant;
@@ -62,5 +63,44 @@ public class EquationEvalTests {
         exception.expect(RuntimeException.class);
         new EquationEval("true = -1.0 * (2.5 + 3.5)").eval();
     }
+
+    @Test
+    public void textEquationEvaluatorEqualPriorityPlusOpr() {
+        Variant var = new EquationEval("1+2+3").eval();
+        assertThat("Expected 6", var.getDouble(), is(6.0));
+    }
+
+    @Test
+    public void textEquationEvaluatorEqualPriorityMinusOpr() {
+        BaseNode node = new EquationEval("4 - 3 - 2").getNode();
+        Variant var = node.execute(new DefaultVariantContainer());
+        assertThat(var.getDouble(), is(-1.0));
+    }
+
+
+    @Test
+    public void textEquationEvaluatorEqualPriorityMultiDivOpr() {
+        Variant var = new EquationEval("2*3*4").eval();
+        assertThat("Expected 24", var.getDouble(), is(24.0));
+    }
+
+    @Test
+    public void textEquationEvaluatorEqualPrioritySumMul() {
+        Variant var = new EquationEval("2+3*4").eval();
+        assertThat("Expected 14", var.getDouble(), is(14.0));
+    }
+
+    @Test
+    public void textEquationEvaluatorEqualPriorityMulSum() {
+        Variant var = new EquationEval("3*4+2").eval();
+        assertThat("Expected 14", var.getDouble(), is(14.0));
+    }
+
+    @Test
+    public void textEquationEvaluatorPriority() {
+        Variant var = new EquationEval(" false + 1 && true").eval();
+        assertThat("Expected 1", var.getDouble(), is(1.0));
+    }
+
 
 }

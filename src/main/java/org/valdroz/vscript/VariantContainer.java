@@ -23,26 +23,38 @@ public interface VariantContainer
 {
 	/**
 	 * Must set and retain variable value.
+	 * @param varName variant variable name.
+	 * @param varValue variant value.
 	 */
 	void setVariant(String varName, Variant varValue);
 
 	/**
 	 * Must return current variable value.
+	 * @param varName variant variable name.
+	 * @return Variant instance must be never null.
 	 */
 	Variant getVariant(String varName);
 
 	/**
 	 * Must be set and retain of an array item.
+	 * @param varName variant variable name.
+	 * @param index array index.
+	 * @param varValue variant value.
 	 */
 	void setVariant(String varName, int index, Variant varValue);
 
 	/**
 	 * Must return current value of an array item.
+	 * @param varName variant variable name.
+	 * @param index array index.
+	 * @return Variant instance must be never null.
 	 */
 	Variant getVariant(String varName, int index);
 
 	/**
 	 * Must return true if container owns variable.
+	 * @param varName variant variable name.
+	 * @return true if container owns variable.
 	 */
 	boolean contains(String varName);
 }

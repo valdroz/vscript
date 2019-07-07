@@ -27,19 +27,8 @@ public class MasterRunBlock implements RunBlock {
     private MasterRunBlock masterRunBlock;
     private Map<String, FunctionStatement> functions = new HashMap<>();
 
-    /**
-     * Class default constructor
-     */
     public MasterRunBlock() {
     }
-
-    /**
-     * Class default constructor
-     */
-    public MasterRunBlock(MasterRunBlock parentBlock) {
-        this.masterRunBlock = parentBlock;
-    }
-
 
     public MasterRunBlock withRunBlock(RunBlock codeItem) {
         codeItem.setMasterRunBlock(this);
@@ -56,8 +45,8 @@ public class MasterRunBlock implements RunBlock {
     }
 
     @Override
-    public void setMasterRunBlock(MasterRunBlock masterRunBlock) {
-        this.masterRunBlock = masterRunBlock;
+    public void setMasterRunBlock(MasterRunBlock runBlock) {
+        this.masterRunBlock = runBlock;
     }
 
 
@@ -80,6 +69,7 @@ public class MasterRunBlock implements RunBlock {
 
     /**
      * Add prepared function to runtime block.
+     * @param func function instance.
      */
     public void addFunctionStatement(FunctionStatement func) {
         functions.put(func.getName(), func);
@@ -87,6 +77,7 @@ public class MasterRunBlock implements RunBlock {
 
     /**
      * Add externally prepared functions to this runtime block.
+     * @param rs run block instance.
      */
     public void copyFunctionsFrom(MasterRunBlock rs) {
         if (rs.functions != null) {

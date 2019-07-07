@@ -22,16 +22,14 @@ package org.valdroz.vscript;
  */
 class EquationParser implements Constants {
 
-    String source;
-
-    int sourceLength = 0;
+    private String source;
 
     private int currentLine = 0;
 
-    char lastErrorCode = 0;
+    private char lastErrorCode = 0;
 
-    int position = 0;
-    int stopAt = -1;
+    private int position = 0;
+    private int stopAt = -1;
 
 
     /**
@@ -43,7 +41,6 @@ class EquationParser implements Constants {
         this.source = source;
         lastErrorCode = CE_SUCCESS;
         currentLine = 0;
-        sourceLength = this.source.length();
         stopAt = source.length();
         position = 0;
     }
@@ -152,27 +149,29 @@ class EquationParser implements Constants {
     }
 
     /**
-     * Generates the the node for +/- operators.
+     * Parses assignment node.
      */
-    private BaseNode genPlusMinus() {
-        BaseNode left = parseMultiplicationDivisionOperator();
+    private BaseNode parseAssignmentNode() {
+        BaseNode left = parseLogicOpNode();
 
         if (left == null) return null;
         skipSpaces();
 
-        while (currentCharCheckExpSeparator() == '-' || currentCharCheckExpSeparator() == '+') {
+        while ((currentCharCheckExpSeparator() == '=' && charAtCheckExpSeparator(position + 1) != '=')) {
+            if (left.operation == NT_CONSTANT) {
+                lastErrorCode = CE_CONST_ASSIGNMENT;
+                return null;
+            }
             BaseNode node = new BaseNode();
             node.leftNode = left;
             node.operation = currentCharCheckExpSeparator();
-
             forwardPosition();
             skipSpaces();
-            node.rightNode = parseMultiplicationDivisionOperator();
+            node.rightNode = parseLogicOpNode();
             if (node.rightNode == null) {
-                this.lastErrorCode = CE_INCOMPLETE;
                 return null;
             }
-            return node;
+            left = node;
         }
 
         return left;
@@ -182,7 +181,7 @@ class EquationParser implements Constants {
      * Parses the node for logical `&&` and `||` operators.
      */
     private BaseNode parseLogicOpNode() {
-        BaseNode left = genPlusMinus();
+        BaseNode left = parsePlusMinus();
 
         if (left == null) return null;
         skipSpaces();
@@ -200,44 +199,43 @@ class EquationParser implements Constants {
             forwardPosition();
             forwardPosition();
             skipSpaces();
-            node.rightNode = genPlusMinus();
+            node.rightNode = parsePlusMinus();
             if (node.rightNode == null) {
                 return null;
             }
-            return node;
+            left = node;
         }
 
         return left;
     }
 
     /**
-     * Parses assignment node.
+     * Parses} the node for +/- operators.
      */
-    private BaseNode parseAssignmentNode() {
-        BaseNode leftNode = parseLogicOpNode();
+    private BaseNode parsePlusMinus() {
+        BaseNode left = parseMultiplicationDivisionOperator();
 
-        if (leftNode == null) return null;
+        if (left == null) return null;
         skipSpaces();
 
-        while ((currentCharCheckExpSeparator() == '=' && charAtCheckExpSeparator(position + 1) != '=')) {
-            if (leftNode.operation == NT_CONSTANT) {
-                lastErrorCode = CE_CONST_ASSIGNMENT;
-                return null;
-            }
+        while (currentCharCheckExpSeparator() == '-' || currentCharCheckExpSeparator() == '+') {
             BaseNode node = new BaseNode();
-            node.leftNode = leftNode;
+            node.leftNode = left;
             node.operation = currentCharCheckExpSeparator();
+
             forwardPosition();
             skipSpaces();
-            node.rightNode = parseLogicOpNode();
+            node.rightNode = parseMultiplicationDivisionOperator();
             if (node.rightNode == null) {
+                this.lastErrorCode = CE_INCOMPLETE;
                 return null;
             }
-            leftNode = node;
+            left = node;
         }
 
-        return leftNode;
+        return left;
     }
+
 
 
     private BaseNode parseMultiplicationDivisionOperator() {
@@ -256,7 +254,7 @@ class EquationParser implements Constants {
             if (node.rightNode == null) {
                 return null;
             }
-            return node;
+            left = node;
         }
 
         return left;
@@ -282,7 +280,7 @@ class EquationParser implements Constants {
             if (node.rightNode == null) {
                 return null;
             }
-            return node;
+            left = node;
         }
 
         return left;
@@ -298,7 +296,7 @@ class EquationParser implements Constants {
         if (left == null) return null;
         skipSpaces();
 
-        while (currentCharCheckExpSeparator() == '>' || currentCharCheckExpSeparator() == '<' ||
+        if (currentCharCheckExpSeparator() == '>' || currentCharCheckExpSeparator() == '<' ||
                 (currentCharCheckExpSeparator() == '=' && charAtCheckExpSeparator(position + 1) == '=') ||
                 (currentCharCheckExpSeparator() == '!' && charAtCheckExpSeparator(position + 1) == '=')) {
             BaseNode node = new BaseNode();
@@ -362,7 +360,7 @@ class EquationParser implements Constants {
             if (node.rightNode == null) {
                 return null;
             }
-            return node;
+            left = node;
         }
 
         return left;
@@ -392,7 +390,7 @@ class EquationParser implements Constants {
 
 
     /**
-     * Generates the node for the identifier with sign, or equation in brackets.
+     * Parse node for the identifier with leading sign, or equation in brackets.
      */
     private BaseNode parseEqFactor() {
         BaseNode left;
@@ -442,7 +440,7 @@ class EquationParser implements Constants {
 
 
     /**
-     * Generates node as variable, function or value.
+     * Parse node as variable, function or value.
      */
     private BaseNode parseAsIdentifiable() {
         BaseNode node = null;
@@ -595,7 +593,7 @@ class EquationParser implements Constants {
      *
      * @param position - position in the script.
      */
-    char charAtCheckExpSeparator(int position) {
+    private char charAtCheckExpSeparator(int position) {
         char retchar = '\0';
         if (position < stopAt) {
             retchar = source.charAt(position);
@@ -608,21 +606,21 @@ class EquationParser implements Constants {
     }
 
 
-    char currentCharCheckExpSeparator() {
+    private char currentCharCheckExpSeparator() {
         return charAtCheckExpSeparator(position);
     }
 
     /**
      * Return char at the current script position, independ on char.
      */
-    char currentChar() {
+    private char currentChar() {
         return charAt(position);
     }
 
     /**
      * Return char at the defined script position, independ on char.
      */
-    char charAt(int position) {
+    private char charAt(int position) {
         char retchar = '\0';
         if (position < stopAt) {
             retchar = source.charAt(position);
@@ -636,7 +634,7 @@ class EquationParser implements Constants {
     /**
      * Skip current position to the next script character to be performed.
      */
-    void skipSpaces() {
+    private void skipSpaces() {
         char c;
         while ((c = charAtCheckExpSeparator(position)) > 0 && c <= 32) {
             if (c == 10) {
@@ -650,7 +648,7 @@ class EquationParser implements Constants {
     /**
      * Increments script position by one.
      */
-    void forwardPosition() {
+    private void forwardPosition() {
         ++position;
     }
 
@@ -658,7 +656,7 @@ class EquationParser implements Constants {
      * Return the word at the current script position. The position is moved to
      * end of returned word.
      */
-    String readWord() {
+    private String readWord() {
         String ret = "";
         skipSpaces();
 
@@ -685,7 +683,7 @@ class EquationParser implements Constants {
     /**
      * Method which determine that character at the current position is digit char.
      */
-    boolean isDigit() {
+    private boolean isDigit() {
         if (charAtCheckExpSeparator(position) >= 0x30 && charAtCheckExpSeparator(position) <= 0x39 || charAtCheckExpSeparator(position) == '.')
             return true;
         return false;
@@ -694,7 +692,7 @@ class EquationParser implements Constants {
     /**
      * Method which determines that character at the current script position is literal.
      */
-    boolean isLiteralChar() {
+    private boolean isLiteralChar() {
         char c = charAtCheckExpSeparator(position);
         return c >= 0x41 && c <= 0x5a || c >= 0x61 && c <= 0x7a || c == '_';
     }
@@ -702,14 +700,14 @@ class EquationParser implements Constants {
     /**
      *
      */
-    boolean isText() {
+    private boolean isText() {
         return charAtCheckExpSeparator(position) == '"';
     }
 
     /**
      *
      */
-    boolean isOperatorSymbol() {
+    private boolean isOperatorSymbol() {
         char ch = charAtCheckExpSeparator(position);
         switch (ch) {
             case '!':
@@ -734,7 +732,7 @@ class EquationParser implements Constants {
     /**
      *
      */
-    String readTextSequence() {
+    private String readTextSequence() {
         String text = "";
 
         if (isText()) {
@@ -800,7 +798,7 @@ class EquationParser implements Constants {
     /**
      * Sets the position on the script.
      */
-    void setPosition(int pos) {
+    private void setPosition(int pos) {
         position = pos;
     }
 

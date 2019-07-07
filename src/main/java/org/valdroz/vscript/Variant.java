@@ -57,45 +57,33 @@ public class Variant {
     }
 
     /**
-     * Returns double value.
+     * @return numeric value
      */
     public double getDouble() {
         return numericValue;
     }
 
     /**
-     * Returns string value.
+     * @return string value
      */
     public String getString() {
         return stringValue;
     }
 
-    /**
-     * Set variant value.
-     */
     public void setValue(String value) {
         vt = VT_STRING;
         stringValue = value;
     }
 
-    /**
-     * Set variant value.
-     */
     public void setValue(double value) {
         vt = VT_NUMERIC;
         numericValue = value;
     }
 
-    /**
-     * Set variant value.
-     */
     public void setValue(int value) {
         setValue((double) value);
     }
 
-    /**
-     * Set variant value for the other variant object.
-     */
     public void setValue(Variant value) {
         vt = value.vt;
         switch (vt) {
@@ -115,7 +103,6 @@ public class Variant {
         }
     }
 
-
     public void makeNull() {
         vt = VT_NONE;
         this.arrayValue = null;
@@ -123,16 +110,13 @@ public class Variant {
         this.numericValue = 0;
     }
 
-    /**
-     * Return variant type.
-     */
     public byte getValueType() {
         return vt;
     }
 
-
     /**
      * Convert and return variant value as string.
+     * @return variant value converted to string.
      */
     @Override
     public String toString() {
@@ -156,7 +140,7 @@ public class Variant {
     }
 
     /**
-     * Return value as double, attempts to convert if variant is not numeric type.
+     * @return variant value converted to double.
      */
     public double toDouble() {
         switch (getValueType()) {
@@ -173,7 +157,7 @@ public class Variant {
     }
 
     /**
-     * Returns `true` if variant interpolated value of not equals to zero.
+     * @return `true` if variant interpolated value is not equals to zero.
      */
     public boolean toBoolean() {
         return toDouble() != 0;
@@ -206,7 +190,7 @@ public class Variant {
     }
 
     /**
-     * Returns value size. If variant type is array, array size will be returned,
+     * @return value size. If variant type is array, array size will be returned,
      * value toString() size wil be returned otherwise,
      */
     public int size() {

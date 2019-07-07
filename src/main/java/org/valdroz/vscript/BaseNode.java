@@ -351,13 +351,13 @@ public class BaseNode implements RunBlock, Constants {
 
 
     @Override
-    public void setMasterRunBlock(MasterRunBlock runScript) {
-        masterRunBlock = runScript;
-        if (leftNode != null) leftNode.setMasterRunBlock(runScript);
-        if (rightNode != null) rightNode.setMasterRunBlock(runScript);
+    public void setMasterRunBlock(MasterRunBlock runBlock) {
+        masterRunBlock = runBlock;
+        if (leftNode != null) leftNode.setMasterRunBlock(runBlock);
+        if (rightNode != null) rightNode.setMasterRunBlock(runBlock);
 
         if (funcParams != null) {
-            funcParams.forEach(nd -> nd.setMasterRunBlock(runScript));
+            funcParams.forEach(nd -> nd.setMasterRunBlock(runBlock));
         }
     }
 
@@ -372,4 +372,14 @@ public class BaseNode implements RunBlock, Constants {
         funcParams.add(paramNode);
     }
 
+    @Override
+    public String toString() {
+        return new StringJoiner(", ","{", "}")
+                .add("o=" + operation)
+                .add("l=" + leftNode)
+                .add("r=" + rightNode)
+                .add("v=" + value)
+                .add("var='" + variableName + "'")
+                .toString();
+    }
 }

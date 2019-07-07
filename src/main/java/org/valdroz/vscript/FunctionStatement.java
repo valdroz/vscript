@@ -76,8 +76,8 @@ public class FunctionStatement extends MasterRunBlock {
 
     /**
      * Execute and get value
-     * @param variantContainer
-     * @return
+     * @param variantContainer variant container
+     * @return result should be never null.
      */
     public Variant execute(VariantContainer variantContainer) {
         LocalVariantContainer local = new LocalVariantContainer(variantContainer);

@@ -23,12 +23,14 @@ package org.valdroz.vscript;
 public interface RunBlock
 {
 	/**
-	 * setMasterRunBlock - set the reference to parent MasterRunBlock object
+	 * Set the reference to parent MasterRunBlock object
+	 * @param runBlock parent run block.
 	 */
-	void setMasterRunBlock(MasterRunBlock runScript);
+	void setMasterRunBlock(MasterRunBlock runBlock);
 	
 	/**
-	 * executes the run block
+	 * Executes the run block.
+	 * @param variantContainer Variant container instance.
 	 */
 	void run(VariantContainer variantContainer);
 

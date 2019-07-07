@@ -31,17 +31,11 @@ public abstract class AbstractStatement<T> implements RunBlock {
 
     public abstract T getThis();
 
-    /**
-     * Interface method. See RunBlock interface for description.
-     */
     @Override
-    public void setMasterRunBlock(MasterRunBlock runScript) {
-        this.master = runScript;
+    public void setMasterRunBlock(MasterRunBlock runBlock) {
+        this.master = runBlock;
     }
 
-    /**
-     * Set the run time code for the statement.
-     */
     public T withStatementBody(RunBlock statementBody) {
         this.body = statementBody;
         return getThis();
@@ -51,9 +45,7 @@ public abstract class AbstractStatement<T> implements RunBlock {
         return master;
     }
 
-    /**
-     * Interface method. See RunBlock interface for description.
-     */
+    @Override
     public void run(VariantContainer variantContainer) {
         if (this.body != null) {
             this.body.setMasterRunBlock(this.master);
