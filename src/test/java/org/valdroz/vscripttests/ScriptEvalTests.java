@@ -36,6 +36,30 @@ public class ScriptEvalTests {
     }
 
     @Test
+    public void testCustomFunctionWithJavaBodyEvaluation() {
+
+        VariantContainer variantContainer = new DefaultVariantContainer();
+
+
+        MasterRunBlock masterRunBlock = new MasterRunBlock();
+
+        masterRunBlock.addFunctionStatement(
+                new FunctionStatement("multiply")
+                        .withParameterName("first")
+                        .withParameterName("second")
+                        .withBody(parse("multiply=first*second"))
+        );
+
+        Variant result = new EquationEval("2 + multiply(3, 4)")
+                .withMasterBlock(masterRunBlock)
+                .eval(variantContainer);
+
+        assertThat(result.getDouble(), is(14.0));
+
+    }
+
+
+    @Test
     public void testIfStatement() {
 
         VariantContainer variantContainer = new DefaultVariantContainer();

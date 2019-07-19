@@ -54,7 +54,7 @@ public class FunctionStatement extends MasterRunBlock {
     }
 
     public Variant getParamValue(int index) {
-        if ( index >= this.parameterValues.size() ) {
+        if ( index >= 0 && index < this.parameterValues.size() ) {
             return this.parameterValues.get(index);
         }
         return new Variant();

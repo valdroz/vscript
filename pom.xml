@@ -6,13 +6,20 @@
 
   <groupId>org.valdroz.vscript</groupId>
   <artifactId>vscript</artifactId>
-  <version>1.0</version>
+  <version>1.0.1</version>
 
   <name>vscript</name>
   <description>Equation evaluator</description>
   <url>https://github.com/valdroz/vscript</url>
 
   <scm><url>https://github.com/valdroz/vscript</url></scm>
+
+  <developers>
+    <developer>
+      <name>Valerijus Drozdovas</name>
+      <email>valerijus.drozdovas@gmail.com</email>
+    </developer>
+  </developers>
 
   <licenses>
     <license>
@@ -91,19 +98,30 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>1.6.7</version>
-        <extensions>true</extensions>
-        <configuration>
-          <serverId>ossrh</serverId>
-          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-          <autoReleaseAfterClose>true</autoReleaseAfterClose>
-        </configuration>
-      </plugin>
+<!--      <plugin>-->
+<!--        <groupId>org.sonatype.plugins</groupId>-->
+<!--        <artifactId>nexus-staging-maven-plugin</artifactId>-->
+<!--        <version>1.6.7</version>-->
+<!--        <extensions>true</extensions>-->
+<!--&lt;!&ndash;        <configuration>&ndash;&gt;-->
+<!--&lt;!&ndash;          <serverId>ossrh</serverId>&ndash;&gt;-->
+<!--&lt;!&ndash;          <nexusUrl>https://oss.sonatype.org/</nexusUrl>&ndash;&gt;-->
+<!--&lt;!&ndash;          <autoReleaseAfterClose>true</autoReleaseAfterClose>&ndash;&gt;-->
+<!--&lt;!&ndash;        </configuration>&ndash;&gt;-->
+<!--      </plugin>-->
     </plugins>
   </build>
 
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
 
 </project>
