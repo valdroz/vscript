@@ -405,12 +405,17 @@ public class BaseNode implements RunBlock, Constants {
     }
 
     static Duration durationTillNow(Variant from) {
-        if (!from.isString()) {
-            throw new RuntimeException("string input is expected");
+        if (from.isString()) {
+            return new Duration(
+                    ISODateTimeFormat.dateOptionalTimeParser().parseDateTime(from.toString()),
+                    now());
+        } else if (from.toLong() > 1) {
+            return new Duration(
+                    new DateTime(from.toLong()),
+                    now());
         }
-        return new Duration(
-                ISODateTimeFormat.dateOptionalTimeParser().parseDateTime(from.toString()),
-                now());
+
+        throw new RuntimeException("ISO string date or millis is expected as input.");
     }
 
     static DateTime now() {

@@ -2,6 +2,7 @@ package org.valdroz.vscripttests;
 
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -200,7 +201,7 @@ public class EquationEvalTests {
     }
 
     @Test
-    public void testNowFunc() throws InterruptedException{
+    public void testNowFunc() throws InterruptedException {
         VariantContainer container = new DefaultVariantContainer();
         long t1 = DateTime.now().getMillis();
         Thread.sleep(1);
@@ -233,6 +234,28 @@ public class EquationEvalTests {
     }
 
     @Test
+    public void testDaysBeforeNowFuncMillis() {
+
+        // Now is always 2010-02-05T17:31:15Z
+        Supplier<Long> prevNow = EquationEval.setNowSupplier(() -> 1265391075000L);
+
+        VariantContainer container = new DefaultVariantContainer();
+        container.setVariant("testDate", new Variant(new DateTime(2010, 2, 1, 0, 0).getMillis())); //"2010-02-01"
+
+        Variant var = new EquationEval("days_before_now(testDate)").eval(container);
+
+        assertThat(var.toInteger(), is(4));
+
+        container.setVariant("testDate", new Variant(new DateTime(2009, 2, 1, 0, 0).getMillis())); //"2009-02-01"
+        var = new EquationEval("days_before_now(testDate)").eval(container);
+
+        assertThat(var.toInteger(), is(369));
+
+        EquationEval.setNowSupplier(prevNow);
+    }
+
+
+    @Test
     public void testHoursBeforeNowFunc() {
 
         // Now is always 2010-02-05T17:31:15Z
@@ -245,7 +268,22 @@ public class EquationEvalTests {
         assertThat(var.toInteger(), is(7));
 
         EquationEval.setNowSupplier(prevNow);
-
     }
+
+    @Test
+    public void testHoursBeforeNowFuncMillis() {
+
+        // Now is always 2010-02-05T17:31:15Z
+        Supplier<Long> prevNow = EquationEval.setNowSupplier(() -> 1265391075000L);
+
+        VariantContainer container = new DefaultVariantContainer();
+        container.setVariant("testDate", new Variant(new DateTime(2010, 2, 5, 10, 0, DateTimeZone.UTC).getMillis())); //2010-02-05T10:00:00Z
+        Variant var = new EquationEval("hours_before_now(testDate)").eval(container);
+
+        assertThat(var.toInteger(), is(7));
+
+        EquationEval.setNowSupplier(prevNow);
+    }
+
 
 }

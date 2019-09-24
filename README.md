@@ -49,8 +49,8 @@ Date functions:
 					E.g. to get maximum days in the previous month, the `n` values must be -1.
 - iso(str)          - Parses input ISO8601 date or date with time and returns millis.
 - now()             - Current time in millis.
-- days_before_now(str) - Parses input ISO8601 date or date with time and return number of days passed until now. 					
-- hours_before_now(str) - Parses input ISO8601 date or date with time and return number of hours passed until now.
+- days_before_now(str/n) - Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of days passed until now. 					
+- hours_before_now(str/n) - Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of hours passed until now.
 
 Misc. functions:
 - size(x)			- Length of string variable value or count of elements in array.
