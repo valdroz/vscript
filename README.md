@@ -41,19 +41,23 @@ Math functions:
 - exp(n)				- Returns the exponential number `e` raised to the power of a `n`.
 
 Date functions:
-- day()				- Returns current day of month.
-- month()			- Returns current month.
+- day()				- Returns current day of month (1-31).
+- month()			- Returns current month (1-12).
 - year()			- Returns current year.
 - day_of_year()		- Return current day of year.
 - days_in_month(n)	- Return maximum days in the month, where `n` is disposition from current month.
 					E.g. to get maximum days in the previous month, the `n` values must be -1.
+- iso(str)          - Parses input ISO8601 date or date with time and returns millis.
+- now()             - Current time in millis.
+- days_before_now(str) - Parses input ISO8601 date or date with time and return number of days passed until now. 					
+- hours_before_now(str) - Parses input ISO8601 date or date with time and return number of hours passed until now.
 
 Misc. functions:
 - size(x)			- Length of string variable value or count of elements in array.
-- isnull(x)			- Returns `1` if value not set, `0` otherwise.
-- isnumeric(x)		- Returns `1` if value is number, `0` otherwise.
-- isstring(x)		- Returns `1` if value is string, `0` otherwise.
-- isarray(x)		- Returns `1` if value is array, `0` otherwise.
+- isnull(x)/is_null(x)			- Returns `1` if value not set, `0` otherwise.
+- isnumeric(x)/isnumeric(x)		- Returns `1` if value is number, `0` otherwise.
+- isstring(x)/is_string(x)		- Returns `1` if value is string, `0` otherwise.
+- isarray(x)/is_array(x)		- Returns `1` if value is array, `0` otherwise.
 
 ## Example
 
