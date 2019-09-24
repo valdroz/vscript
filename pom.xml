@@ -6,7 +6,7 @@
 
   <groupId>org.valdroz.vscript</groupId>
   <artifactId>vscript</artifactId>
-  <version>1.1.1</version>
+  <version>1.1.2</version>
 
   <name>vscript</name>
   <description>Equation evaluator</description>

@@ -80,10 +80,11 @@ public class BaseNode implements RunBlock, Constants {
                 leftNodeResult = leftNode.execute(variantContainer);
                 rightNodeResult = rightNode.execute(variantContainer);
                 if (leftNodeResult.getValueType() == Variant.VT_STRING ||
-                        rightNodeResult.getValueType() == Variant.VT_STRING)
+                        rightNodeResult.getValueType() == Variant.VT_STRING) {
                     value.setValue(leftNodeResult.toString() + rightNodeResult.toString());
-                else
+                } else {
                     value.setValue(leftNodeResult.getDouble() + rightNodeResult.getDouble());
+                }
                 break;
 
             case '-':
@@ -104,43 +105,41 @@ public class BaseNode implements RunBlock, Constants {
                 break;
 
             case '!':
-                value.setValue(getPreferredNode().execute(variantContainer).toBoolean() ? BOOL_FALSE : BOOL_TRUE);
+                value.setValue(!getPreferredNode().execute(variantContainer).toBoolean());
                 break;
 
             case '&':
                 leftNodeResult = leftNode.execute(variantContainer);
                 rightNodeResult = rightNode.execute(variantContainer);
-                tmp = (int) leftNodeResult.toDouble() & (int) rightNodeResult.toDouble();
-                value.setValue(tmp);
+                value.setValue((int) leftNodeResult.toDouble() & (int) rightNodeResult.toDouble());
                 break;
 
             case '|':
                 leftNodeResult = leftNode.execute(variantContainer);
                 rightNodeResult = rightNode.execute(variantContainer);
-                tmp = (int) leftNodeResult.toDouble() | (int) rightNodeResult.toDouble();
-                value.setValue(tmp);
+                value.setValue((int) leftNodeResult.toDouble() | (int) rightNodeResult.toDouble());
                 break;
 
             case '>':
                 leftNodeResult = leftNode.execute(variantContainer);
                 rightNodeResult = rightNode.execute(variantContainer);
                 if (leftNodeResult.getValueType() == Variant.VT_STRING &&
-                        rightNodeResult.getValueType() == Variant.VT_STRING)
-                    tmp = (leftNodeResult.toString().compareTo(rightNodeResult.toString()) > 0 ? BOOL_TRUE : BOOL_FALSE);
-                else
-                    tmp = leftNodeResult.toDouble() > rightNodeResult.toDouble() ? BOOL_TRUE : BOOL_FALSE;
-                value.setValue(tmp);
+                        rightNodeResult.getValueType() == Variant.VT_STRING) {
+                    value.setValue(leftNodeResult.toString().compareTo(rightNodeResult.toString()) > 0);
+                } else {
+                    value.setValue(leftNodeResult.toDouble() > rightNodeResult.toDouble());
+                }
                 break;
 
             case '<':
                 leftNodeResult = leftNode.execute(variantContainer);
                 rightNodeResult = rightNode.execute(variantContainer);
                 if (leftNodeResult.getValueType() == Variant.VT_STRING &&
-                        rightNodeResult.getValueType() == Variant.VT_STRING)
-                    tmp = (leftNodeResult.toString().compareTo(rightNodeResult.toString()) < 0 ? BOOL_TRUE : BOOL_FALSE);
-                else
-                    tmp = leftNodeResult.toDouble() < rightNodeResult.toDouble() ? BOOL_TRUE : BOOL_FALSE;
-                value.setValue(tmp);
+                        rightNodeResult.getValueType() == Variant.VT_STRING) {
+                    value.setValue(leftNodeResult.toString().compareTo(rightNodeResult.toString()) < 0);
+                } else {
+                    value.setValue(leftNodeResult.toDouble() < rightNodeResult.toDouble());
+                }
                 break;
 
             case '^':
@@ -151,14 +150,22 @@ public class BaseNode implements RunBlock, Constants {
 
             case NT_LOP_AND:
                 leftNodeResult = leftNode.execute(variantContainer);
-                rightNodeResult = rightNode.execute(variantContainer);
-                value.setValue((leftNodeResult.toBoolean() && rightNodeResult.toBoolean()) ? BOOL_TRUE : BOOL_FALSE);
+                if (leftNodeResult.toBoolean()) {
+                    rightNodeResult = rightNode.execute(variantContainer);
+                    value.setValue(rightNodeResult.toBoolean());
+                } else {
+                    value.setValue(false);
+                }
                 break;
 
             case NT_LOP_OR:
                 leftNodeResult = leftNode.execute(variantContainer);
-                rightNodeResult = rightNode.execute(variantContainer);
-                value.setValue((leftNodeResult.toBoolean() || rightNodeResult.toBoolean()) ? BOOL_TRUE : BOOL_FALSE);
+                if (leftNodeResult.toBoolean()) {
+                    value.setValue(true);
+                } else {
+                    rightNodeResult = rightNode.execute(variantContainer);
+                    value.setValue(rightNodeResult.toBoolean());
+                }
                 break;
 
             case NT_LOP_EQUALS:
@@ -166,9 +173,9 @@ public class BaseNode implements RunBlock, Constants {
                 rightNodeResult = rightNode.execute(variantContainer);
                 if (leftNodeResult.getValueType() == Variant.VT_STRING ||
                         rightNodeResult.getValueType() == Variant.VT_STRING) {
-                    value.setValue(leftNodeResult.toString().equals(rightNodeResult.toString()) ? BOOL_TRUE : BOOL_FALSE);
+                    value.setValue(leftNodeResult.toString().equals(rightNodeResult.toString()));
                 } else {
-                    value.setValue(leftNodeResult.equals(rightNodeResult) ? BOOL_TRUE : BOOL_FALSE);
+                    value.setValue(leftNodeResult.equals(rightNodeResult));
                 }
                 break;
 
@@ -177,9 +184,9 @@ public class BaseNode implements RunBlock, Constants {
                 rightNodeResult = rightNode.execute(variantContainer);
                 if (leftNodeResult.getValueType() == Variant.VT_STRING ||
                         rightNodeResult.getValueType() == Variant.VT_STRING) {
-                    value.setValue(!leftNodeResult.toString().equals(rightNodeResult.toString()) ? BOOL_TRUE : BOOL_FALSE);
+                    value.setValue(!leftNodeResult.toString().equals(rightNodeResult.toString()));
                 } else {
-                    value.setValue(!leftNodeResult.equals(rightNodeResult) ? BOOL_TRUE : BOOL_FALSE);
+                    value.setValue(!leftNodeResult.equals(rightNodeResult));
                 }
                 break;
 
@@ -189,9 +196,9 @@ public class BaseNode implements RunBlock, Constants {
 
                 if (leftNodeResult.getValueType() == Variant.VT_STRING ||
                         rightNodeResult.getValueType() == Variant.VT_STRING) {
-                    value.setValue(leftNodeResult.toString().compareTo(rightNodeResult.toString()) >= 0 ? BOOL_TRUE : BOOL_FALSE);
+                    value.setValue(leftNodeResult.toString().compareTo(rightNodeResult.toString()) >= 0);
                 } else {
-                    value.setValue((leftNodeResult.toDouble() >= rightNodeResult.toDouble()) ? BOOL_TRUE : BOOL_FALSE);
+                    value.setValue((leftNodeResult.toDouble() >= rightNodeResult.toDouble()));
                 }
                 break;
 
@@ -200,9 +207,9 @@ public class BaseNode implements RunBlock, Constants {
                 rightNodeResult = rightNode.execute(variantContainer);
                 if (leftNodeResult.getValueType() == Variant.VT_STRING ||
                         rightNodeResult.getValueType() == Variant.VT_STRING) {
-                    value.setValue(leftNodeResult.toString().compareTo(rightNodeResult.toString()) <= 0 ? BOOL_TRUE : BOOL_FALSE);
+                    value.setValue(leftNodeResult.toString().compareTo(rightNodeResult.toString()) <= 0);
                 } else {
-                    value.setValue((leftNodeResult.toDouble() <= rightNodeResult.toDouble()) ? BOOL_TRUE : BOOL_FALSE);
+                    value.setValue((leftNodeResult.toDouble() <= rightNodeResult.toDouble()));
                 }
                 break;
 
@@ -309,19 +316,19 @@ public class BaseNode implements RunBlock, Constants {
                 break;
 
             case NT_MF_IS_STRING:
-                value.setValue(getPreferredNode().execute(variantContainer).getValueType() == Variant.VT_STRING ? BOOL_TRUE : BOOL_FALSE);
+                value.setValue(getPreferredNode().execute(variantContainer).isString());
                 break;
 
             case NT_MF_IS_NUMBER:
-                value.setValue(getPreferredNode().execute(variantContainer).getValueType() == Variant.VT_NUMERIC ? BOOL_TRUE : BOOL_FALSE);
+                value.setValue(getPreferredNode().execute(variantContainer).isNumeric());
                 break;
 
             case NT_MF_IS_ARRAY:
-                value.setValue(getPreferredNode().execute(variantContainer).getValueType() == Variant.VT_ARRAY ? BOOL_TRUE : BOOL_FALSE);
+                value.setValue(getPreferredNode().execute(variantContainer).isArray());
                 break;
 
             case NT_MF_IS_NULL:
-                value.setValue(getPreferredNode().execute(variantContainer).getValueType() == Variant.VT_NONE ? BOOL_TRUE : BOOL_FALSE);
+                value.setValue(getPreferredNode().execute(variantContainer).isNull());
                 break;
 
             case NT_FUNCTION: {

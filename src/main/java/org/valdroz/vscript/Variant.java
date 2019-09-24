@@ -20,6 +20,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
+import static org.valdroz.vscript.Constants.*;
+
 /**
  * Variant object.
  *
@@ -30,7 +32,6 @@ public class Variant {
     public static final byte VT_NUMERIC = 1;
     public static final byte VT_STRING = 2;
     public static final byte VT_ARRAY = 3;
-//    public static final byte VT_ARRAY = 3;
 
     /**
      * Variant value type
@@ -66,6 +67,14 @@ public class Variant {
         return this.vt == VT_STRING;
     }
 
+    public boolean isNumeric() {
+        return this.vt == VT_NUMERIC;
+    }
+
+    public boolean isArray() {
+        return this.vt == VT_ARRAY;
+    }
+
     /**
      * @return numeric value
      */
@@ -97,6 +106,11 @@ public class Variant {
 
     public void setValue(int value) {
         setValue((double) value);
+    }
+
+    public void setValue(boolean value) {
+        vt = VT_NUMERIC;
+        numericValue = value ? BOOL_TRUE: BOOL_FALSE;
     }
 
 
@@ -164,7 +178,7 @@ public class Variant {
                 return numericValue;
             case VT_STRING:
                 try {
-                    return Double.valueOf(stringValue);
+                    return Double.parseDouble(stringValue);
                 } catch (Exception ex) {
                     return 0;
                 }
@@ -181,7 +195,7 @@ public class Variant {
                 return new Double(numericValue).intValue();
             case VT_STRING:
                 try {
-                    return Integer.valueOf(stringValue);
+                    return Integer.parseInt(stringValue);
                 } catch (Exception ex) {
                     return 0;
                 }
@@ -198,7 +212,7 @@ public class Variant {
                 return new Double(numericValue).longValue();
             case VT_STRING:
                 try {
-                    return Long.valueOf(stringValue);
+                    return Long.parseLong(stringValue);
                 } catch (Exception ex) {
                     return 0;
                 }
@@ -244,12 +258,13 @@ public class Variant {
      * value toString() size wil be returned otherwise,
      */
     public int size() {
-        if (vt == VT_ARRAY && arrayValue != null)
+        if (vt == VT_ARRAY && arrayValue != null) {
             return arrayValue.size();
-        else if (vt != VT_NONE)
+        } else if (vt != VT_NONE) {
             return toString().length();
-        else
+        } else {
             return 0;
+        }
     }
 
 
