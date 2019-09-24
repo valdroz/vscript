@@ -6,7 +6,7 @@
 
   <groupId>org.valdroz.vscript</groupId>
   <artifactId>vscript</artifactId>
-  <version>1.0.1</version>
+  <version>1.1.0</version>
 
   <name>vscript</name>
   <description>Equation evaluator</description>
@@ -54,6 +54,12 @@
       <version>2.4.0</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <version>2.10.4</version>
+    </dependency>
+
   </dependencies>
 
   <build>

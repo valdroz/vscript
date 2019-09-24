@@ -15,6 +15,8 @@
  */
 package org.valdroz.vscript;
 
+import java.util.function.Supplier;
+
 /**
  *
  * Equation evaluator.
@@ -75,6 +77,12 @@ public final class EquationEval {
 
     public Variant eval() {
         return eval(new DefaultVariantContainer());
+    }
+
+    public static Supplier<Long> setNowSupplier(Supplier<Long> nowProvider) {
+        Supplier<Long> prev = BaseNode.nowProvider;
+        BaseNode.nowProvider = nowProvider;
+        return prev;
     }
 
 }

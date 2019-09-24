@@ -132,15 +132,27 @@ class EquationParser implements Constants {
                 return NT_MF_DAY_OF_YEAR;
             case "days_in_month":
                 return NT_MF_DAYS_IN_MONTH;
+            case "now":
+                return NT_MF_NOW;
+            case "iso":
+                return NT_MF_ISO;
+            case "days_before_now":
+                return NT_MF_DAYS_BEFORE_NOW;
+            case "hours_before_now":
+                return NT_MF_HOURS_BEFORE_NOW;
             case "size":
                 return NT_MF_SIZE;
             case "isnull":
+            case "is_null":
                 return NT_MF_IS_NULL;
             case "isnumeric":
+            case "is_numeric":
                 return NT_MF_IS_NUMBER;
             case "isstring":
+            case "is_string":
                 return NT_MF_IS_STRING;
             case "isarray":
+            case "is_array":
                 return NT_MF_IS_ARRAY;
             default:
                 return '\0';
@@ -747,7 +759,7 @@ class EquationParser implements Constants {
                     lastErrorCode = CE_ILLEGAL_SYMBOL;
                     return null;
                 } else if (ch == 13 || ch == 10 || ch == 0) {
-                    lastErrorCode = CE_MISSING_QUATATION;
+                    lastErrorCode = CE_MISSING_QUOTATION;
                     return null;
                 }
 

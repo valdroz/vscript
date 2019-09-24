@@ -15,7 +15,15 @@
  */
 package org.valdroz.vscript;
 
-import java.util.*;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.format.ISODateTimeFormat;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.StringJoiner;
+import java.util.function.Supplier;
 
 /**
  * Base interpretable node.
@@ -34,6 +42,7 @@ public class BaseNode implements RunBlock, Constants {
     private MasterRunBlock masterRunBlock = null;
     private List<BaseNode> funcParams = null;
 
+    static Supplier<Long> nowProvider = () -> DateTime.now().getMillis();
 
     BaseNode() {
     }
@@ -95,7 +104,7 @@ public class BaseNode implements RunBlock, Constants {
                 break;
 
             case '!':
-                value.setValue(getPreferredNode().execute(variantContainer).toBoolean() ? 1.0 : 0.0);
+                value.setValue(getPreferredNode().execute(variantContainer).toBoolean() ? BOOL_FALSE : BOOL_TRUE);
                 break;
 
             case '&':
@@ -117,9 +126,9 @@ public class BaseNode implements RunBlock, Constants {
                 rightNodeResult = rightNode.execute(variantContainer);
                 if (leftNodeResult.getValueType() == Variant.VT_STRING &&
                         rightNodeResult.getValueType() == Variant.VT_STRING)
-                    tmp = (leftNodeResult.toString().compareTo(rightNodeResult.toString()) > 0 ? 1.0 : 0.0);
+                    tmp = (leftNodeResult.toString().compareTo(rightNodeResult.toString()) > 0 ? BOOL_TRUE : BOOL_FALSE);
                 else
-                    tmp = leftNodeResult.toDouble() > rightNodeResult.toDouble() ? 1.0 : 0.0;
+                    tmp = leftNodeResult.toDouble() > rightNodeResult.toDouble() ? BOOL_TRUE : BOOL_FALSE;
                 value.setValue(tmp);
                 break;
 
@@ -128,9 +137,9 @@ public class BaseNode implements RunBlock, Constants {
                 rightNodeResult = rightNode.execute(variantContainer);
                 if (leftNodeResult.getValueType() == Variant.VT_STRING &&
                         rightNodeResult.getValueType() == Variant.VT_STRING)
-                    tmp = (leftNodeResult.toString().compareTo(rightNodeResult.toString()) < 0 ? 1.0 : 0.0);
+                    tmp = (leftNodeResult.toString().compareTo(rightNodeResult.toString()) < 0 ? BOOL_TRUE : BOOL_FALSE);
                 else
-                    tmp = leftNodeResult.toDouble() < rightNodeResult.toDouble() ? 1.0 : 0.0;
+                    tmp = leftNodeResult.toDouble() < rightNodeResult.toDouble() ? BOOL_TRUE : BOOL_FALSE;
                 value.setValue(tmp);
                 break;
 
@@ -143,13 +152,13 @@ public class BaseNode implements RunBlock, Constants {
             case NT_LOP_AND:
                 leftNodeResult = leftNode.execute(variantContainer);
                 rightNodeResult = rightNode.execute(variantContainer);
-                value.setValue((leftNodeResult.toBoolean() && rightNodeResult.toBoolean()) ? 1.0 : 0.0);
+                value.setValue((leftNodeResult.toBoolean() && rightNodeResult.toBoolean()) ? BOOL_TRUE : BOOL_FALSE);
                 break;
 
             case NT_LOP_OR:
                 leftNodeResult = leftNode.execute(variantContainer);
                 rightNodeResult = rightNode.execute(variantContainer);
-                value.setValue((leftNodeResult.toBoolean() || rightNodeResult.toBoolean()) ? 1.0 : 0.0);
+                value.setValue((leftNodeResult.toBoolean() || rightNodeResult.toBoolean()) ? BOOL_TRUE : BOOL_FALSE);
                 break;
 
             case NT_LOP_EQUALS:
@@ -157,9 +166,9 @@ public class BaseNode implements RunBlock, Constants {
                 rightNodeResult = rightNode.execute(variantContainer);
                 if (leftNodeResult.getValueType() == Variant.VT_STRING ||
                         rightNodeResult.getValueType() == Variant.VT_STRING) {
-                    value.setValue(leftNodeResult.toString().equals(rightNodeResult.toString()) ? 1.0 : 0.0);
+                    value.setValue(leftNodeResult.toString().equals(rightNodeResult.toString()) ? BOOL_TRUE : BOOL_FALSE);
                 } else {
-                    value.setValue(leftNodeResult.equals(rightNodeResult) ? 1.0 : 0.0);
+                    value.setValue(leftNodeResult.equals(rightNodeResult) ? BOOL_TRUE : BOOL_FALSE);
                 }
                 break;
 
@@ -168,9 +177,9 @@ public class BaseNode implements RunBlock, Constants {
                 rightNodeResult = rightNode.execute(variantContainer);
                 if (leftNodeResult.getValueType() == Variant.VT_STRING ||
                         rightNodeResult.getValueType() == Variant.VT_STRING) {
-                    value.setValue(!leftNodeResult.toString().equals(rightNodeResult.toString()) ? 1.0 : 0.0);
+                    value.setValue(!leftNodeResult.toString().equals(rightNodeResult.toString()) ? BOOL_TRUE : BOOL_FALSE);
                 } else {
-                    value.setValue(!leftNodeResult.equals(rightNodeResult) ? 1.0 : 0.0);
+                    value.setValue(!leftNodeResult.equals(rightNodeResult) ? BOOL_TRUE : BOOL_FALSE);
                 }
                 break;
 
@@ -180,9 +189,9 @@ public class BaseNode implements RunBlock, Constants {
 
                 if (leftNodeResult.getValueType() == Variant.VT_STRING ||
                         rightNodeResult.getValueType() == Variant.VT_STRING) {
-                    value.setValue(leftNodeResult.toString().compareTo(rightNodeResult.toString()) >= 0 ? 1.0 : 0.0);
+                    value.setValue(leftNodeResult.toString().compareTo(rightNodeResult.toString()) >= 0 ? BOOL_TRUE : BOOL_FALSE);
                 } else {
-                    value.setValue((leftNodeResult.toDouble() >= rightNodeResult.toDouble()) ? 1.0 : 0.0);
+                    value.setValue((leftNodeResult.toDouble() >= rightNodeResult.toDouble()) ? BOOL_TRUE : BOOL_FALSE);
                 }
                 break;
 
@@ -191,9 +200,9 @@ public class BaseNode implements RunBlock, Constants {
                 rightNodeResult = rightNode.execute(variantContainer);
                 if (leftNodeResult.getValueType() == Variant.VT_STRING ||
                         rightNodeResult.getValueType() == Variant.VT_STRING) {
-                    value.setValue(leftNodeResult.toString().compareTo(rightNodeResult.toString()) <= 0 ? 1.0 : 0.0);
+                    value.setValue(leftNodeResult.toString().compareTo(rightNodeResult.toString()) <= 0 ? BOOL_TRUE : BOOL_FALSE);
                 } else {
-                    value.setValue((leftNodeResult.toDouble() <= rightNodeResult.toDouble()) ? 1.0 : 0.0);
+                    value.setValue((leftNodeResult.toDouble() <= rightNodeResult.toDouble()) ? BOOL_TRUE : BOOL_FALSE);
                 }
                 break;
 
@@ -249,64 +258,70 @@ public class BaseNode implements RunBlock, Constants {
                 value.setValue(getPreferredNode().execute(variantContainer));
                 System.out.print(value.toString());
                 break;
-            case NT_MF_DAY: {
-                Calendar c = new GregorianCalendar();
-                c.setTime(new Date());
-                value.setValue(c.get(Calendar.DAY_OF_MONTH));
-            }
-            break;
-            case NT_MF_MONTH: {
-                Calendar c = new GregorianCalendar();
-                c.setTime(new Date());
-                value.setValue(c.get(Calendar.MONTH) + 1);
-            }
-            break;
-            case NT_MF_YEAR: {
-                Calendar c = new GregorianCalendar();
-                c.setTime(new Date());
-                value.setValue(c.get(Calendar.YEAR));
-            }
-            break;
-            case NT_MF_DAY_OF_YEAR: {
-                Calendar c = new GregorianCalendar();
-                c.setTime(new Date());
-                value.setValue(c.get(Calendar.DAY_OF_YEAR));
-            }
-            break;
-            case NT_MF_DAYS_IN_MONTH: {
-                tmp = getPreferredNode().execute(variantContainer).toDouble();
-                GregorianCalendar c = new GregorianCalendar();
-                c.setTime(new Date());
-                int month = c.get(Calendar.MONTH);
-                //java1 --------------------------------------------------
-                c.set(Calendar.MONTH, month + (int) tmp + 1);
-                c.set(Calendar.DAY_OF_MONTH, 1);
-                c.roll(Calendar.DAY_OF_YEAR, false);
-                value.setValue(c.get(Calendar.DAY_OF_MONTH));
 
-                //java2 --------------------------------------------------
-                //c.set( Calendar.MONTH, month + (int)tmp );
-                //value.setValue( c.getActualMaximum( Calendar.DAY_OF_MONTH ) );
+            case NT_MF_DAY:
+                value.setValue(now().getDayOfMonth());
+                break;
+
+            case NT_MF_MONTH:
+                value.setValue(now().getMonthOfYear());
+                break;
+
+            case NT_MF_YEAR:
+                value.setValue(now().getYear());
+                break;
+
+            case NT_MF_DAY_OF_YEAR:
+                value.setValue(now().getDayOfYear());
+                break;
+
+            case NT_MF_DAYS_IN_MONTH: {
+                DateTime dt = now();
+                Variant month = getPreferredNode().execute(variantContainer);
+                dt = dt.plusMonths(month.toInteger());
+                value.setValue(dt.dayOfMonth().withMaximumValue().getDayOfMonth());
             }
             break;
+
+            case NT_MF_ISO: {
+                Variant isoDate = getPreferredNode().execute(variantContainer);
+                if (!isoDate.isString()) {
+                    throw new RuntimeException("iso expects string as input.");
+                }
+                value.setValue(ISODateTimeFormat.dateOptionalTimeParser().parseDateTime(isoDate.toString()).getMillis());
+            }
+            break;
+
+            case NT_MF_NOW:
+                value.setValue(nowProvider.get());
+                break;
+
+            case NT_MF_DAYS_BEFORE_NOW:
+                value.setValue(durationTillNow(getPreferredNode().execute(variantContainer)).getStandardDays());
+                break;
+
+            case NT_MF_HOURS_BEFORE_NOW:
+                value.setValue(durationTillNow(getPreferredNode().execute(variantContainer)).getStandardHours());
+                break;
+
             case NT_MF_SIZE:
                 value.setValue(getPreferredNode().execute(variantContainer).size());
                 break;
 
             case NT_MF_IS_STRING:
-                value.setValue(getPreferredNode().execute(variantContainer).getValueType() == Variant.VT_STRING ? 1.0 : 0.0);
+                value.setValue(getPreferredNode().execute(variantContainer).getValueType() == Variant.VT_STRING ? BOOL_TRUE : BOOL_FALSE);
                 break;
 
             case NT_MF_IS_NUMBER:
-                value.setValue(getPreferredNode().execute(variantContainer).getValueType() == Variant.VT_NUMERIC ? 1.0 : 0.0);
+                value.setValue(getPreferredNode().execute(variantContainer).getValueType() == Variant.VT_NUMERIC ? BOOL_TRUE : BOOL_FALSE);
                 break;
 
             case NT_MF_IS_ARRAY:
-                value.setValue(getPreferredNode().execute(variantContainer).getValueType() == Variant.VT_ARRAY ? 1.0 : 0.0);
+                value.setValue(getPreferredNode().execute(variantContainer).getValueType() == Variant.VT_ARRAY ? BOOL_TRUE : BOOL_FALSE);
                 break;
 
             case NT_MF_IS_NULL:
-                value.setValue(getPreferredNode().execute(variantContainer).getValueType() == Variant.VT_NONE ? 1.0 : 0.0);
+                value.setValue(getPreferredNode().execute(variantContainer).getValueType() == Variant.VT_NONE ? BOOL_TRUE : BOOL_FALSE);
                 break;
 
             case NT_FUNCTION: {
@@ -314,12 +329,18 @@ public class BaseNode implements RunBlock, Constants {
                 if (funcParams != null) {
                     funcParams.forEach(nd -> paramValues.add(nd.execute(variantContainer)));
                 }
+                if (masterRunBlock == null) {
+                    throw new RuntimeException("Function undefined: " + this.variableName);
+                }
                 Variant rez = masterRunBlock.callFunction(this.variableName, paramValues, variantContainer);
                 if (rez != null) {
                     value.setValue(rez);
                 }
             }
             break;
+            default:
+                throw new RuntimeException("Unexpected node: " + operation);
+
         }
         return value;
     }
@@ -374,12 +395,25 @@ public class BaseNode implements RunBlock, Constants {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ","{", "}")
+        return new StringJoiner(", ", "{", "}")
                 .add("o=" + operation)
                 .add("l=" + leftNode)
                 .add("r=" + rightNode)
                 .add("v=" + value)
                 .add("var='" + variableName + "'")
                 .toString();
+    }
+
+    static Duration durationTillNow(Variant from) {
+        if (!from.isString()) {
+            throw new RuntimeException("string input is expected");
+        }
+        return new Duration(
+                ISODateTimeFormat.dateOptionalTimeParser().parseDateTime(from.toString()),
+                now());
+    }
+
+    static DateTime now() {
+        return new DateTime(nowProvider.get());
     }
 }

@@ -30,6 +30,7 @@ public class Variant {
     public static final byte VT_NUMERIC = 1;
     public static final byte VT_STRING = 2;
     public static final byte VT_ARRAY = 3;
+//    public static final byte VT_ARRAY = 3;
 
     /**
      * Variant value type
@@ -56,6 +57,15 @@ public class Variant {
         setValue(value);
     }
 
+
+    public boolean isNull() {
+        return this.vt == VT_NONE;
+    }
+
+    public boolean isString() {
+        return this.vt == VT_STRING;
+    }
+
     /**
      * @return numeric value
      */
@@ -80,9 +90,15 @@ public class Variant {
         numericValue = value;
     }
 
+    public void setValue(long value) {
+        vt = VT_NUMERIC;
+        numericValue = value;
+    }
+
     public void setValue(int value) {
         setValue((double) value);
     }
+
 
     public void setValue(Variant value) {
         vt = value.vt;
@@ -149,6 +165,40 @@ public class Variant {
             case VT_STRING:
                 try {
                     return Double.valueOf(stringValue);
+                } catch (Exception ex) {
+                    return 0;
+                }
+        }
+        return 0;
+    }
+
+    /**
+     * @return int value or 0 if type conversion is not possible.
+     */
+    public int toInteger() {
+        switch (getValueType()) {
+            case VT_NUMERIC:
+                return new Double(numericValue).intValue();
+            case VT_STRING:
+                try {
+                    return Integer.valueOf(stringValue);
+                } catch (Exception ex) {
+                    return 0;
+                }
+        }
+        return 0;
+    }
+
+    /**
+     * @return int value or 0 if type conversion is not possible.
+     */
+    public long toLong() {
+        switch (getValueType()) {
+            case VT_NUMERIC:
+                return new Double(numericValue).longValue();
+            case VT_STRING:
+                try {
+                    return Long.valueOf(stringValue);
                 } catch (Exception ex) {
                     return 0;
                 }

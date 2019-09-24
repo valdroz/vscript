@@ -16,7 +16,7 @@
 package org.valdroz.vscript;
 
 /**
- * Localized variant container.
+ * Locally scoped variant container.
  *
  * @author Valerijus Drozdovas
  */

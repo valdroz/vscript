@@ -36,7 +36,7 @@ public class Utils implements Constants {
             case CE_MISSING_BRACKET2:
                 message = "Missing bracked '}'.";
                 break;
-            case CE_MISSING_QUATATION:
+            case CE_MISSING_QUOTATION:
                 message = "Missing quatation.";
                 break;
             case CE_RESERVED_WORD_AS_FUNC:
@@ -78,5 +78,6 @@ public class Utils implements Constants {
 
         return message;
     }
+
 
 }

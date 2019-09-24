@@ -18,7 +18,7 @@ package org.valdroz.vscript;
 import java.util.*;
 
 /**
- * RunBlock container and executor.
+ * Master Run Block container and executor.
  *
  * @author Valerijus Drozdovas
  */
@@ -63,8 +63,7 @@ public class MasterRunBlock implements RunBlock {
                 return func.execute(variantContainer);
             }
         }
-
-        return null;
+        throw new RuntimeException("Function undefined: " + funcName);
     }
 
     /**

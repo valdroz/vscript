@@ -27,7 +27,7 @@ public interface Constants {
     char CE_TEXT_SYNTAX = 5;
     char CE_UNSUPPORTED_FUNCTION = 6;
     char CE_ILLEGAL_SYMBOL = 7;
-    char CE_MISSING_QUATATION = 8;
+    char CE_MISSING_QUOTATION = 8;
     char CE_MISSING_BRACKET2 = 9; // }
     char CE_UNSUPPORTED_STATEMENT = 10;
     char CE_FUNC_DECL_SYNTAX = 11;
@@ -64,6 +64,10 @@ public interface Constants {
     char NT_MF_IS_NUMBER = 160;
     char NT_MF_IS_ARRAY = 161;
     char NT_MF_IS_NULL = 162;
+    char NT_MF_NOW = 163;
+    char NT_MF_ISO = 164;
+    char NT_MF_HOURS_BEFORE_NOW = 165;
+    char NT_MF_DAYS_BEFORE_NOW = 166;
 
 
     char NT_LOP_AND = 128;
@@ -75,6 +79,9 @@ public interface Constants {
 
     char NT_CONSTANT = 200;
 
+
+    int BOOL_TRUE = 1;
+    int BOOL_FALSE = 0;
 
     ConstantNode C_TRUE = new ConstantNode(new Variant(1));
     ConstantNode C_FALSE = new ConstantNode(new Variant(0));
