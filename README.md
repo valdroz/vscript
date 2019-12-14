@@ -3,7 +3,7 @@ What started as a student project now turned in to simple and handy expression e
 
 ## Syntax
 
-Supported mumeric operators `+ -  * / ^`, binary operators
+Supported numeric operators `+ -  * / ^`, binary operators
  `&, |`, logical operators ` ==, >, <, >=, <=, !=, ! `
 
 
@@ -49,15 +49,15 @@ Date functions:
 					E.g. to get maximum days in the previous month, the `n` values must be -1.
 - iso(str)          - Parses input ISO8601 date or date with time and returns millis.
 - now()             - Current time in millis.
-- days_before_now(str/n) - Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of days passed until now. 					
-- hours_before_now(str/n) - Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of hours passed until now.
+- days_before_now(x) - (`x` is string or numeric) Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of days passed until now. 					
+- hours_before_now(x) - (`x` is string or numeric) Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of hours passed until now.
 
 Misc. functions:
 - size(x)			- Length of string variable value or count of elements in array.
-- isnull(x)/is_null(x)			- Returns `1` if value not set, `0` otherwise.
-- isnumeric(x)/isnumeric(x)		- Returns `1` if value is number, `0` otherwise.
-- isstring(x)/is_string(x)		- Returns `1` if value is string, `0` otherwise.
-- isarray(x)/is_array(x)		- Returns `1` if value is array, `0` otherwise.
+- is_null(x)		- Returns `1` if value not set, `0` otherwise.
+- is_numeric(x)		- Returns `1` if value is number, `0` otherwise.
+- is_string(x)		- Returns `1` if value is string, `0` otherwise.
+- is_array(x)		- Returns `1` if value is array, `0` otherwise.
 
 ## Example
 
