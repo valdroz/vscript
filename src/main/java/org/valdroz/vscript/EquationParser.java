@@ -170,17 +170,17 @@ class EquationParser implements Constants {
         skipSpaces();
 
         while ((currentCharCheckExpSeparator() == '=' && charAtCheckExpSeparator(position + 1) != '=')) {
-            if (left.operation == NT_CONSTANT) {
+            if (left.getNodeOperation() == NT_CONSTANT) {
                 lastErrorCode = CE_CONST_ASSIGNMENT;
                 return null;
             }
             BaseNode node = new BaseNode();
-            node.leftNode = left;
-            node.operation = currentCharCheckExpSeparator();
+            node.setLeftNode(left);
+            node.setNodeOperation(currentCharCheckExpSeparator());
             forwardPosition();
             skipSpaces();
-            node.rightNode = parseLogicOpNode();
-            if (node.rightNode == null) {
+            node.setRightNode(parseLogicOpNode());
+            if (node.getRightNode() == null) {
                 return null;
             }
             left = node;
@@ -201,18 +201,18 @@ class EquationParser implements Constants {
         while ((currentCharCheckExpSeparator() == '|' && charAtCheckExpSeparator(position + 1) == '|') ||
                 (currentCharCheckExpSeparator() == '&' && charAtCheckExpSeparator(position + 1) == '&')) {
             BaseNode node = new BaseNode();
-            node.leftNode = left;
+            node.setLeftNode(left);
 
             if (currentCharCheckExpSeparator() == '&')
-                node.operation = NT_LOP_AND;
+                node.setNodeOperation(NT_LOP_AND);
             else if (currentCharCheckExpSeparator() == '|')
-                node.operation = NT_LOP_OR;
+                node.setNodeOperation(NT_LOP_OR);
 
             forwardPosition();
             forwardPosition();
             skipSpaces();
-            node.rightNode = parsePlusMinus();
-            if (node.rightNode == null) {
+            node.setRightNode(parsePlusMinus());
+            if (node.getRightNode() == null) {
                 return null;
             }
             left = node;
@@ -232,13 +232,13 @@ class EquationParser implements Constants {
 
         while (currentCharCheckExpSeparator() == '-' || currentCharCheckExpSeparator() == '+') {
             BaseNode node = new BaseNode();
-            node.leftNode = left;
-            node.operation = currentCharCheckExpSeparator();
+            node.setLeftNode(left);
+            node.setNodeOperation(currentCharCheckExpSeparator());
 
             forwardPosition();
             skipSpaces();
-            node.rightNode = parseMultiplicationDivisionOperator();
-            if (node.rightNode == null) {
+            node.setRightNode(parseMultiplicationDivisionOperator());
+            if (node.getRightNode() == null) {
                 this.lastErrorCode = CE_INCOMPLETE;
                 return null;
             }
@@ -249,7 +249,6 @@ class EquationParser implements Constants {
     }
 
 
-
     private BaseNode parseMultiplicationDivisionOperator() {
         BaseNode left = parsePowerOperator();
 
@@ -258,12 +257,12 @@ class EquationParser implements Constants {
 
         while (currentCharCheckExpSeparator() == '*' || currentCharCheckExpSeparator() == '/') {
             BaseNode node = new BaseNode();
-            node.leftNode = left;
-            node.operation = currentCharCheckExpSeparator();
+            node.setLeftNode(left);
+            node.setNodeOperation(currentCharCheckExpSeparator());
             forwardPosition();
             skipSpaces();
-            node.rightNode = parsePowerOperator();
-            if (node.rightNode == null) {
+            node.setRightNode(parsePowerOperator());
+            if (node.getRightNode() == null) {
                 return null;
             }
             left = node;
@@ -284,12 +283,12 @@ class EquationParser implements Constants {
 
         while (currentCharCheckExpSeparator() == '^' || currentCharCheckExpSeparator() == '$') {
             BaseNode node = new BaseNode();
-            node.leftNode = left;
-            node.operation = currentCharCheckExpSeparator();
+            node.setLeftNode(left);
+            node.setNodeOperation(currentCharCheckExpSeparator());
             forwardPosition();
             skipSpaces();
-            node.rightNode = parseComparisonOperator();
-            if (node.rightNode == null) {
+            node.setRightNode(parseComparisonOperator());
+            if (node.getRightNode() == null) {
                 return null;
             }
             left = node;
@@ -312,25 +311,25 @@ class EquationParser implements Constants {
                 (currentCharCheckExpSeparator() == '=' && charAtCheckExpSeparator(position + 1) == '=') ||
                 (currentCharCheckExpSeparator() == '!' && charAtCheckExpSeparator(position + 1) == '=')) {
             BaseNode node = new BaseNode();
-            node.leftNode = left;
-            node.operation = currentCharCheckExpSeparator();
+            node.setLeftNode(left);
+            node.setNodeOperation(currentCharCheckExpSeparator());
 
             if (charAtCheckExpSeparator(position + 1) == '=') {
-                switch (node.operation) {
+                switch (node.getNodeOperation()) {
                     case '>': // >=
-                        node.operation = NT_LOP_MORE_EQUALS;
+                        node.setNodeOperation(NT_LOP_MORE_EQUALS);
                         forwardPosition();
                         break;
                     case '<': // >=
-                        node.operation = NT_LOP_LESS_EQUALS;
+                        node.setNodeOperation(NT_LOP_LESS_EQUALS);
                         forwardPosition();
                         break;
                     case '=': // >=
-                        node.operation = NT_LOP_EQUALS;
+                        node.setNodeOperation(NT_LOP_EQUALS);
                         forwardPosition();
                         break;
                     case '!': // >=
-                        node.operation = NT_LOP_NOT_EQUALS;
+                        node.setNodeOperation(NT_LOP_NOT_EQUALS);
                         forwardPosition();
                         break;
                 }
@@ -339,8 +338,8 @@ class EquationParser implements Constants {
             forwardPosition();
             skipSpaces();
 
-            node.rightNode = parseBinAndOrOperator(); // for ! oprs.
-            if (node.rightNode == null) {
+            node.setRightNode(parseBinAndOrOperator()); // for ! oprs.
+            if (node.getRightNode() == null) {
                 return null;
             }
             return node;
@@ -362,14 +361,14 @@ class EquationParser implements Constants {
         while ((currentCharCheckExpSeparator() == '&' && charAtCheckExpSeparator(position + 1) != '&') ||
                 (currentCharCheckExpSeparator() == '|' && currentCharCheckExpSeparator() != '|')) {
             BaseNode node = new BaseNode();
-            node.leftNode = left;
-            node.operation = currentCharCheckExpSeparator();
+            node.setLeftNode(left);
+            node.setNodeOperation(currentCharCheckExpSeparator());
 
             forwardPosition();
             skipSpaces();
 
-            node.rightNode = parseNotOperator();
-            if (node.rightNode == null) {
+            node.setRightNode(parseNotOperator());
+            if (node.getRightNode() == null) {
                 return null;
             }
             left = node;
@@ -387,11 +386,11 @@ class EquationParser implements Constants {
 
         if (currentCharCheckExpSeparator() == '!') {
             BaseNode node = new BaseNode();
-            node.operation = currentCharCheckExpSeparator();
+            node.setNodeOperation(currentCharCheckExpSeparator());
             forwardPosition();
             skipSpaces();
-            node.rightNode = parseNotOperator();
-            if (node.rightNode == null) {
+            node.setRightNode(parseNotOperator());
+            if (node.getRightNode() == null) {
                 return null;
             }
             return node;
@@ -411,15 +410,15 @@ class EquationParser implements Constants {
         if (currentCharCheckExpSeparator() == '-' || currentCharCheckExpSeparator() == '+') {
             BaseNode node = new BaseNode();
             left = new BaseNode();
-            left.operation = NT_VALUE;
-            left.value.setValue(currentCharCheckExpSeparator() == '-' ? -1.0 : 1.0);
-            node.leftNode = left;
-            node.operation = '*';
+            left.setNodeOperation(NT_VALUE);
+            left.assignValue(Variant.fromDouble(currentCharCheckExpSeparator() == '-' ? -1.0 : 1.0));
+            node.setLeftNode(left);
+            node.setNodeOperation('*');
 
             forwardPosition();
 
-            node.rightNode = parseAssignmentNode();
-            if (node.rightNode == null) {
+            node.setRightNode(parseAssignmentNode());
+            if (node.getRightNode() == null) {
                 return null;
             }
             return node;
@@ -431,8 +430,8 @@ class EquationParser implements Constants {
             skipSpaces();
             if (currentCharCheckExpSeparator() == ')') {
                 node = new BaseNode();
-                node.operation = NT_VALUE;
-                node.value.setValue(0);
+                node.setNodeOperation(NT_VALUE);
+                //node.value.setValue(0);
             } else {
                 node = parseAssignmentNode();
                 if (node == null) return null;
@@ -461,9 +460,9 @@ class EquationParser implements Constants {
         if (isDigit()) {
             String digit = readWord();
             node = new BaseNode();
-            node.operation = NT_VALUE;
+            node.setNodeOperation(NT_VALUE);
             try {
-                node.value.setValue(Double.valueOf(digit));
+                node.assignValue(Variant.fromBigDecimal(digit));
             } catch (Exception ex) {
                 lastErrorCode = CE_SYNTAX;
                 return null;
@@ -475,8 +474,8 @@ class EquationParser implements Constants {
                 return null;
             }
             node = new BaseNode();
-            node.operation = NT_VALUE;
-            node.value.setValue(text);
+            node.setNodeOperation(NT_VALUE);
+            node.assignValue(Variant.fromString(text));
         } else if (isLiteralChar()) {
             int prevPos = getPosition();
             String word = readWord();
@@ -490,9 +489,9 @@ class EquationParser implements Constants {
 
             if (mathFuncOpCode > 0 && isFunction) {
                 node = new BaseNode();
-                node.operation = mathFuncOpCode;
-                node.leftNode = parseEqFactor();
-                if (node.leftNode == null) {
+                node.setNodeOperation(mathFuncOpCode);
+                node.setLeftNode(parseEqFactor());
+                if (node.getLeftNode() == null) {
                     return null;
                 }
             } else if (!isFunction && isArray) {
@@ -509,9 +508,9 @@ class EquationParser implements Constants {
                 skipSpaces();
 
                 node = new BaseNode();
-                node.operation = NT_VARIABLE;
-                node.leftNode = indexNode;
-                node.variableName = word;
+                node.setNodeOperation(NT_VARIABLE);
+                node.setLeftNode(indexNode);
+                node.setName(word);
 
             } else if (!isFunction) {
                 node = new BaseNode();
@@ -523,8 +522,8 @@ class EquationParser implements Constants {
                         if (constNode != null) {
                             node = constNode;
                         } else {
-                            node.operation = NT_LOCAL_VARIABLE;
-                            node.variableName = word;
+                            node.setNodeOperation(NT_LOCAL_VARIABLE);
+                            node.setName(word);
                         }
                     } else {
                         lastErrorCode = CE_ILLEGAL_VAR_NAME;
@@ -535,8 +534,8 @@ class EquationParser implements Constants {
                     if (constNode != null) {
                         node = constNode;
                     } else {
-                        node.operation = NT_VARIABLE;
-                        node.variableName = word;
+                        node.setNodeOperation(NT_VARIABLE);
+                        node.setName(word);
                     }
                 }
             } else {
@@ -572,8 +571,9 @@ class EquationParser implements Constants {
 
         BaseNode node = new BaseNode();
 
-        node.operation = NT_FUNCTION;
-        node.variableName = funcName;
+        node.setNodeOperation(NT_FUNCTION);
+        node.initParams();
+        node.setName(funcName);
 
         skipSpaces();
         if (currentCharCheckExpSeparator() == '(') {
@@ -790,7 +790,6 @@ class EquationParser implements Constants {
         return text;
 
     }
-
 
 
     /**

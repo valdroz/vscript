@@ -67,7 +67,7 @@ public class Utils implements Constants {
                 message = "Syntax error, missing ']' bracket.";
                 break;
             case CE_CONST_ASSIGNMENT:
-                message = "Constants cannot assigned with value.";
+                message = "Constant assigned is not allowed.";
                 break;
             default:
                 return "";

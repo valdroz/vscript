@@ -21,26 +21,26 @@ package org.valdroz.vscript;
  * @author Valerijus Drozdovas
  */
 public class LocalVariantContainer extends DefaultVariantContainer {
-    private final VariantContainer global;
+    private final VariantContainer delegate;
 
-    public LocalVariantContainer(VariantContainer global) {
-        this.global = global;
+    public LocalVariantContainer(VariantContainer delegate) {
+        this.delegate = delegate;
     }
 
     @Override
-    public Variant getVariant(String varName) {
-        if (contains(varName)) {
-            return super.getVariant(varName);
+    public Variant getVariant(String name) {
+        if (contains(name)) {
+            return super.getVariant(name);
         }
-        return global.getVariant(varName);
+        return Variant.sanitize(delegate.getVariant(name));
     }
 
     @Override
-    public Variant getVariant(String varName, int index) {
-        if (contains(varName)) {
-            return super.getVariant(varName, index);
+    public Variant getVariant(String name, int index) {
+        if (contains(name)) {
+            return super.getVariant(name, index);
         }
-        return global.getVariant(varName, index);
+        return Variant.sanitize(delegate.getVariant(name, index));
     }
 
 }

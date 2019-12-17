@@ -25,7 +25,7 @@ import java.util.Map;
  * @author Valerijus Drozdovas
  */
 public class DefaultVariantContainer implements VariantContainer {
-    private Map<String, Variant> variantMap;
+    private final Map<String, Variant> variantMap;
 
     public DefaultVariantContainer() {
         variantMap = new HashMap<>();
@@ -37,26 +37,23 @@ public class DefaultVariantContainer implements VariantContainer {
     }
 
     @Override
-    public Variant getVariant(String varName) {
-        Variant value = variantMap.get(varName);
-        if (value == null) value = new Variant();
-        return value;
+    public Variant getVariant(String name) {
+        Variant value = variantMap.get(name);
+        return Variant.sanitize(value);
     }
 
     @Override
-    public void setVariant(String varName, int index, Variant varValue) {
-        Variant value = variantMap.get(varName);
-        if (value == null) value = new Variant();
-        value.setArrayItem(index, varValue);
-        variantMap.put(varName, value);
+    public void setVariant(String name, int index, Variant varValue) {
+        Variant variant = Variant.sanitize(variantMap.get(name));
+        if (variant.isNull()) {
+            variantMap.put(name, variant);
+        }
+        Variant.setArrayItem(variant, index, varValue);
     }
 
     @Override
-    public Variant getVariant(String varName, int index) {
-        Variant value = variantMap.get(varName);
-        if (value == null) return new Variant();
-
-        return value.getArrayItem(index);
+    public Variant getVariant(String name, int index) {
+        return Variant.getArrayItem(variantMap.get(name), index);
     }
 
     @Override

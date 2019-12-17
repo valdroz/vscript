@@ -1,5 +1,5 @@
 /*
- * Copyright 2000 Valerijus Drozdovas
+ * Copyright 2019 Valerijus Drozdovas
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,11 @@ package org.valdroz.vscript;
 
 /**
  * @author Valerijus Drozdovas
- * Created on 2019-07-06
+ * Created on 12/16/19
  */
-public class ConstantNode extends BaseNode {
-    private Variant constant;
+public class UndefinedFunction extends RuntimeException {
 
-    ConstantNode(Variant value) {
-        this.constant = value;
-        setNodeOperation(NT_CONSTANT);
+    public UndefinedFunction(String functionName) {
+        super("Undefined function \"" + functionName + "\"");
     }
-
-    @Override
-    public Variant execute(VariantContainer variantContainer) {
-        return constant;
-    }
-
 }

@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 public final class EquationEval {
 
     private BaseNode node;
-    private MasterRunBlock masterRunBlock;
+    private DefaultRunBlock masterRunBlock;
 
     /**
      *
@@ -65,13 +65,16 @@ public final class EquationEval {
         return node;
     }
 
-    public EquationEval withMasterBlock(MasterRunBlock masterBlock) {
+    public EquationEval withMasterBlock(DefaultRunBlock masterBlock) {
         this.masterRunBlock = masterBlock;
         return this;
     }
 
     public Variant eval(VariantContainer variantContainer) {
-        node.setMasterRunBlock(this.masterRunBlock);
+        if (masterRunBlock == null) {
+            masterRunBlock = new DefaultRunBlock();
+        }
+        node.setParentRunBlock(masterRunBlock);
         return node.execute(variantContainer);
     }
 

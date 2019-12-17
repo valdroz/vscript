@@ -6,7 +6,7 @@
 
   <groupId>org.valdroz.vscript</groupId>
   <artifactId>vscript</artifactId>
-  <version>1.1.2</version>
+  <version>2.0</version>
 
   <name>vscript</name>
   <description>Equation evaluator</description>
@@ -40,7 +40,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <version>4.12</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -60,11 +60,35 @@
       <artifactId>joda-time</artifactId>
       <version>2.10.4</version>
     </dependency>
-
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.8.5</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>28.1-jre</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.9</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.6</version>
+    </dependency>
   </dependencies>
 
   <build>
     <plugins>
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.0.0-M4</version>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
@@ -105,17 +129,6 @@
           </execution>
         </executions>
       </plugin>
-<!--      <plugin>-->
-<!--        <groupId>org.sonatype.plugins</groupId>-->
-<!--        <artifactId>nexus-staging-maven-plugin</artifactId>-->
-<!--        <version>1.6.7</version>-->
-<!--        <extensions>true</extensions>-->
-<!--&lt;!&ndash;        <configuration>&ndash;&gt;-->
-<!--&lt;!&ndash;          <serverId>ossrh</serverId>&ndash;&gt;-->
-<!--&lt;!&ndash;          <nexusUrl>https://oss.sonatype.org/</nexusUrl>&ndash;&gt;-->
-<!--&lt;!&ndash;          <autoReleaseAfterClose>true</autoReleaseAfterClose>&ndash;&gt;-->
-<!--&lt;!&ndash;        </configuration>&ndash;&gt;-->
-<!--      </plugin>-->
     </plugins>
   </build>
 

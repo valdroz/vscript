@@ -26,7 +26,7 @@ public interface RunBlock
 	 * Set the reference to parent MasterRunBlock object
 	 * @param runBlock parent run block.
 	 */
-	void setMasterRunBlock(MasterRunBlock runBlock);
+	void setParentRunBlock(DefaultRunBlock runBlock);
 	
 	/**
 	 * Executes the run block.

@@ -79,14 +79,10 @@ public interface Constants {
 
     char NT_CONSTANT = 200;
 
-
-    int BOOL_TRUE = 1;
-    int BOOL_FALSE = 0;
-
-    ConstantNode C_TRUE = new ConstantNode(new Variant(1));
-    ConstantNode C_FALSE = new ConstantNode(new Variant(0));
-    ConstantNode C_NULL = new ConstantNode(new Variant());
-    ConstantNode C_PI = new ConstantNode(new Variant(Math.PI));
-    ConstantNode C_E = new ConstantNode(new Variant(Math.E));
+    ConstantNode C_TRUE = new ConstantNode(Variant.fromBoolean(true));
+    ConstantNode C_FALSE = new ConstantNode(Variant.fromBoolean(false));
+    ConstantNode C_NULL = new ConstantNode(Variant.nullVariant());
+    ConstantNode C_PI = new ConstantNode(Variant.fromDouble(Math.PI));
+    ConstantNode C_E = new ConstantNode(Variant.fromDouble(Math.E));
 
 }
