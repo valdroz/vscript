@@ -96,21 +96,21 @@ public class BaseNode implements RunBlock, Constants {
 
 
     public Variant execute(VariantContainer variantContainer) {
-        if (operation == NT_VALUE)
-            return Variant.sanitize(value);
-        else if (operation == NT_VARIABLE || operation == NT_LOCAL_VARIABLE) {
-            if (getParameterNode() != null) {
-                int index = getParameterNode().execute(variantContainer).asNumeric().intValue();
-                return Variant.getArrayItem(variantContainer.getVariant(this.name), index);
-            } else {
-                return Variant.sanitize(variantContainer.getVariant(this.name));
-            }
-        }
 
         Variant leftNodeResult;
         Variant rightNodeResult;
 
         switch (operation) {
+            case NT_VALUE:
+                return Variant.sanitize(value);
+            case NT_VARIABLE:
+            case NT_LOCAL_VARIABLE:
+                if (getParameterNode() != null) {
+                    int index = getParameterNode().execute(variantContainer).asNumeric().intValue();
+                    return Variant.getArrayItem(variantContainer.getVariant(this.name), index);
+                } else {
+                    return Variant.sanitize(variantContainer.getVariant(this.name));
+                }
             case '*':
                 value = leftNode.execute(variantContainer).multiply(rightNode.execute(variantContainer));
                 break;

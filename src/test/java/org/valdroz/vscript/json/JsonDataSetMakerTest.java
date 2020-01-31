@@ -16,6 +16,7 @@
 package org.valdroz.vscript.json;
 
 import com.google.common.collect.Lists;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -25,8 +26,9 @@ import org.junit.Test;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Valerijus Drozdovas
@@ -39,12 +41,15 @@ public class JsonDataSetMakerTest {
         String json = IOUtils.toString(JsonDataSetMaker.class.getResource("/test-data-set.json"), Charset.defaultCharset());
         JsonElement je = new JsonParser().parse(json);
 
-        JsonDataSetMaker dm = new JsonDataSetMaker(je.getAsJsonObject(), JsonDataSetMaker.Mode.KEEP_ARRAYS_FOR_PRIMITIVES);
+        JsonDataSetMaker dm = new JsonDataSetMaker(je.getAsJsonObject(), "pref", JsonDataSetMaker.Mode.KEEP_ARRAYS_FOR_PRIMITIVES);
 
         List<JsonObject> dataSets = Lists.newLinkedList(dm.getDataSets());
+
+        dataSets.forEach(System.out::println);
+
         assertThat(dataSets.size(), is(2));
-        assertThat(dataSets.get(0).get("objects.type").getAsJsonPrimitive().getAsString(), is("obj1"));
-        assertThat(dataSets.get(1).get("objects.type").getAsJsonPrimitive().getAsString(), is("obj2"));
+        assertThat(dataSets.get(0).get("pref.objects.type").getAsJsonPrimitive().getAsString(), is("obj1"));
+        assertThat(dataSets.get(1).get("pref.objects.type").getAsJsonPrimitive().getAsString(), is("obj2"));
     }
 
     @Test
@@ -56,6 +61,42 @@ public class JsonDataSetMakerTest {
 
         List<JsonObject> dataSets = Lists.newLinkedList(dm.getDataSets());
         assertThat(dataSets.size(), is(24));
+    }
+
+    @Test
+    public void getDataSets2() throws Exception {
+        String json = IOUtils.toString(JsonDataSetMaker.class.getResource("/test-data-set-2.json"), Charset.defaultCharset());
+        JsonElement je = new JsonParser().parse(json);
+
+        JsonDataSetMaker dm = new JsonDataSetMaker(je.getAsJsonObject(), JsonDataSetMaker.Mode.KEEP_ARRAYS_FOR_PRIMITIVES);
+
+        List<JsonObject> dataSets = Lists.newLinkedList(dm.getDataSets());
+
+        assertThat(dataSets.size(), is(4));
+
+        json = IOUtils.toString(JsonDataSetMaker.class.getResource("/test-data-set-2-result.json"), Charset.defaultCharset());
+        JsonArray ja = new JsonParser().parse(json).getAsJsonArray();
+
+        assertThat(dataSets, containsInAnyOrder(Lists.newArrayList(ja.iterator()).toArray()));
+
+    }
+
+    @Test
+    public void getDataSets3() throws Exception {
+        String json = IOUtils.toString(JsonDataSetMaker.class.getResource("/test-data-set-3.json"), Charset.defaultCharset());
+        JsonElement je = new JsonParser().parse(json);
+
+        JsonDataSetMaker dm = new JsonDataSetMaker(je.getAsJsonObject(), JsonDataSetMaker.Mode.KEEP_ARRAYS_FOR_PRIMITIVES);
+
+        List<JsonObject> dataSets = Lists.newLinkedList(dm.getDataSets());
+
+        assertThat(dataSets.size(), is(6));
+
+        json = IOUtils.toString(JsonDataSetMaker.class.getResource("/test-data-set-3-result.json"), Charset.defaultCharset());
+        JsonArray ja = new JsonParser().parse(json).getAsJsonArray();
+
+        assertThat(dataSets, containsInAnyOrder(Lists.newArrayList(ja.iterator()).toArray()));
+
     }
 
 }

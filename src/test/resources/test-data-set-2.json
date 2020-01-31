@@ -1,0 +1,39 @@
+{
+  "id": "1234567890",
+  "options": [
+    "op1",
+    "op2",
+    "OP3"
+  ],
+  "prefs": [
+    "p1",
+    "p2"
+  ],
+  "objects": [
+    {
+      "type": "obj1",
+      "data": 90,
+      "p": [1,2,3],
+      "b" : true
+    },
+    {
+      "type": "obj2",
+      "data": 0,
+      "b" : false
+    }
+  ],
+  "otherObjects": [
+    {
+      "type": "obj1",
+      "data": 90,
+      "p": [1,2,3],
+      "b" : true
+    },
+    {
+      "type": "obj2",
+      "data": 0,
+      "b" : false
+    }
+  ]
+
+}

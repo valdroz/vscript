@@ -1,0 +1,6 @@
+[
+  {"id":"1234567890","options":["op1","op2","OP3"],"prefs":["p1","p2"],"objects.type":"obj1","objects.data":90,"objects.p":[1,2,3],"objects.b":true,"otherObjects.type":"obj1","otherObjects.data":90,"otherObjects.p":[1,2,3],"otherObjects.b":true},
+  {"id":"1234567890","options":["op1","op2","OP3"],"prefs":["p1","p2"],"objects.type":"obj1","objects.data":90,"objects.p":[1,2,3],"objects.b":true,"otherObjects.type":"obj2","otherObjects.data":0,"otherObjects.b":false},
+  {"id":"1234567890","options":["op1","op2","OP3"],"prefs":["p1","p2"],"objects.type":"obj2","objects.data":0,"objects.b":false,"otherObjects.type":"obj1","otherObjects.data":90,"otherObjects.p":[1,2,3],"otherObjects.b":true},
+  {"id":"1234567890","options":["op1","op2","OP3"],"prefs":["p1","p2"],"objects.type":"obj2","objects.data":0,"objects.b":false,"otherObjects.type":"obj2","otherObjects.data":0,"otherObjects.b":false}
+]
