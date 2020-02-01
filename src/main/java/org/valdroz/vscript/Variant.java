@@ -262,9 +262,10 @@ public abstract class Variant implements Comparable<Variant> {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            NumericVariant that = (NumericVariant) o;
-            return Objects.equals(value, that.value);
+            if (!(o instanceof Variant)) return false;
+            Variant that = (Variant) o;
+            if (that.isNull() || that.isArray()) return false;
+            return Objects.equals(value, that.asNumeric());
         }
 
         @Override

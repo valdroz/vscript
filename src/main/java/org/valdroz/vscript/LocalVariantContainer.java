@@ -29,7 +29,7 @@ public class LocalVariantContainer extends DefaultVariantContainer {
 
     @Override
     public Variant getVariant(String name) {
-        if (contains(name)) {
+        if (super.contains(name)) {
             return super.getVariant(name);
         }
         return Variant.sanitize(delegate.getVariant(name));
@@ -37,10 +37,14 @@ public class LocalVariantContainer extends DefaultVariantContainer {
 
     @Override
     public Variant getVariant(String name, int index) {
-        if (contains(name)) {
+        if (super.contains(name)) {
             return super.getVariant(name, index);
         }
         return Variant.sanitize(delegate.getVariant(name, index));
     }
 
+    @Override
+    public boolean contains(String varName) {
+        return super.contains(varName) || delegate.contains(varName);
+    }
 }
