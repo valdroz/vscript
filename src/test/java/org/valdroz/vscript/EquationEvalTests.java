@@ -16,8 +16,10 @@
 package org.valdroz.vscript;
 
 
+import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -105,7 +107,7 @@ public class EquationEvalTests {
 
     @Test
     public void testEquationEvaluatorConstAssignment() {
-        exception.expect(RuntimeException.class);
+        exception.expect(EvaluationException.class);
         new EquationEval("true = -1.0 * (2.5 + 3.5)").eval();
     }
 
@@ -117,7 +119,7 @@ public class EquationEvalTests {
 
     @Test
     public void testEquationEvaluatorEqualPriorityMinusOpr() {
-        BaseNode node = new EquationEval("4 - 3 - 2").getNode();
+        Node node = new EquationEval("4 - 3 - 2").getNode();
         Variant var = node.execute(new DefaultVariantContainer());
         assertThat(var.asNumeric().doubleValue(), is(-1.0));
     }
@@ -307,5 +309,111 @@ public class EquationEvalTests {
         EquationEval.setNowSupplier(prevNow);
     }
 
+
+    @Test
+    public void testSubstitutions() {
+
+        VariantContainer variantContainer = new DefaultVariantContainer();
+        variantContainer.setVariant("a", Variant.nullVariant());
+        variantContainer.setVariant("b", Variant.fromInt(1));
+        variantContainer.setVariant("c", Variant.fromString("c"));
+        variantContainer.setVariant("a2", Variant.nullVariant());
+
+        EquationEval eq = new EquationEval("2 + a?b + 2");
+        Variant res = eq.eval(variantContainer);
+
+        assertThat(res.isNumeric(), is(true));
+        assertThat(res.asNumeric().intValue(), is(5));
+
+        res = EquationEval.parse("a?a2?b + 2").execute(variantContainer);
+
+        assertThat(res.isNumeric(), is(true));
+        assertThat(res.asNumeric().intValue(), is(3));
+
+        res = EquationEval.parse("a?sqrt(4) + 1").execute(variantContainer);
+
+        assertThat(res.isNumeric(), is(true));
+        assertThat(res.asNumeric().intValue(), is(3));
+
+        res = EquationEval.parse("a?true").execute(variantContainer);
+
+        assertThat(res.isBoolean(), is(true));
+        assertThat(res.asBoolean(), is(true));
+
+        res = EquationEval.parse("a?false").execute(variantContainer);
+
+        assertThat(res.isBoolean(), is(true));
+        assertThat(res.asBoolean(), is(false));
+
+        res = EquationEval.parse("a?\"aaa\" + 2").execute(variantContainer);
+
+        assertThat(res.isString(), is(true));
+        assertThat(res.asString(), is("aaa2"));
+
+        res = EquationEval.parse("a?-1 + 2").execute(variantContainer);
+
+        System.out.println("res= " + res.toString());
+
+        assertThat(res.isNumeric(), is(true));
+        assertThat(res.asNumeric().intValue(), is(1));
+    }
+
+
+    @Test
+    public void testLeadingNegativeDigit1() {
+        Variant res = EquationEval.parse("-123 + 2 * 3").execute(new DefaultVariantContainer());
+        assertThat(res.isNumeric(), is(true));
+        assertThat(res.asNumeric().intValue(), is(-117));
+    }
+
+    @Test
+    public void testLeadingNegativeDigit2() {
+        Variant res = EquationEval.parse("(-123 + 2) * 3").execute(new DefaultVariantContainer());
+        assertThat(res.isNumeric(), is(true));
+        assertThat(res.asNumeric().intValue(), is(-363));
+    }
+
+
+    @Test
+    public void testEmpty() {
+        Variant res = EquationEval.parse("   ").execute(new DefaultVariantContainer());
+        assertThat(res.isNull(), is(true));
+    }
+
+    @Test
+    public void testNull() {
+        Variant res = EquationEval.parse(null).execute(new DefaultVariantContainer());
+        assertThat(res.isNull(), is(true));
+    }
+
+    @Test
+    public void testDefaultExpression() {
+        String backup = Configuration.setExpressionForEmptyEval("true");
+        Variant res = EquationEval.parse(null).execute(new DefaultVariantContainer());
+        Configuration.setExpressionForEmptyEval(backup);
+
+        Assert.assertThat( res.isBoolean(), Matchers.is(true) );
+    }
+
+
+    @Test
+    public void example() {
+        Configuration.setDecimalScale(2);
+        DefaultVariantContainer container = new DefaultVariantContainer();
+        container.setVariant("myVar1", Variant.fromDouble(5.2));
+
+        Variant var = EquationEval.parse("res = 3 + myVar1 * sqrt(4); res == 13.4").execute(container);
+        Variant res = container.getVariant("res");
+
+        Assert.assertThat(var.isBoolean(), Matchers.is(true));
+        Assert.assertThat(var.asBoolean(), Matchers.is(true));
+
+        Assert.assertThat(res.isNumeric(), Matchers.is(true));
+        Assert.assertThat(res.asNumeric().doubleValue(), Matchers.is(13.4));
+        Assert.assertThat(res.asString(), Matchers.is("13.40"));
+
+        System.out.println(var);
+        System.out.println(res);
+    }
 
 }

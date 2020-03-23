@@ -20,7 +20,7 @@ package org.valdroz.vscript;
  */
 public class Utils implements Constants {
 
-    static String getErrorMsg(char lastErrorCode, int position, int lineNumber) {
+    static String getErrorMsg(int lastErrorCode, int position, int lineNumber) {
         String message = "";
 
         switch (lastErrorCode) {

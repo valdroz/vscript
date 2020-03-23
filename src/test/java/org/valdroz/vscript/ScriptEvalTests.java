@@ -52,4 +52,30 @@ public class ScriptEvalTests {
 
     }
 
+
+    @Test
+    public void testCustomFunctionNullResponseSubstitution() {
+
+        VariantContainer variantContainer = new DefaultVariantContainer();
+
+
+        DefaultRunBlock masterRunBlock = new DefaultRunBlock();
+
+        masterRunBlock.registerFunction(
+                new AbstractFunction("produce_null(first, second)") {
+                    @Override
+                    public Variant execute(VariantContainer variantContainer) {
+                        return Variant.nullVariant();
+                    }
+                }
+        );
+
+        Variant result = new EquationEval("2 + produce_null(1, 2)?-10")
+                .withMasterBlock(masterRunBlock)
+                .eval(variantContainer);
+
+        assertThat(result.asNumeric().intValue(), is(-8));
+
+    }
+
 }

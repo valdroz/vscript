@@ -1,29 +1,78 @@
-# Vscript - equation interpreter 
-What started as a student project now turned in to simple and handy expression evaluator, or even scripting engine. 
+# Vscript - Equation Interpreter 
+
+Vscript is an extendable and runtime safe equation interpreter capable to evaluate arithmetic 
+and logical expression.
+
+
+## Example
+
+```java
+
+import org.hamcrest.Matchers;
+import org.junit.Assert;
+import org.valdroz.vscript.*;
+
+public class Example {
+    public static void main(String[] args) {
+        // Configure decimal scale for numeric operations to 2 
+        Configuration.setDecimalScale(2);
+
+        // Initialize variant container with one variable as
+        // myVar1 = 5.2
+        VariantContainer container = new DefaultVariantContainer();
+        container.setVariant("myVar1", Variant.fromDouble(5.2));
+
+        // Execute expression with given variant container 
+        Variant var = EquationEval.parse("res = 3 + myVar1 * sqrt(4); res == 13.4").execute(container);
+
+        // Expecting variant container now also includes variable `res`
+        // as it was initialized through expression 
+        Variant res = container.getVariant("res");
+
+        // Evaluation response expected to be boolean `true` due to `res == 13.4`
+        Assert.assertThat(var.isBoolean(), Matchers.is(true));
+        Assert.assertThat(var.asBoolean(), Matchers.is(true));
+    
+        // Expecting res as numeric as a result of algebraic result assignment
+        Assert.assertThat(res.isNumeric(), Matchers.is(true));
+        
+        // `res` must be equal to 13.4
+        Assert.assertThat(res.asNumeric().doubleValue(), Matchers.is(13.4));
+
+        // String should have two places after decimal due to `Configuration.setDecimalScale(2)`
+        Assert.assertThat(res.asString(), Matchers.is("13.40"));
+
+        System.out.println(var); // prints: Boolean Variant of true
+        System.out.println(res); // prints: Numeric Variant of 13.40
+    }
+}
+
+```
+
+
 
 ## Syntax
 
 Supported numeric operators `+ -  * / ^`, binary operators
- `&, |`, logical operators ` ==, >, <, >=, <=, !=, ! `
+ `&, |`, logical operators ` ==, >, <, >=, <=, !=, ! ` and `=` assignment;
 
 
 ### Reserved Keywords
 
-- `true`		- `1.0` value.
-- `false`		- `0.0` value.
-- `PI`			- `3.1415926535897932384626433832795`.
-- `null`		- Value with no type. Can also be used in assignments.
+- `true`        - Boolean true.
+- `false`       - Boolean false.
+- `PI`			- Mathematical PI constant of `3.1415926535897932384626433832795`.
+- `null`		- Uninitialized value.
 
 
 ### Variable types
 
-Variable can have three value types:
+Supported variant value types:
 
-- string - E.g. `"Hello"`.
-- numeric - E.g. `2.65`. Numeric values can be used as boolean where Zero stands for `false`, otherwise `true`.
+- string - E.g. `"Hello world!"`.
+- numeric - E.g. `2.65` backed by `java.math.BigDecimal`
+- boolean - E.g. `true` or `false`
 - array - `{10.35, "Hello", {30, 2.3}}`. Array elements can be of mixed types.
-
-
 
 ## Predefined functions:
 
@@ -59,14 +108,39 @@ Misc. functions:
 - is_string(x)		- Returns `1` if value is string, `0` otherwise.
 - is_array(x)		- Returns `1` if value is array, `0` otherwise.
 
-## Example
+## Extending to meet your needs
+
+Vscript allows defining custom functions to meet your needs.
+Simplified example of adding one customer function is shown here:    
 
 ```java
+import org.valdroz.vscript.*;
 
-DefaultVariantContainer container = new DefaultVariantContainer();
-container.setVariant("movie.price", new Variant(5));
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-Variant var = new EquationEval("(3 + movie.price * sqrt(4)) >= 13.0").eval(container);
-assertThat(var.toBoolean(), is(true));
+public class ExampleCustomerFunctions {
+    public static void main(String[] args) {
+        VariantContainer variantContainer = new DefaultVariantContainer();
+
+        DefaultRunBlock masterRunBlock = new DefaultRunBlock();
+        masterRunBlock.registerFunction(
+                new AbstractFunction("custom_multiply(first, second)") {
+                    @Override
+                    public Variant execute(VariantContainer variantContainer) {
+                        Variant first = variantContainer.getVariant("first");
+                        Variant second = variantContainer.getVariant("second");
+                        return first.multiply(second);
+                    }
+                }
+        );
+
+        Variant result = new EquationEval("2 + custom_multiply(3, 4)")
+                .withMasterBlock(masterRunBlock)
+                .eval(variantContainer);
+
+        assertThat(result.asNumeric().doubleValue(), is(14.0));
+    }
+}
 
 ```

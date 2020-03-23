@@ -155,4 +155,20 @@ public class ArrayEvalTests {
     }
 
 
+    @Test
+    public void testArrayValueSubstitution() {
+        DefaultVariantContainer container = new DefaultVariantContainer();
+        List<Variant> variants = new ArrayList<>();
+        variants.add(Variant.fromString("a"));
+        container.setVariant("arr", Variant.fromArray(variants));
+
+        Variant var = new EquationEval("arr[0] + arr[1]?\"b\"").eval(container);
+
+        assertThat(var.isString(), is(true));
+        assertThat(var.asString(), is("ab"));
+
+    }
+
+
+
 }

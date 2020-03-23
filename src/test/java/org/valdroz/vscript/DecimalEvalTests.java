@@ -19,6 +19,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.math.BigDecimal;
+
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -29,7 +31,7 @@ public class DecimalEvalTests {
 
     @Test
     public void testDivision() {
-        Variant.setDecimalScale(4);
+        int restore = Configuration.setDecimalScale(4);
         DefaultVariantContainer container = new DefaultVariantContainer();
         container.setVariant("d1", Variant.fromInt(1));
         container.setVariant("d2", Variant.fromInt(3));
@@ -43,8 +45,9 @@ public class DecimalEvalTests {
         var = new EquationEval("d1 + s1").eval(container);
 
         assertThat(var.isNumeric(), is(true));
-        assertThat(var.asString(), is("11.1"));
-
+        assertThat(var.asString(), is("11.1000"));
+        assertThat(var.asNumeric().compareTo(BigDecimal.valueOf(11.1)), is(0));
+        Configuration.setDecimalScale(restore);
     }
 
     @Test
@@ -70,12 +73,12 @@ public class DecimalEvalTests {
         Variant var = new EquationEval("d1 + s1").eval(container);
 
         assertThat(var.isNumeric(), is(true));
-        assertThat(var.asString(), is("12.1"));
+        assertThat(var.asNumeric().compareTo(BigDecimal.valueOf(12.1)), is(0));
 
         var = new EquationEval("s1 + d1").eval(container);
 
         assertThat(var.isNumeric(), is(true));
-        assertThat(var.asString(), is("12.1"));
+        assertThat(var.asNumeric().compareTo(BigDecimal.valueOf(12.1)), is(0));
 
         var = new EquationEval("s2 + d1").eval(container);
 

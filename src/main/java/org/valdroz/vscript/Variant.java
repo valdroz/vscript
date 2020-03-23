@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static org.valdroz.vscript.Configuration.*;
+
 /**
  * Variant object.
  *
@@ -31,20 +33,20 @@ public abstract class Variant implements Comparable<Variant> {
 
     private static final Variant NULL_VARIANT = new NullVariant();
 
-    private static int decimalScale = 3;
-    private static RoundingMode roundingMode = RoundingMode.HALF_EVEN;
-    private static boolean caseSensitive = true;
 
+    @Deprecated
     public static void setDecimalScale(int decimalScale) {
-        Variant.decimalScale = decimalScale;
+        Configuration.setDecimalScale(decimalScale);
     }
 
+    @Deprecated
     public static void setRoundingMode(RoundingMode roundingMode) {
-        Variant.roundingMode = roundingMode;
+        Configuration.setRoundingMode(roundingMode);
     }
 
+    @Deprecated
     public static void setCaseSensitive(boolean caseSensitive) {
-        Variant.caseSensitive = caseSensitive;
+        Configuration.setCaseSensitive(caseSensitive);
     }
 
     public abstract BigDecimal asNumeric();
@@ -155,6 +157,12 @@ public abstract class Variant implements Comparable<Variant> {
         return variant;
     }
 
+    public static Variant sanitize(Variant variant, Variant substitution) {
+        if (variant == null) {
+            return substitution;
+        }
+        return variant;
+    }
 
     // Operator methods
     public abstract Variant multiply(Variant variant);
@@ -199,7 +207,7 @@ public abstract class Variant implements Comparable<Variant> {
 
         @Override
         public String asString() {
-            return value.stripTrailingZeros().toString();
+            return value.toString();
         }
 
         @Override
@@ -234,8 +242,8 @@ public abstract class Variant implements Comparable<Variant> {
                 throw new UnsupportedOperationException("Division by zero");
             }
             return Variant.fromBigDecimal(
-                    value.setScale(decimalScale, roundingMode)
-                            .divide(divisor.setScale(decimalScale, roundingMode), roundingMode)
+                    value.setScale(getDecimalScale(), getRoundingMode())
+                            .divide(divisor.setScale(getDecimalScale(), getRoundingMode()), getRoundingMode())
                             .stripTrailingZeros());
         }
 
@@ -265,7 +273,10 @@ public abstract class Variant implements Comparable<Variant> {
             if (!(o instanceof Variant)) return false;
             Variant that = (Variant) o;
             if (that.isNull() || that.isArray()) return false;
-            return Objects.equals(value, that.asNumeric());
+
+            return value.compareTo(that.asNumeric()) == 0;
+
+            //return Objects.equals(value, that.asNumeric());
         }
 
         @Override
@@ -290,7 +301,7 @@ public abstract class Variant implements Comparable<Variant> {
         @Override
         public BigDecimal asNumeric() {
             try {
-                return new BigDecimal(value).setScale(decimalScale, roundingMode);
+                return new BigDecimal(value).setScale(getDecimalScale(), getRoundingMode());
             } catch (Exception ex) {
                 return BigDecimal.ZERO;
             }
@@ -394,7 +405,7 @@ public abstract class Variant implements Comparable<Variant> {
             if (this == o) return true;
             if (!(o instanceof Variant)) return false;
             Variant that = (Variant) o;
-            if (caseSensitive) {
+            if (isCaseSensitive()) {
                 return Objects.equals(value, that.asString());
             }
             return value.equalsIgnoreCase(that.asString());
@@ -602,7 +613,7 @@ public abstract class Variant implements Comparable<Variant> {
 
         @Override
         public BigDecimal asNumeric() {
-            return BigDecimal.valueOf(valueArray.size()).setScale(decimalScale, roundingMode);
+            return BigDecimal.valueOf(valueArray.size()).setScale(getDecimalScale(), getRoundingMode());
         }
 
         @Override

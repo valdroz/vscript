@@ -19,7 +19,6 @@ package org.valdroz.vscript;
  * @author Valerijus Drozdovas
  */
 public interface Constants {
-    char CE_SUCCESS = 0;
     char CE_INCOMPLETE = 1;
     char CE_SYNTAX = 2;
     char CE_RESERVED_WORD_AS_FUNC = 3;

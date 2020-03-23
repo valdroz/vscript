@@ -29,11 +29,12 @@ import java.util.function.Supplier;
  *
  * @author Valerijus Drozdovas
  */
-public class BaseNode implements RunBlock, Constants {
+class BaseNode implements Node, Constants {
 
     private char operation = 0;
 
     private Variant value;
+    private BaseNode valueSubstitution = null;
 
     private BaseNode leftNode = null;
     private BaseNode rightNode = null;
@@ -67,6 +68,10 @@ public class BaseNode implements RunBlock, Constants {
         this.rightNode = rightNode;
     }
 
+    void setValueSubstitution(BaseNode node) {
+        this.valueSubstitution = node;
+    }
+
     public BaseNode getLeftNode() {
         return leftNode;
     }
@@ -95,6 +100,7 @@ public class BaseNode implements RunBlock, Constants {
     }
 
 
+    @Override
     public Variant execute(VariantContainer variantContainer) {
 
         Variant leftNodeResult;
@@ -107,9 +113,17 @@ public class BaseNode implements RunBlock, Constants {
             case NT_LOCAL_VARIABLE:
                 if (getParameterNode() != null) {
                     int index = getParameterNode().execute(variantContainer).asNumeric().intValue();
-                    return Variant.getArrayItem(variantContainer.getVariant(this.name), index);
+                    Variant _v = Variant.getArrayItem(variantContainer.getVariant(this.name), index);
+                    if ((_v == null || _v.isNull()) && (valueSubstitution != null)) {
+                        _v = valueSubstitution.execute(variantContainer);
+                    }
+                    return Variant.sanitize(_v);
                 } else {
-                    return Variant.sanitize(variantContainer.getVariant(this.name));
+                    Variant _v = variantContainer.getVariant(this.name);
+                    if ((_v == null || _v.isNull()) && (valueSubstitution != null)) {
+                        _v = valueSubstitution.execute(variantContainer);
+                    }
+                    return Variant.sanitize(_v);
                 }
             case '*':
                 value = leftNode.execute(variantContainer).multiply(rightNode.execute(variantContainer));
@@ -338,7 +352,11 @@ public class BaseNode implements RunBlock, Constants {
                         lvc.setVariant(fpn, funcParams.get(pidx).execute(variantContainer) );
                     }
                 }
-                value = Variant.sanitize(function.execute(lvc));
+                value = function.execute(lvc);
+                if ((value == null || value.isNull()) && (valueSubstitution != null)) {
+                    value = valueSubstitution.execute(variantContainer);
+                }
+                value = Variant.sanitize(value);
             }
             break;
             default:

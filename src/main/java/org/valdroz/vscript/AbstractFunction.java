@@ -36,7 +36,7 @@ public abstract class AbstractFunction {
     public AbstractFunction(String signature) {
         String[] tokens = signature.trim().split("[()]");
         if (tokens.length == 0) {
-            throw new SyntaxException("Invalid function signature \"" + signature + "\"");
+            throw new EvaluationException("Invalid function signature \"" + signature + "\"");
         }
         name = tokens[0];
         if (tokens.length > 1) {

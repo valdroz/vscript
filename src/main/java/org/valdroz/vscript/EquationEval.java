@@ -18,50 +18,43 @@ package org.valdroz.vscript;
 import java.util.function.Supplier;
 
 /**
- *
  * Equation evaluator.
  *
  * @author Valerijus Drozdovas
  */
 public final class EquationEval {
 
-    private BaseNode node;
+    private CompositeNode node;
     private DefaultRunBlock masterRunBlock;
 
     /**
-     *
      * @param equation is a text with interpretable equation. E.g. "10 * 2"
      */
     public EquationEval(String equation) {
         EquationParser parser = new EquationParser(equation);
 
-        this.node = parser.parse(0);
-        String leftover = parser.getRemainderSource();
-
-        if ( this.node == null || parser.getLastErrorCode() != EquationParser.CE_SUCCESS ) {
-            StringBuilder errorMsg = new StringBuilder("Expression error: ");
-            errorMsg.append(Utils.getErrorMsg(parser.getLastErrorCode(), parser.getPosition(), parser.currentLineNumber()));
-            if (leftover != null) {
-                errorMsg.append(" - Stopped at: \"");
-                errorMsg.append(leftover);
-                errorMsg.append("\"");
-            }
-            throw new RuntimeException(errorMsg.toString());
-        }
+        this.node = new CompositeNode();
+        String leftover = "";
+        int pos = 0;
+        do {
+            node.addNode(parser.parse(pos));
+            pos = parser.currentPosition() + 1;
+            leftover = parser.unprocessedSource();
+        } while (leftover.length() > 1 && leftover.startsWith(";"));
 
         if (leftover.length() > 0) {
             StringBuilder errorMsg = new StringBuilder("Expression error: Unexpected text \"");
             errorMsg.append(leftover);
             errorMsg.append("\"");
-            throw new RuntimeException(errorMsg.toString());
+            throw new EvaluationException(errorMsg.toString(), parser.currentLineNumber(), parser.currentPosition());
         }
     }
 
-    public static BaseNode parse(String equation) {
+    public static Node parse(String equation) {
         return new EquationEval(equation).getNode();
     }
 
-    public BaseNode getNode() {
+    public Node getNode() {
         return node;
     }
 

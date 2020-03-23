@@ -19,6 +19,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
+import org.valdroz.vscript.Configuration;
 import org.valdroz.vscript.EquationEval;
 import org.valdroz.vscript.Variant;
 
@@ -36,6 +37,7 @@ public class JsonVariantContainerTest {
 
     @Test
     public void jsonToVariantContainers() throws Exception {
+        Configuration.setDecimalScale(3);
 
         String json = IOUtils.toString(JsonDataSetMaker.class.getResource("/test-data-set.json"), Charset.defaultCharset());
         JsonElement je = new JsonParser().parse(json);
@@ -78,7 +80,7 @@ public class JsonVariantContainerTest {
         assertThat(v.isBoolean(), is(true));
         assertThat(v.asBoolean(), is(true));
 
-        Variant.setCaseSensitive(false);
+        Configuration.setCaseSensitive(false);
 
         new EquationEval("objects.data = 5").eval(vc);
 
