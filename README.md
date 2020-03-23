@@ -119,7 +119,7 @@ import org.valdroz.vscript.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class ExampleCustomerFunctions {
+public class ExampleCustomFunction {
     public static void main(String[] args) {
         VariantContainer variantContainer = new DefaultVariantContainer();
 
