@@ -111,7 +111,7 @@ Misc. functions:
 ## Extending to meet your needs
 
 Vscript allows defining custom functions to meet your needs.
-Simplified example of adding one customer function is shown here:    
+Simplified example of adding one custom function is shown here:    
 
 ```java
 import org.valdroz.vscript.*;

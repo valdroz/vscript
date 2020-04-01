@@ -191,7 +191,6 @@ public abstract class Variant implements Comparable<Variant> {
         private BigDecimal value;
 
         NumericVariant(BigDecimal value) {
-            //this.value = value.setScale(decimalScale, roundingMode);
             this.value = value;
         }
 
