@@ -20,11 +20,14 @@ package org.valdroz.vscript;
  * Created on 2019-07-06
  */
 public class ConstantNode extends BaseNode {
-    private Variant constant;
+    private final Variant constant;
+
+    ConstantNode() {
+        this.constant = Variant.nullVariant();
+    }
 
     ConstantNode(Variant value) {
-        this.constant = value;
-        setNodeOperation(NT_CONSTANT);
+        this.constant = Variant.sanitize(value);
     }
 
     @Override

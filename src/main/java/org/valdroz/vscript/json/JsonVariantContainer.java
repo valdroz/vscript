@@ -23,7 +23,7 @@ import org.valdroz.vscript.VariantContainer;
 import java.util.List;
 
 /**
- * @author vdrozd720
+ * @author Valerijus Drozdovas
  * Created on 12/16/19
  */
 public class JsonVariantContainer implements VariantContainer {

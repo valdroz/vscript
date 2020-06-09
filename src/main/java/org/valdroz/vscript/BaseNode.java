@@ -30,42 +30,48 @@ import java.util.function.Supplier;
  * @author Valerijus Drozdovas
  */
 class BaseNode implements Node, Constants {
-
     private char operation = 0;
-
-    private Variant value;
-    private BaseNode valueSubstitution = null;
-
-    private BaseNode leftNode = null;
-    private BaseNode rightNode = null;
     private String name = "";
 
-    private DefaultRunBlock parentRunBlock = null;
-    private List<BaseNode> funcParams = null;
+    private BaseNode valueSubstitution = null;
+    private BaseNode leftNode = null;
+    private BaseNode rightNode = null;
+    private List<BaseNode> params = null;
 
-    static Supplier<Long> nowProvider = () -> DateTime.now().getMillis();
+    private RunBlock parentRunBlock = null;
+
+    static Supplier<Long> currentTime = () -> DateTime.now().getMillis();
 
     BaseNode() {
-    }
-
-    public Variant getValue() {
-        return Variant.sanitize(value);
     }
 
     public String getName() {
         return name;
     }
 
-    void setName(String name) {
+    BaseNode withName(String name) {
         this.name = name;
+        return this;
     }
 
-    void setLeftNode(BaseNode leftNode) {
+    BaseNode withLeftNode(BaseNode leftNode) {
         this.leftNode = leftNode;
+        return this;
     }
 
-    void setRightNode(BaseNode rightNode) {
+    BaseNode setLeftNode(BaseNode leftNode) {
+        this.leftNode = leftNode;
+        return leftNode;
+    }
+
+    BaseNode withRightNode(BaseNode rightNode) {
         this.rightNode = rightNode;
+        return this;
+    }
+
+    BaseNode setRightNode(BaseNode rightNode) {
+        this.rightNode = rightNode;
+        return rightNode;
     }
 
     void setValueSubstitution(BaseNode node) {
@@ -80,192 +86,178 @@ class BaseNode implements Node, Constants {
         return rightNode;
     }
 
-    public Variant assignValue(Variant value) {
-        this.value = Variant.sanitize(value);
-        return this.value;
-    }
-
     char getNodeOperation() {
         return operation;
     }
 
-    BaseNode setNodeOperation(char op) {
+    BaseNode withNodeOperation(char op) {
         operation = op;
         return this;
     }
 
     @Override
-    public void run(VariantContainer variantContainer) {
-        execute(variantContainer);
-    }
-
-
-    @Override
     public Variant execute(VariantContainer variantContainer) {
-
+        Variant result = Variant.nullVariant();
         Variant leftNodeResult;
         Variant rightNodeResult;
 
         switch (operation) {
-            case NT_VALUE:
-                return Variant.sanitize(value);
             case NT_VARIABLE:
             case NT_LOCAL_VARIABLE:
                 if (getParameterNode() != null) {
                     int index = getParameterNode().execute(variantContainer).asNumeric().intValue();
-                    Variant _v = Variant.getArrayItem(variantContainer.getVariant(this.name), index);
+                    Variant _v = Variant.getArrayItem(variantContainer.getVariant(getName()), index);
                     if ((_v == null || _v.isNull()) && (valueSubstitution != null)) {
                         _v = valueSubstitution.execute(variantContainer);
                     }
                     return Variant.sanitize(_v);
                 } else {
-                    Variant _v = variantContainer.getVariant(this.name);
+                    Variant _v = variantContainer.getVariant(getName());
                     if ((_v == null || _v.isNull()) && (valueSubstitution != null)) {
                         _v = valueSubstitution.execute(variantContainer);
                     }
                     return Variant.sanitize(_v);
                 }
             case '*':
-                value = leftNode.execute(variantContainer).multiply(rightNode.execute(variantContainer));
+                result = leftNode.execute(variantContainer).multiply(rightNode.execute(variantContainer));
                 break;
 
             case '+':
-                value = leftNode.execute(variantContainer).add(rightNode.execute(variantContainer));
+                result = leftNode.execute(variantContainer).add(rightNode.execute(variantContainer));
                 break;
 
             case '-':
-                value = leftNode.execute(variantContainer).minus(rightNode.execute(variantContainer));
+                result = leftNode.execute(variantContainer).minus(rightNode.execute(variantContainer));
                 break;
 
             case '=':
-                rightNodeResult = rightNode.execute(variantContainer);
-                value = leftNode.assignValue(rightNodeResult, variantContainer);
+                result = leftNode.assignValue(rightNode.execute(variantContainer), variantContainer);
                 break;
 
             case '/':
-                value = leftNode.execute(variantContainer).divide(rightNode.execute(variantContainer));
+                result = leftNode.execute(variantContainer).divide(rightNode.execute(variantContainer));
                 break;
 
             case '!':
-                value = Variant.fromBoolean(!getParameterNode().execute(variantContainer).asBoolean());
+                result = Variant.fromBoolean(!leftNode.execute(variantContainer).asBoolean());
                 break;
 
             case '&':
                 leftNodeResult = leftNode.execute(variantContainer);
                 rightNodeResult = rightNode.execute(variantContainer);
-                value = Variant.fromLong(leftNodeResult.asNumeric().longValue() & rightNodeResult.asNumeric().longValue());
+                result = Variant.fromLong(leftNodeResult.asNumeric().longValue() & rightNodeResult.asNumeric().longValue());
                 break;
 
             case '|':
                 leftNodeResult = leftNode.execute(variantContainer);
                 rightNodeResult = rightNode.execute(variantContainer);
-                value = Variant.fromLong(leftNodeResult.asNumeric().longValue() | rightNodeResult.asNumeric().longValue());
+                result = Variant.fromLong(leftNodeResult.asNumeric().longValue() | rightNodeResult.asNumeric().longValue());
                 break;
 
             case '>':
                 leftNodeResult = leftNode.execute(variantContainer);
                 rightNodeResult = rightNode.execute(variantContainer);
-                value = Variant.fromBoolean(leftNodeResult.compareTo(rightNodeResult) > 0);
+                result = Variant.fromBoolean(leftNodeResult.compareTo(rightNodeResult) > 0);
                 break;
 
             case '<':
                 leftNodeResult = leftNode.execute(variantContainer);
                 rightNodeResult = rightNode.execute(variantContainer);
-                value = Variant.fromBoolean(leftNodeResult.compareTo(rightNodeResult) < 0);
+                result = Variant.fromBoolean(leftNodeResult.compareTo(rightNodeResult) < 0);
                 break;
 
             case '^':
                 leftNodeResult = leftNode.execute(variantContainer);
                 rightNodeResult = rightNode.execute(variantContainer);
-                value = leftNodeResult.pow(rightNodeResult);
+                result = leftNodeResult.pow(rightNodeResult);
                 break;
 
             case NT_LOP_AND:
                 leftNodeResult = leftNode.execute(variantContainer);
                 if (leftNodeResult.asBoolean()) {
                     rightNodeResult = rightNode.execute(variantContainer);
-                    value = Variant.fromBoolean(rightNodeResult.asBoolean());
+                    result = Variant.fromBoolean(rightNodeResult.asBoolean());
                 } else {
-                    value = Variant.fromBoolean(false);
+                    result = Variant.fromBoolean(false);
                 }
                 break;
 
             case NT_LOP_OR:
                 leftNodeResult = leftNode.execute(variantContainer);
                 if (leftNodeResult.asBoolean()) {
-                    value = Variant.fromBoolean(true);
+                    result = Variant.fromBoolean(true);
                 } else {
-                    value = Variant.fromBoolean(rightNode.execute(variantContainer).asBoolean());
+                    result = Variant.fromBoolean(rightNode.execute(variantContainer).asBoolean());
                 }
                 break;
 
             case NT_LOP_EQUALS:
                 leftNodeResult = leftNode.execute(variantContainer);
                 rightNodeResult = rightNode.execute(variantContainer);
-                value = Variant.fromBoolean(leftNodeResult.equals(rightNodeResult));
+                result = Variant.fromBoolean(leftNodeResult.equals(rightNodeResult));
                 break;
 
             case NT_LOP_NOT_EQUALS:
                 leftNodeResult = leftNode.execute(variantContainer);
                 rightNodeResult = rightNode.execute(variantContainer);
-                value = Variant.fromBoolean(!leftNodeResult.equals(rightNodeResult));
+                result = Variant.fromBoolean(!leftNodeResult.equals(rightNodeResult));
                 break;
 
             case NT_LOP_MORE_EQUALS:
                 leftNodeResult = leftNode.execute(variantContainer);
                 rightNodeResult = rightNode.execute(variantContainer);
-                value = Variant.fromBoolean(leftNodeResult.compareTo(rightNodeResult) >= 0);
+                result = Variant.fromBoolean(leftNodeResult.compareTo(rightNodeResult) >= 0);
                 break;
 
             case NT_LOP_LESS_EQUALS:
                 leftNodeResult = leftNode.execute(variantContainer);
                 rightNodeResult = rightNode.execute(variantContainer);
-                value = Variant.fromBoolean(leftNodeResult.compareTo(rightNodeResult) <= 0);
+                result = Variant.fromBoolean(leftNodeResult.compareTo(rightNodeResult) <= 0);
                 break;
 
             case NT_MF_SIN:
-                value = Variant.fromDouble(Math.sin(getParameterNode().execute(variantContainer).asNumeric().doubleValue()));
+                result = Variant.fromDouble(Math.sin(getParameterNode().execute(variantContainer).asNumeric().doubleValue()));
                 break;
 
             case NT_MF_COS:
-                value = Variant.fromDouble(Math.cos(getParameterNode().execute(variantContainer).asNumeric().doubleValue()));
+                result = Variant.fromDouble(Math.cos(getParameterNode().execute(variantContainer).asNumeric().doubleValue()));
                 break;
 
             case NT_MF_ASIN:
-                value = Variant.fromDouble(Math.asin(getParameterNode().execute(variantContainer).asNumeric().doubleValue()));
+                result = Variant.fromDouble(Math.asin(getParameterNode().execute(variantContainer).asNumeric().doubleValue()));
                 break;
 
             case NT_MF_ACOS:
-                value = Variant.fromDouble(Math.acos(getParameterNode().execute(variantContainer).asNumeric().doubleValue()));
+                result = Variant.fromDouble(Math.acos(getParameterNode().execute(variantContainer).asNumeric().doubleValue()));
                 break;
 
             case NT_MF_TAN:
-                value = Variant.fromDouble(Math.tan(getParameterNode().execute(variantContainer).asNumeric().doubleValue()));
+                result = Variant.fromDouble(Math.tan(getParameterNode().execute(variantContainer).asNumeric().doubleValue()));
                 break;
 
             case NT_MF_ATAN:
-                value = Variant.fromDouble(Math.atan(getParameterNode().execute(variantContainer).asNumeric().doubleValue()));
+                result = Variant.fromDouble(Math.atan(getParameterNode().execute(variantContainer).asNumeric().doubleValue()));
                 break;
 
             case NT_MF_EXP:
-                value = Variant.fromDouble(Math.exp(getParameterNode().execute(variantContainer).asNumeric().doubleValue()));
+                result = Variant.fromDouble(Math.exp(getParameterNode().execute(variantContainer).asNumeric().doubleValue()));
                 break;
 
             case NT_MF_LN:
             case NT_MF_LOG:
-                value = Variant.fromDouble(Math.log(getParameterNode().execute(variantContainer).asNumeric().doubleValue()));
+                result = Variant.fromDouble(Math.log(getParameterNode().execute(variantContainer).asNumeric().doubleValue()));
                 break;
 
             case NT_MF_NEG:
-                value = getParameterNode().execute(variantContainer).negate();
+                result = getParameterNode().execute(variantContainer).negate();
                 break;
 
             case NT_MF_ABS:
-                value = getParameterNode().execute(variantContainer).abs();
+                result = getParameterNode().execute(variantContainer).abs();
                 break;
 
             case NT_MF_SQRT:
-                value = getParameterNode().execute(variantContainer).sqrt();
+                result = getParameterNode().execute(variantContainer).sqrt();
                 break;
 
             case NT_MF_DEBUG:
@@ -273,26 +265,26 @@ class BaseNode implements Node, Constants {
                 break;
 
             case NT_MF_DAY:
-                value = Variant.fromInt(now().getDayOfMonth());
+                result = Variant.fromInt(now().getDayOfMonth());
                 break;
 
             case NT_MF_MONTH:
-                value = Variant.fromInt(now().getMonthOfYear());
+                result = Variant.fromInt(now().getMonthOfYear());
                 break;
 
             case NT_MF_YEAR:
-                value = Variant.fromInt(now().getYear());
+                result = Variant.fromInt(now().getYear());
                 break;
 
             case NT_MF_DAY_OF_YEAR:
-                value = Variant.fromInt(now().getDayOfYear());
+                result = Variant.fromInt(now().getDayOfYear());
                 break;
 
             case NT_MF_DAYS_IN_MONTH: {
                 DateTime dt = now();
                 Variant month = getParameterNode().execute(variantContainer);
                 dt = dt.plusMonths(month.asNumeric().intValue());
-                value = Variant.fromInt(dt.dayOfMonth().withMaximumValue().getDayOfMonth());
+                result = Variant.fromInt(dt.dayOfMonth().withMaximumValue().getDayOfMonth());
             }
             break;
 
@@ -301,120 +293,151 @@ class BaseNode implements Node, Constants {
                 if (!isoDate.isString()) {
                     throw new RuntimeException("iso expects string as input.");
                 }
-                value = Variant.fromLong(ISODateTimeFormat.dateOptionalTimeParser().parseDateTime(isoDate.asString()).getMillis());
+                result = Variant.fromLong(ISODateTimeFormat.dateOptionalTimeParser().parseDateTime(isoDate.asString()).getMillis());
             }
             break;
 
             case NT_MF_NOW:
-                value = Variant.fromLong(nowProvider.get());
+                result = Variant.fromLong(currentTime.get());
                 break;
 
             case NT_MF_DAYS_BEFORE_NOW:
-                value = Variant.fromLong(durationTillNow(getParameterNode().execute(variantContainer)).getStandardDays());
+                result = Variant.fromLong(durationTillNow(getParameterNode().execute(variantContainer)).getStandardDays());
                 break;
 
             case NT_MF_HOURS_BEFORE_NOW:
-                value = Variant.fromLong(durationTillNow(getParameterNode().execute(variantContainer)).getStandardHours());
+                result = Variant.fromLong(durationTillNow(getParameterNode().execute(variantContainer)).getStandardHours());
                 break;
 
             case NT_MF_SIZE:
-                value = Variant.fromInt(getParameterNode().execute(variantContainer).size());
+                result = Variant.fromInt(getParameterNode().execute(variantContainer).size());
                 break;
 
             case NT_MF_IS_STRING:
-                value = Variant.fromBoolean(getParameterNode().execute(variantContainer).isString());
+                result = Variant.fromBoolean(getParameterNode().execute(variantContainer).isString());
                 break;
 
             case NT_MF_IS_NUMBER:
-                value = Variant.fromBoolean(getParameterNode().execute(variantContainer).isNumeric());
+                result = Variant.fromBoolean(getParameterNode().execute(variantContainer).isNumeric());
                 break;
 
             case NT_MF_IS_ARRAY:
-                value = Variant.fromBoolean(getParameterNode().execute(variantContainer).isArray());
+                result = Variant.fromBoolean(getParameterNode().execute(variantContainer).isArray());
                 break;
 
             case NT_MF_IS_NULL:
-                value = Variant.fromBoolean(getParameterNode().execute(variantContainer).isNull());
+                result = Variant.fromBoolean(getParameterNode().execute(variantContainer).isNull());
                 break;
 
             case NT_FUNCTION: {
-                AbstractFunction function = parentRunBlock.getFunction(this.name);
+                AbstractFunction function = parentRunBlock.resolveFunction(getName());
                 if (function == null) {
-                    throw new UndefinedFunction(this.name);
+                    throw new UndefinedFunction(getName());
                 }
                 LocalVariantContainer lvc = new LocalVariantContainer(variantContainer);
                 List<String> parameterNames = function.getParameterNames();
                 for (int pidx = 0;
-                     pidx < Math.min(funcParams.size(), parameterNames.size());
+                     pidx < Math.min(params.size(), parameterNames.size());
                      ++pidx) {
                     String fpn = parameterNames.get(pidx);
                     if (fpn.length() > 0) {
-                        lvc.setVariant(fpn, funcParams.get(pidx).execute(variantContainer) );
+                        lvc.setVariant(fpn, params.get(pidx).execute(variantContainer));
                     }
                 }
-                value = function.execute(lvc);
-                if ((value == null || value.isNull()) && (valueSubstitution != null)) {
-                    value = valueSubstitution.execute(variantContainer);
+                result = function.execute(lvc);
+                if ((result == null || result.isNull()) && (valueSubstitution != null)) {
+                    result = valueSubstitution.execute(variantContainer);
                 }
-                value = Variant.sanitize(value);
+                result = Variant.sanitize(result);
             }
             break;
             default:
                 throw new RuntimeException("Unexpected node: " + operation);
 
         }
-        return value;
+        return result;
     }
 
     /**
      * Returns parameter node for build-in functions like "sin", "cos" and etc, or array index.
      */
     private BaseNode getParameterNode() {
-        if (leftNode == null) return rightNode;
-        return leftNode;
+//        if (leftNode == null) return rightNode;
+//        return leftNode;
+        if (params != null && params.size() > 0) {
+            return params.get(0);
+        }
+        return null;
     }
 
     /**
-     * Sets calculated value to the variable.
+     * Set variable node value.
      */
     private Variant assignValue(Variant newValue, VariantContainer variantContainer) {
         if (operation == NT_VARIABLE || operation == NT_LOCAL_VARIABLE) {
             // Array variable node
             if (getParameterNode() != null) {
                 int index = getParameterNode().execute(variantContainer).asNumeric().intValue();
-                variantContainer.setVariant(name, index, newValue);
+                variantContainer.setVariant(getName(), index, newValue);
             } else {
-                variantContainer.setVariant(name, newValue);
+                variantContainer.setVariant(getName(), newValue);
             }
-            return variantContainer.getVariant(name);
+            return variantContainer.getVariant(getName());
         } else {
-            value = newValue;
-            return value;
+            throw new EvaluationException("Invalid assignment");
         }
     }
 
 
     @Override
-    public void setParentRunBlock(DefaultRunBlock runBlock) {
+    public void setParentRunBlock(RunBlock runBlock) {
         parentRunBlock = runBlock;
         if (leftNode != null) leftNode.setParentRunBlock(runBlock);
         if (rightNode != null) rightNode.setParentRunBlock(runBlock);
 
-        if (funcParams != null) {
-            funcParams.forEach(nd -> nd.setParentRunBlock(runBlock));
+        if (params != null) {
+            params.forEach(nd -> nd.setParentRunBlock(runBlock));
         }
     }
 
+    @Override
+    public void collectStats(NodeStats stats) {
+        switch (this.operation) {
+            case NT_VARIABLE:
+                stats.referencedVariable(getName());
+                break;
+            case NT_FUNCTION:
+                stats.referencedExtFunction(getName());
+                break;
+        }
+
+        if (valueSubstitution != null) {
+            valueSubstitution.collectStats(stats);
+        }
+
+        if (leftNode != null) {
+            leftNode.collectStats(stats);
+        }
+
+        if (rightNode != null) {
+            rightNode.collectStats(stats);
+        }
+
+        if (params != null) {
+            params.forEach(baseNode -> baseNode.collectStats(stats));
+        }
+
+    }
 
     /**
      * Adds node as parameter, for "function" type node.
      */
     void addParameterNode(BaseNode paramNode) {
-        funcParams.add(paramNode);
+        params.add(paramNode);
     }
 
     void initParams() {
-        funcParams = new ArrayList<>();
+        params = new ArrayList<>();
     }
 
     @Override
@@ -423,7 +446,6 @@ class BaseNode implements Node, Constants {
                 .add("o=" + operation)
                 .add("l=" + leftNode)
                 .add("r=" + rightNode)
-                .add("v=" + value)
                 .add("var='" + name + "'")
                 .toString();
     }
@@ -443,6 +465,6 @@ class BaseNode implements Node, Constants {
     }
 
     static DateTime now() {
-        return new DateTime(nowProvider.get());
+        return new DateTime(currentTime.get());
     }
 }

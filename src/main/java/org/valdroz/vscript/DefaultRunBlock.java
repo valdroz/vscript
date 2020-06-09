@@ -24,7 +24,7 @@ import java.util.*;
  */
 public class DefaultRunBlock implements RunBlock {
     private List<RunBlock> runtimeBlocks = new ArrayList<>();
-    private DefaultRunBlock parentRunBlock;
+    private RunBlock parent;
     private Map<String, AbstractFunction> functions = new HashMap<>();
 
     public DefaultRunBlock() {
@@ -37,22 +37,25 @@ public class DefaultRunBlock implements RunBlock {
     }
 
     @Override
-    public void run(VariantContainer variantContainer) {
+    public Variant execute(VariantContainer variantContainer) {
+        Variant lastResult = Variant.nullVariant();
         for (RunBlock runBlock : runtimeBlocks) {
             runBlock.setParentRunBlock(this);
-            runBlock.run(variantContainer);
+            lastResult = runBlock.execute(variantContainer);
         }
+        return lastResult;
     }
 
     @Override
-    public void setParentRunBlock(DefaultRunBlock runBlock) {
-        this.parentRunBlock = runBlock;
+    public void setParentRunBlock(RunBlock runBlock) {
+        this.parent = runBlock;
     }
 
 
-    public AbstractFunction getFunction(String name) {
-        if (parentRunBlock != null && !functions.containsKey(name)) {
-            return parentRunBlock.getFunction(name);
+    @Override
+    public AbstractFunction resolveFunction(String name) {
+        if (parent != null && !functions.containsKey(name)) {
+            return parent.resolveFunction(name);
         }
         return functions.get(name);
     }
@@ -64,6 +67,5 @@ public class DefaultRunBlock implements RunBlock {
     public void registerFunction(AbstractFunction func) {
         functions.put(func.getName(), func);
     }
-
 
 }

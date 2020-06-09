@@ -16,23 +16,31 @@
 package org.valdroz.vscript;
 
 /**
- *  RunBlock interface.
+ * RunBlock interface.
  *
- *  @author Valerijus Dorzdovas 
+ * @author Valerijus Dorzdovas
  */
-public interface RunBlock
-{
-	/**
-	 * Set the reference to parent MasterRunBlock object
-	 * @param runBlock parent run block.
-	 */
-	void setParentRunBlock(DefaultRunBlock runBlock);
-	
-	/**
-	 * Executes the run block.
-	 * @param variantContainer Variant container instance.
-	 */
-	void run(VariantContainer variantContainer);
+public interface RunBlock {
 
-	
+    /**
+     * Set the reference to parent.
+     *
+     * @param runBlock parent run block.
+     */
+    void setParentRunBlock(RunBlock runBlock);
+
+    /**
+     *
+     * @param variantContainer
+     * @return
+     */
+    Variant execute(VariantContainer variantContainer);
+
+    /**
+     *
+     * @param name
+     * @return
+     */
+    AbstractFunction resolveFunction(String name);
+
 }

@@ -35,7 +35,6 @@ public interface Constants {
     char CE_MISSING_BRACKET3 = 14; // ]
     char CE_CONST_ASSIGNMENT = 15;
 
-    char NT_VALUE = 133;
     char NT_VARIABLE = 134;
     char NT_FUNCTION = 135;
     char NT_LOCAL_VARIABLE = 137;
@@ -75,8 +74,6 @@ public interface Constants {
     char NT_LOP_LESS_EQUALS = 131;
     char NT_LOP_EQUALS = 132;
     char NT_LOP_NOT_EQUALS = 136;
-
-    char NT_CONSTANT = 200;
 
     ConstantNode C_TRUE = new ConstantNode(Variant.fromBoolean(true));
     ConstantNode C_FALSE = new ConstantNode(Variant.fromBoolean(false));

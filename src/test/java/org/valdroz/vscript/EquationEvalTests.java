@@ -159,60 +159,60 @@ public class EquationEvalTests {
     @Test
     public void testDayFunc() {
         // Now is always 2010-02-05T17:31:15Z
-        Supplier<Long> prevNow = EquationEval.setNowSupplier(() -> 1265391075000L);
+        Supplier<Long> prevNow = EquationEval.setCurrentTimeSupplier(() -> 1265391075000L);
         Variant var = new EquationEval("day()").eval();
         assertThat(var.asNumeric().intValue(), is(5));
-        EquationEval.setNowSupplier(prevNow);
+        EquationEval.setCurrentTimeSupplier(prevNow);
     }
 
     @Test
     public void testMonthFunc() {
         // Now is always 2010-02-05T17:31:15Z
-        Supplier<Long> prevNow = EquationEval.setNowSupplier(() -> 1265391075000L);
+        Supplier<Long> prevNow = EquationEval.setCurrentTimeSupplier(() -> 1265391075000L);
         Variant var = new EquationEval("month()").eval();
         assertThat(var.asNumeric().intValue(), is(2));
-        EquationEval.setNowSupplier(prevNow);
+        EquationEval.setCurrentTimeSupplier(prevNow);
     }
 
     @Test
     public void testYearFunc() {
         // Now is always 2010-02-05T17:31:15Z
-        Supplier<Long> prevNow = EquationEval.setNowSupplier(() -> 1265391075000L);
+        Supplier<Long> prevNow = EquationEval.setCurrentTimeSupplier(() -> 1265391075000L);
         Variant var = new EquationEval("year()").eval();
         assertThat(var.asNumeric().intValue(), is(2010));
-        EquationEval.setNowSupplier(prevNow);
+        EquationEval.setCurrentTimeSupplier(prevNow);
     }
 
 
     @Test
     public void testDaysInMonthFunc() {
         // Now is always 2010-02-05T17:31:15Z
-        Supplier<Long> prevNow = EquationEval.setNowSupplier(() -> 1265391075000L);
+        Supplier<Long> prevNow = EquationEval.setCurrentTimeSupplier(() -> 1265391075000L);
         // April (Current month + 2) of 2010 should have 30 days
         Variant var = new EquationEval("days_in_month(2)").eval();
         assertThat(var.asNumeric().intValue(), is(30));
-        EquationEval.setNowSupplier(prevNow);
+        EquationEval.setCurrentTimeSupplier(prevNow);
     }
 
     @Test
     public void testDaysInMonthFunc2() {
         // Now is always 2010-02-05T17:31:15Z
-        Supplier<Long> prevNow = EquationEval.setNowSupplier(() -> 1265391075000L);
+        Supplier<Long> prevNow = EquationEval.setCurrentTimeSupplier(() -> 1265391075000L);
         // Jan (Current month - 1) of 2010 should have 31 days
         Variant var = new EquationEval("days_in_month(-1)").eval();
         assertThat(var.asNumeric().intValue(), is(31));
-        EquationEval.setNowSupplier(prevNow);
+        EquationEval.setCurrentTimeSupplier(prevNow);
     }
 
 
     @Test
     public void testDaysInMonthFuncNoParam() {
         // Now is always 2010-02-05T17:31:15Z
-        Supplier<Long> prevNow = EquationEval.setNowSupplier(() -> 1265391075000L);
+        Supplier<Long> prevNow = EquationEval.setCurrentTimeSupplier(() -> 1265391075000L);
         // Current month, February of 2010 should have 28 days
         Variant var = new EquationEval("days_in_month()").eval();
         assertThat(var.asNumeric().intValue(), is(28));
-        EquationEval.setNowSupplier(prevNow);
+        EquationEval.setCurrentTimeSupplier(prevNow);
     }
 
 
@@ -240,7 +240,7 @@ public class EquationEvalTests {
     public void testDaysBeforeNowFunc() {
 
         // Now is always 2010-02-05T17:31:15Z
-        Supplier<Long> prevNow = EquationEval.setNowSupplier(() -> 1265391075000L);
+        Supplier<Long> prevNow = EquationEval.setCurrentTimeSupplier(() -> 1265391075000L);
 
         VariantContainer container = new DefaultVariantContainer();
         container.setVariant("testDate", Variant.fromString("2010-02-01"));
@@ -254,14 +254,14 @@ public class EquationEvalTests {
 
         assertThat(var.asNumeric().intValue(), is(369));
 
-        EquationEval.setNowSupplier(prevNow);
+        EquationEval.setCurrentTimeSupplier(prevNow);
     }
 
     @Test
     public void testDaysBeforeNowFuncMillis() {
 
         // Now is always 2010-02-05T17:31:15Z
-        Supplier<Long> prevNow = EquationEval.setNowSupplier(() -> 1265391075000L);
+        Supplier<Long> prevNow = EquationEval.setCurrentTimeSupplier(() -> 1265391075000L);
 
         VariantContainer container = new DefaultVariantContainer();
         container.setVariant("testDate", Variant.fromLong(new DateTime(2010, 2, 1, 0, 0).getMillis())); //"2010-02-01"
@@ -275,7 +275,7 @@ public class EquationEvalTests {
 
         assertThat(var.asNumeric().intValue(), is(369));
 
-        EquationEval.setNowSupplier(prevNow);
+        EquationEval.setCurrentTimeSupplier(prevNow);
     }
 
 
@@ -283,7 +283,7 @@ public class EquationEvalTests {
     public void testHoursBeforeNowFunc() {
 
         // Now is always 2010-02-05T17:31:15Z
-        Supplier<Long> prevNow = EquationEval.setNowSupplier(() -> 1265391075000L);
+        Supplier<Long> prevNow = EquationEval.setCurrentTimeSupplier(() -> 1265391075000L);
 
         VariantContainer container = new DefaultVariantContainer();
         container.setVariant("testDate", Variant.fromString("2010-02-05T10:00:00Z"));
@@ -291,14 +291,14 @@ public class EquationEvalTests {
 
         assertThat(var.asNumeric().intValue(), is(7));
 
-        EquationEval.setNowSupplier(prevNow);
+        EquationEval.setCurrentTimeSupplier(prevNow);
     }
 
     @Test
     public void testHoursBeforeNowFuncMillis() {
 
         // Now is always 2010-02-05T17:31:15Z
-        Supplier<Long> prevNow = EquationEval.setNowSupplier(() -> 1265391075000L);
+        Supplier<Long> prevNow = EquationEval.setCurrentTimeSupplier(() -> 1265391075000L);
 
         VariantContainer container = new DefaultVariantContainer();
         container.setVariant("testDate", Variant.fromLong(new DateTime(2010, 2, 5, 10, 0, DateTimeZone.UTC).getMillis())); //2010-02-05T10:00:00Z
@@ -306,7 +306,7 @@ public class EquationEvalTests {
 
         assertThat(var.asNumeric().intValue(), is(7));
 
-        EquationEval.setNowSupplier(prevNow);
+        EquationEval.setCurrentTimeSupplier(prevNow);
     }
 
 
@@ -392,7 +392,7 @@ public class EquationEvalTests {
         Variant res = EquationEval.parse(null).execute(new DefaultVariantContainer());
         Configuration.setExpressionForEmptyEval(backup);
 
-        Assert.assertThat( res.isBoolean(), Matchers.is(true) );
+        Assert.assertThat(res.isBoolean(), Matchers.is(true));
     }
 
 
@@ -415,5 +415,31 @@ public class EquationEvalTests {
         System.out.println(var);
         System.out.println(res);
     }
+
+
+    @Test
+    public void invalidAssignments() {
+        exception.expect(EvaluationException.class);
+        VariantContainer variantContainer = new DefaultVariantContainer();
+        EquationEval eq = new EquationEval("1=3");
+        Variant res = eq.eval(variantContainer);
+    }
+
+
+    @Test
+    public void testStats() {
+        VariantContainer variantContainer = new DefaultVariantContainer();
+        EquationEval eq = new EquationEval("c[0] = a + b; d = extf1(c[0] + e + 1); d = sin(a * 0); c[f] = extf2() ");
+
+        NodeStats stats = eq.getStats();
+
+        assertThat(stats.referencedVariables().size(), is(6));
+        assertThat(stats.referencedVariables(), containsInAnyOrder("a","b","c","d","e","f"));
+        assertThat(stats.referencedExtFunctions().size(), is(2));
+        assertThat(stats.referencedExtFunctions(), containsInAnyOrder("extf1", "extf2"));
+    }
+
+
+
 
 }

@@ -25,7 +25,8 @@ import java.util.function.Supplier;
 public final class EquationEval {
 
     private CompositeNode node;
-    private DefaultRunBlock masterRunBlock;
+    private RunBlock masterRunBlock;
+    private NodeStats stats;
 
     /**
      * @param equation is a text with interpretable equation. E.g. "10 * 2"
@@ -58,7 +59,15 @@ public final class EquationEval {
         return node;
     }
 
-    public EquationEval withMasterBlock(DefaultRunBlock masterBlock) {
+    public NodeStats getStats() {
+        if (stats == null) {
+            stats = new NodeStats();
+            node.collectStats(stats);
+        }
+        return stats;
+    }
+
+    public EquationEval withMasterBlock(RunBlock masterBlock) {
         this.masterRunBlock = masterBlock;
         return this;
     }
@@ -75,9 +84,9 @@ public final class EquationEval {
         return eval(new DefaultVariantContainer());
     }
 
-    public static Supplier<Long> setNowSupplier(Supplier<Long> nowProvider) {
-        Supplier<Long> prev = BaseNode.nowProvider;
-        BaseNode.nowProvider = nowProvider;
+    public static Supplier<Long> setCurrentTimeSupplier(Supplier<Long> currentTimeSupplier) {
+        Supplier<Long> prev = BaseNode.currentTime;
+        BaseNode.currentTime = currentTimeSupplier;
         return prev;
     }
 

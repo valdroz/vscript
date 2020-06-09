@@ -31,7 +31,7 @@ public class ArrayEvalTests {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void testEquationEvaluator() {
+    public void testAddToArray() {
         DefaultVariantContainer container = new DefaultVariantContainer();
         List<Variant> variants = new ArrayList<>();
         variants.add(Variant.fromString("a"));
@@ -169,6 +169,18 @@ public class ArrayEvalTests {
 
     }
 
+    @Test
+    public void testArrayParsingError() {
+        DefaultVariantContainer container = new DefaultVariantContainer();
+        List<Variant> variants = new ArrayList<>();
+        variants.add(Variant.fromString("a"));
+        container.setVariant("arr", Variant.fromArray(variants));
+
+        Variant var = new EquationEval("arr[0]=2; arr[1]=arr[0]; arr[0]==arr[1]").eval(container);
+
+        System.out.println(var);
+
+    }
 
 
 }
