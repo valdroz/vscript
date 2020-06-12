@@ -153,7 +153,7 @@ class EquationParser implements Constants {
      * Parses assignment node.
      */
     private BaseNode parseAssignmentNode() {
-        BaseNode left = parseLogicOpNode();
+        BaseNode left = parseLogicOrNode();
 
         if (left == null) return null;
         skipSpaces();
@@ -167,7 +167,7 @@ class EquationParser implements Constants {
                     .withNodeOperation(currentCharCheckExpSeparator());
             forwardPosition();
             skipSpaces();
-            if (node.setRightNode(parseLogicOpNode()) == null) {
+            if (node.setRightNode(parseLogicOrNode()) == null) {
                 return null;
             }
             left = node;
@@ -179,21 +179,39 @@ class EquationParser implements Constants {
     /**
      * Parses the node for logical `&&` and `||` operators.
      */
-    private BaseNode parseLogicOpNode() {
+    private BaseNode parseLogicOrNode() {
+        BaseNode left = parseLogicAndNode();
+
+        if (left == null) return null;
+        skipSpaces();
+
+        while (currentCharCheckExpSeparator() == '|' && charAtCheckExpSeparator(position + 1) == '|') {
+            BaseNode node = new BaseNode()
+                    .withLeftNode(left)
+                    .withNodeOperation(NT_LOP_OR);
+
+            forwardPosition();
+            forwardPosition();
+            skipSpaces();
+            if (node.setRightNode(parseLogicAndNode()) == null) {
+                return null;
+            }
+            left = node;
+        }
+
+        return left;
+    }
+
+    private BaseNode parseLogicAndNode() {
         BaseNode left = parsePlusMinus();
 
         if (left == null) return null;
         skipSpaces();
 
-        while ((currentCharCheckExpSeparator() == '|' && charAtCheckExpSeparator(position + 1) == '|') ||
-                (currentCharCheckExpSeparator() == '&' && charAtCheckExpSeparator(position + 1) == '&')) {
+        while (currentCharCheckExpSeparator() == '&' && charAtCheckExpSeparator(position + 1) == '&') {
             BaseNode node = new BaseNode()
-                    .withLeftNode(left);
-
-            if (currentCharCheckExpSeparator() == '&')
-                node.withNodeOperation(NT_LOP_AND);
-            else if (currentCharCheckExpSeparator() == '|')
-                node.withNodeOperation(NT_LOP_OR);
+                    .withLeftNode(left)
+                    .withNodeOperation(NT_LOP_AND);
 
             forwardPosition();
             forwardPosition();
@@ -206,6 +224,7 @@ class EquationParser implements Constants {
 
         return left;
     }
+
 
     /**
      * Parses} the node for +/- operators.
