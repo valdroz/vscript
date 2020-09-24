@@ -15,6 +15,9 @@
  */
 package org.valdroz.vscript;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 import java.util.*;
 
 /**
@@ -23,9 +26,9 @@ import java.util.*;
  * @author Valerijus Drozdovas
  */
 public class DefaultRunBlock implements RunBlock {
-    private List<RunBlock> runtimeBlocks = new ArrayList<>();
+    private final List<RunBlock> runtimeBlocks = Lists.newArrayList();
     private RunBlock parent;
-    private Map<String, AbstractFunction> functions = new HashMap<>();
+    private final Map<String, AbstractFunction> functions = Maps.newHashMap();
 
     public DefaultRunBlock() {
     }

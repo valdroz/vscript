@@ -24,7 +24,7 @@ import java.util.function.Supplier;
  */
 public final class EquationEval {
 
-    private CompositeNode node;
+    private final CompositeNode node;
     private RunBlock masterRunBlock;
     private NodeStats stats;
 

@@ -15,6 +15,7 @@
  */
 package org.valdroz.vscript;
 
+import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.format.ISODateTimeFormat;
@@ -30,7 +31,7 @@ import java.util.function.Supplier;
  * @author Valerijus Drozdovas
  */
 class BaseNode implements Node, Constants {
-    private char operation = 0;
+    private int operation = 0;
     private String name = "";
 
     private BaseNode valueSubstitution = null;
@@ -86,11 +87,11 @@ class BaseNode implements Node, Constants {
         return rightNode;
     }
 
-    char getNodeOperation() {
+    int getNodeOperation() {
         return operation;
     }
 
-    BaseNode withNodeOperation(char op) {
+    BaseNode withNodeOperation(int op) {
         operation = op;
         return this;
     }
@@ -216,52 +217,52 @@ class BaseNode implements Node, Constants {
                 break;
 
             case NT_MF_SIN:
-                result = Variant.fromDouble(Math.sin(getParameterNode().execute(variantContainer).asNumeric().doubleValue()));
+                result = Variant.fromDouble(Math.sin(getParameterOrNullNode().execute(variantContainer).asNumeric().doubleValue()));
                 break;
 
             case NT_MF_COS:
-                result = Variant.fromDouble(Math.cos(getParameterNode().execute(variantContainer).asNumeric().doubleValue()));
+                result = Variant.fromDouble(Math.cos(getParameterOrNullNode().execute(variantContainer).asNumeric().doubleValue()));
                 break;
 
             case NT_MF_ASIN:
-                result = Variant.fromDouble(Math.asin(getParameterNode().execute(variantContainer).asNumeric().doubleValue()));
+                result = Variant.fromDouble(Math.asin(getParameterOrNullNode().execute(variantContainer).asNumeric().doubleValue()));
                 break;
 
             case NT_MF_ACOS:
-                result = Variant.fromDouble(Math.acos(getParameterNode().execute(variantContainer).asNumeric().doubleValue()));
+                result = Variant.fromDouble(Math.acos(getParameterOrNullNode().execute(variantContainer).asNumeric().doubleValue()));
                 break;
 
             case NT_MF_TAN:
-                result = Variant.fromDouble(Math.tan(getParameterNode().execute(variantContainer).asNumeric().doubleValue()));
+                result = Variant.fromDouble(Math.tan(getParameterOrNullNode().execute(variantContainer).asNumeric().doubleValue()));
                 break;
 
             case NT_MF_ATAN:
-                result = Variant.fromDouble(Math.atan(getParameterNode().execute(variantContainer).asNumeric().doubleValue()));
+                result = Variant.fromDouble(Math.atan(getParameterOrNullNode().execute(variantContainer).asNumeric().doubleValue()));
                 break;
 
             case NT_MF_EXP:
-                result = Variant.fromDouble(Math.exp(getParameterNode().execute(variantContainer).asNumeric().doubleValue()));
+                result = Variant.fromDouble(Math.exp(getParameterOrNullNode().execute(variantContainer).asNumeric().doubleValue()));
                 break;
 
             case NT_MF_LN:
             case NT_MF_LOG:
-                result = Variant.fromDouble(Math.log(getParameterNode().execute(variantContainer).asNumeric().doubleValue()));
+                result = Variant.fromDouble(Math.log(getParameterOrNullNode().execute(variantContainer).asNumeric().doubleValue()));
                 break;
 
             case NT_MF_NEG:
-                result = getParameterNode().execute(variantContainer).negate();
+                result = getParameterOrNullNode().execute(variantContainer).negate();
                 break;
 
             case NT_MF_ABS:
-                result = getParameterNode().execute(variantContainer).abs();
+                result = getParameterOrNullNode().execute(variantContainer).abs();
                 break;
 
             case NT_MF_SQRT:
-                result = getParameterNode().execute(variantContainer).sqrt();
+                result = getParameterOrNullNode().execute(variantContainer).sqrt();
                 break;
 
             case NT_MF_DEBUG:
-                System.out.print(Variant.sanitize(getParameterNode().execute(variantContainer)).asString());
+                System.out.print(Variant.sanitize(getParameterOrNullNode().execute(variantContainer)).asString());
                 break;
 
             case NT_MF_DAY:
@@ -282,14 +283,14 @@ class BaseNode implements Node, Constants {
 
             case NT_MF_DAYS_IN_MONTH: {
                 DateTime dt = now();
-                Variant month = getParameterNode().execute(variantContainer);
+                Variant month = getParameterOrNullNode().execute(variantContainer);
                 dt = dt.plusMonths(month.asNumeric().intValue());
                 result = Variant.fromInt(dt.dayOfMonth().withMaximumValue().getDayOfMonth());
             }
             break;
 
             case NT_MF_ISO: {
-                Variant isoDate = getParameterNode().execute(variantContainer);
+                Variant isoDate = getParameterOrNullNode().execute(variantContainer);
                 if (!isoDate.isString()) {
                     throw new RuntimeException("iso expects string as input.");
                 }
@@ -302,32 +303,41 @@ class BaseNode implements Node, Constants {
                 break;
 
             case NT_MF_DAYS_BEFORE_NOW:
-                result = Variant.fromLong(durationTillNow(getParameterNode().execute(variantContainer)).getStandardDays());
+                result = Variant.fromLong(durationTillNow(getParameterOrNullNode().execute(variantContainer)).getStandardDays());
                 break;
 
             case NT_MF_HOURS_BEFORE_NOW:
-                result = Variant.fromLong(durationTillNow(getParameterNode().execute(variantContainer)).getStandardHours());
+                result = Variant.fromLong(durationTillNow(getParameterOrNullNode().execute(variantContainer)).getStandardHours());
                 break;
 
             case NT_MF_SIZE:
-                result = Variant.fromInt(getParameterNode().execute(variantContainer).size());
+                result = Variant.fromInt(getParameterOrNullNode().execute(variantContainer).size());
                 break;
 
             case NT_MF_IS_STRING:
-                result = Variant.fromBoolean(getParameterNode().execute(variantContainer).isString());
+                result = Variant.fromBoolean(getParameterOrNullNode().execute(variantContainer).isString());
                 break;
 
             case NT_MF_IS_NUMBER:
-                result = Variant.fromBoolean(getParameterNode().execute(variantContainer).isNumeric());
+                result = Variant.fromBoolean(getParameterOrNullNode().execute(variantContainer).isNumeric());
                 break;
 
             case NT_MF_IS_ARRAY:
-                result = Variant.fromBoolean(getParameterNode().execute(variantContainer).isArray());
+                result = Variant.fromBoolean(getParameterOrNullNode().execute(variantContainer).isArray());
                 break;
 
             case NT_MF_IS_NULL:
-                result = Variant.fromBoolean(getParameterNode().execute(variantContainer).isNull());
+                result = Variant.fromBoolean(getParameterOrNullNode().execute(variantContainer).isNull());
                 break;
+
+            case NT_MF_TO_ARRAY: {
+                List<Variant> arrItems = Lists.newArrayList();
+                if (params != null) {
+                    params.forEach(itemNode -> arrItems.add(itemNode.execute(variantContainer)));
+                }
+                result = Variant.fromArray(arrItems);
+            }
+            break;
 
             case NT_FUNCTION: {
                 AbstractFunction function = parentRunBlock.resolveFunction(getName());
@@ -362,13 +372,19 @@ class BaseNode implements Node, Constants {
      * Returns parameter node for build-in functions like "sin", "cos" and etc, or array index.
      */
     private BaseNode getParameterNode() {
-//        if (leftNode == null) return rightNode;
-//        return leftNode;
         if (params != null && params.size() > 0) {
             return params.get(0);
         }
         return null;
     }
+
+    private BaseNode getParameterOrNullNode() {
+        if (params != null && params.size() > 0) {
+            return params.get(0);
+        }
+        return C_NULL;
+    }
+
 
     /**
      * Set variable node value.

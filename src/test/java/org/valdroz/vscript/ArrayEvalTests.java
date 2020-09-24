@@ -19,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -177,8 +178,22 @@ public class ArrayEvalTests {
         container.setVariant("arr", Variant.fromArray(variants));
 
         Variant var = new EquationEval("arr[0]=2; arr[1]=arr[0]; arr[0]==arr[1]").eval(container);
+        assertThat("Last evaluation value `true`", var.asBoolean(), is(true));
+    }
 
-        System.out.println(var);
+    @Test
+    public void testToArrayFunction() {
+        DefaultVariantContainer container = new DefaultVariantContainer();
+
+        Variant var = new EquationEval("arr = to_array(1,2,\"3\",true); is_size_4 = size(arr); arr == 3").eval(container);
+
+        assertThat("Last evaluation result should be off boolean type", var.isBoolean(), is(true));
+        assertThat("Last evaluation value `true` as arr includes item matching \"3\" == 3", var.asBoolean(), is(true));
+        assertThat("is_size_4 must be 4", container.getVariant("is_size_4").asNumeric(), is(BigDecimal.valueOf(4)));
+        assertThat("arr[0] is 1", container.getVariant("arr", 0).asNumeric(), is(BigDecimal.valueOf(1)));
+        assertThat("arr[1] is 2", container.getVariant("arr", 1).asNumeric(), is(BigDecimal.valueOf(2)));
+        assertThat("arr[2] is \"3\"", container.getVariant("arr", 2).asString(), is("3"));
+        assertThat("arr[3] is \"true\"", container.getVariant("arr", 3).asBoolean(), is(true));
 
     }
 

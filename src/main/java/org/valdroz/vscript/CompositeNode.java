@@ -15,6 +15,8 @@
  */
 package org.valdroz.vscript;
 
+import com.google.common.collect.Lists;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,7 +27,7 @@ import java.util.List;
 class CompositeNode implements Node {
 
     private RunBlock parentRunBlock;
-    private List<Node> nodes = new LinkedList<>();
+    private final List<Node> nodes = Lists.newLinkedList();
 
     @Override
     public Variant execute(VariantContainer variantContainer) {

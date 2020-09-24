@@ -103,10 +103,11 @@ Date functions:
 
 Misc. functions:
 - size(x)			- Length of string variable value or count of elements in array.
-- is_null(x)		- Returns `1` if value not set, `0` otherwise.
-- is_numeric(x)		- Returns `1` if value is number, `0` otherwise.
-- is_string(x)		- Returns `1` if value is string, `0` otherwise.
-- is_array(x)		- Returns `1` if value is array, `0` otherwise.
+- is_null(x)		- Returns `true` if value not set, `false` otherwise.
+- is_numeric(x)		- Returns `true` if value is number, `false` otherwise.
+- is_string(x)		- Returns `true` if value is string, `false` otherwise.
+- is_array(x)		- Returns `true` if value is array, `false` otherwise.
+- to_array(x1,x2,...,xN) - Makes an array populated with provided values.
 
 ## Extending to meet your needs
 

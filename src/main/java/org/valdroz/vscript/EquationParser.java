@@ -15,6 +15,9 @@
  */
 package org.valdroz.vscript;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.ImmutableBiMap;
+
 import java.util.Optional;
 
 /**
@@ -27,6 +30,42 @@ class EquationParser implements Constants {
     private int currentLine = 0;
     private int position = 0;
     private int stopAt = -1;
+
+    private static final BiMap<String, Integer> functionCodes = ImmutableBiMap.<String, Integer>builder()
+            .put("sin", NT_MF_SIN)
+            .put("cos", NT_MF_COS)
+            .put("asin", NT_MF_ASIN)
+            .put("acos", NT_MF_ACOS)
+            .put("tan", NT_MF_TAN)
+            .put("atan", NT_MF_ATAN)
+            .put("abs", NT_MF_ABS)
+            .put("neg", NT_MF_NEG)
+            .put("sqrt", NT_MF_SQRT)
+            .put("log", NT_MF_LOG)
+            .put("exp", NT_MF_EXP)
+            .put("debug", NT_MF_DEBUG)
+            .put("day", NT_MF_DAY)
+            .put("month", NT_MF_MONTH)
+            .put("year", NT_MF_YEAR)
+            .put("day_of_year", NT_MF_DAY_OF_YEAR)
+            .put("days_in_month", NT_MF_DAYS_IN_MONTH)
+            .put("now", NT_MF_NOW)
+            .put("iso", NT_MF_ISO)
+            .put("days_before_now", NT_MF_DAYS_BEFORE_NOW)
+            .put("hours_before_now", NT_MF_HOURS_BEFORE_NOW)
+            .put("size", NT_MF_SIZE)
+            //.put("isnull", NT_MF_IS_NULL)
+            .put("is_null", NT_MF_IS_NULL)
+            //.put("isnumeric", NT_MF_IS_NUMBER)
+            .put("is_numeric", NT_MF_IS_NUMBER)
+            //.put("isstring", NT_MF_IS_STRING)
+            .put("is_string", NT_MF_IS_STRING)
+            //.put("isarray", NT_MF_IS_ARRAY)
+            .put("is_array", NT_MF_IS_ARRAY)
+            .put("to_array", NT_MF_TO_ARRAY)
+            .build();
+
+
 
     /**
      * Construct equation parser
@@ -83,70 +122,73 @@ class EquationParser implements Constants {
      * Method <src>determineMathFuncCode</src> return internal script
      * function code by it name.
      */
-    private static char determineMathFuncCode(String funcName) {
+    private static int determineMathFuncCode(String funcName) {
         String fn = funcName.toLowerCase();
+        return functionCodes.getOrDefault(fn, 0);
 
-        switch (fn) {
-            case "sin":
-                return NT_MF_SIN;
-            case "cos":
-                return NT_MF_COS;
-            case "asin":
-                return NT_MF_ASIN;
-            case "acos":
-                return NT_MF_ACOS;
-            case "tan":
-                return NT_MF_TAN;
-            case "atan":
-                return NT_MF_ATAN;
-            case "abs":
-                return NT_MF_ABS;
-            case "neg":
-                return NT_MF_NEG;
-            case "sqrt":
-                return NT_MF_SQRT;
-            case "log":
-                return NT_MF_LOG;
-            case "exp":
-                return NT_MF_EXP;
-            case "debug":
-                return NT_MF_DEBUG;
-            case "day":
-                return NT_MF_DAY;
-            case "month":
-                return NT_MF_MONTH;
-            case "year":
-                return NT_MF_YEAR;
-            case "day_of_year":
-                return NT_MF_DAY_OF_YEAR;
-            case "days_in_month":
-                return NT_MF_DAYS_IN_MONTH;
-            case "now":
-                return NT_MF_NOW;
-            case "iso":
-                return NT_MF_ISO;
-            case "days_before_now":
-                return NT_MF_DAYS_BEFORE_NOW;
-            case "hours_before_now":
-                return NT_MF_HOURS_BEFORE_NOW;
-            case "size":
-                return NT_MF_SIZE;
-            case "isnull":
-            case "is_null":
-                return NT_MF_IS_NULL;
-            case "isnumeric":
-            case "is_numeric":
-                return NT_MF_IS_NUMBER;
-            case "isstring":
-            case "is_string":
-                return NT_MF_IS_STRING;
-            case "isarray":
-            case "is_array":
-                return NT_MF_IS_ARRAY;
-            default:
-                return '\0';
-
-        }
+//        switch (fn) {
+//            case "sin":
+//                return NT_MF_SIN;
+//            case "cos":
+//                return NT_MF_COS;
+//            case "asin":
+//                return NT_MF_ASIN;
+//            case "acos":
+//                return NT_MF_ACOS;
+//            case "tan":
+//                return NT_MF_TAN;
+//            case "atan":
+//                return NT_MF_ATAN;
+//            case "abs":
+//                return NT_MF_ABS;
+//            case "neg":
+//                return NT_MF_NEG;
+//            case "sqrt":
+//                return NT_MF_SQRT;
+//            case "log":
+//                return NT_MF_LOG;
+//            case "exp":
+//                return NT_MF_EXP;
+//            case "debug":
+//                return NT_MF_DEBUG;
+//            case "day":
+//                return NT_MF_DAY;
+//            case "month":
+//                return NT_MF_MONTH;
+//            case "year":
+//                return NT_MF_YEAR;
+//            case "day_of_year":
+//                return NT_MF_DAY_OF_YEAR;
+//            case "days_in_month":
+//                return NT_MF_DAYS_IN_MONTH;
+//            case "now":
+//                return NT_MF_NOW;
+//            case "iso":
+//                return NT_MF_ISO;
+//            case "days_before_now":
+//                return NT_MF_DAYS_BEFORE_NOW;
+//            case "hours_before_now":
+//                return NT_MF_HOURS_BEFORE_NOW;
+//            case "size":
+//                return NT_MF_SIZE;
+//            case "isnull":
+//            case "is_null":
+//                return NT_MF_IS_NULL;
+//            case "isnumeric":
+//            case "is_numeric":
+//                return NT_MF_IS_NUMBER;
+//            case "isstring":
+//            case "is_string":
+//                return NT_MF_IS_STRING;
+//            case "isarray":
+//            case "is_array":
+//                return NT_MF_IS_ARRAY;
+//            case "to_array":
+//                return NT_MF_TO_ARRAY;
+//            default:
+//                return '\0';
+//
+//        }
     }
 
     /**
@@ -458,7 +500,6 @@ class EquationParser implements Constants {
             String text = readTextSequence();
             node = new ConstantNode(Variant.fromString(text));
         } else if (isLiteralChar()) {
-            int prevPos = currentPosition();
             String word = readWord();
             if (word.length() == 0) return null;
 
@@ -466,7 +507,7 @@ class EquationParser implements Constants {
             boolean isFunction = currentCharCheckExpSeparator() == '(';
             boolean isArray = currentCharCheckExpSeparator() == '[';
 
-            char mathFuncOpCode = determineMathFuncCode(word);
+            int mathFuncOpCode = determineMathFuncCode(word);
 
             if (isFunction) {
                 if (mathFuncOpCode > 0) {
@@ -545,18 +586,6 @@ class EquationParser implements Constants {
                 return C_NULL;
         }
         return null;
-    }
-
-
-    private BaseNode parseFunction() {
-        skipSpaces();
-        String funcName = readWord();
-
-        BaseNode node = new BaseNode()
-                .withNodeOperation(NT_FUNCTION)
-                .withName(funcName);
-        parseParamsFor(node, '(', ')', ',');
-        return node;
     }
 
     private int parseParamsFor(BaseNode node, char openChar, char closeChar, char sep) {
@@ -780,13 +809,6 @@ class EquationParser implements Constants {
      */
     int currentPosition() {
         return position;
-    }
-
-    /**
-     * Sets the position on the script.
-     */
-    private void setPosition(int pos) {
-        position = pos;
     }
 
     /**

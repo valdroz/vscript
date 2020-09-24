@@ -35,7 +35,7 @@ import java.util.Set;
  */
 public class JsonDataSetMaker {
 
-    private JfObject root = new JfObject(StringUtils.EMPTY);
+    private final JfObject root = new JfObject(StringUtils.EMPTY);
 
     public enum Mode {
         KEEP_ARRAYS_FOR_PRIMITIVES,
