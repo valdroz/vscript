@@ -105,7 +105,7 @@ public class DecimalEvalTests {
 
     @Test
     public void testErrorOnSubtractStringArithmetic() {
-        exception.expectMessage("Invalid minus operator on [String Variant of \"a10.1\"]");
+        exception.expectMessage("Invalid minus operator on [\"a10.1\"]");
 
         DefaultVariantContainer container = new DefaultVariantContainer();
         container.setVariant("d1", Variant.fromInt(2));
@@ -116,7 +116,7 @@ public class DecimalEvalTests {
 
     @Test
     public void testErrorOnAddMultiplyStringArithmetic() {
-        exception.expectMessage("Invalid multiply operator on [String Variant of \"a10.1\"]");
+        exception.expectMessage("Invalid multiply operator on [\"a10.1\"]");
 
         DefaultVariantContainer container = new DefaultVariantContainer();
         container.setVariant("d1", Variant.fromInt(2));
@@ -127,7 +127,7 @@ public class DecimalEvalTests {
 
     @Test
     public void testErrorOnAddDivideStringArithmetic() {
-        exception.expectMessage("Invalid divide operator on [String Variant of \"a10.1\"]");
+        exception.expectMessage("Invalid divide operator on [\"a10.1\"]");
 
         DefaultVariantContainer container = new DefaultVariantContainer();
         container.setVariant("d1", Variant.fromInt(2));

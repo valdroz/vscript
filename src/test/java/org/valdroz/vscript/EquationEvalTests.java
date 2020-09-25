@@ -73,7 +73,7 @@ public class EquationEvalTests {
 
     @Test
     public void testEquationEvaluatorBooleans() {
-        exception.expectMessage("Invalid add operator on [Boolean Variant of true]");
+        exception.expectMessage("Invalid add operator on [true]");
         new EquationEval("true + true").eval();
     }
 
@@ -145,7 +145,7 @@ public class EquationEvalTests {
 
     @Test
     public void testEquationEvaluatorPriority() {
-        exception.expectMessage("Invalid add operator on [Boolean Variant of false]");
+        exception.expectMessage("Invalid add operator on [false]");
         new EquationEval(" false + 1 && true").eval();
     }
 
@@ -352,8 +352,6 @@ public class EquationEvalTests {
 
         res = EquationEval.parse("a?-1 + 2").execute(variantContainer);
 
-        System.out.println("res= " + res.toString());
-
         assertThat(res.isNumeric(), is(true));
         assertThat(res.asNumeric().intValue(), is(1));
     }
@@ -411,9 +409,6 @@ public class EquationEvalTests {
         Assert.assertThat(res.isNumeric(), Matchers.is(true));
         Assert.assertThat(res.asNumeric().doubleValue(), Matchers.is(13.4));
         Assert.assertThat(res.asString(), Matchers.is("13.40"));
-
-        System.out.println(var);
-        System.out.println(res);
     }
 
 
@@ -422,24 +417,65 @@ public class EquationEvalTests {
         exception.expect(EvaluationException.class);
         VariantContainer variantContainer = new DefaultVariantContainer();
         EquationEval eq = new EquationEval("1=3");
-        Variant res = eq.eval(variantContainer);
+        eq.eval(variantContainer);
     }
 
 
     @Test
     public void testStats() {
-        VariantContainer variantContainer = new DefaultVariantContainer();
+
         EquationEval eq = new EquationEval("c[0] = a + b; d = extf1(c[0] + e + 1); d = sin(a * 0); c[f] = extf2() ");
 
         NodeStats stats = eq.getStats();
 
         assertThat(stats.referencedVariables().size(), is(6));
-        assertThat(stats.referencedVariables(), containsInAnyOrder("a","b","c","d","e","f"));
+        assertThat(stats.referencedVariables(), containsInAnyOrder("a", "b", "c", "d", "e", "f"));
         assertThat(stats.referencedExtFunctions().size(), is(2));
         assertThat(stats.referencedExtFunctions(), containsInAnyOrder("extf1", "extf2"));
     }
 
+    @Test
+    public void testTrace() {
+        VariantContainer variantContainer = new DefaultVariantContainer();
+        DefaultRunBlock masterRunBlock = new DefaultRunBlock();
 
+        masterRunBlock.registerFunction(
+                new AbstractFunction("multiply(first, second)") {
+                    @Override
+                    public Variant execute(VariantContainer variantContainer) {
+                        Variant first = variantContainer.getVariant("first");
+                        Variant second = variantContainer.getVariant("second");
+                        return first.multiply(second);
+                    }
+                }
+        );
+        new EquationEval("var1 = 10 * 2; var2 = 20; var3=false;" +
+                "arr = to_array(\"v1\",\"v2\"); " +
+                "arr[0] == \"v1\";" +
+                "var3 = var1 == var3;" +
+                "var3 = !var3;" +
+                "var1 >= var2;" +
+                "var1 <= var2;" +
+                "var1 > var3;" +
+                "var1 < var2;" +
+                "var4 = var3 || var1 != var2;" +
+                "multiply(var1,3/2)", System.out::println)
+                .withMasterBlock(masterRunBlock)
+                .eval(variantContainer);
 
+    }
+
+    @Test
+    public void testTrace2() {
+        Configuration.setCaseSensitive(false);
+        VariantContainer variantContainer = new DefaultVariantContainer();
+        variantContainer.setVariant("var1", Variant.fromString("V1"));
+        variantContainer.setVariant("var2", Variant.fromBoolean(true));
+        Variant res = EquationEval.parse("var1 == \"v1\" && var2 && \"v1\" == to_array(\"A1\",\"V1\") ", System.out::println)
+                .execute(variantContainer);
+
+        assertThat(res.isBoolean(), is(true));
+        assertThat(res.asBoolean(), is(true));
+    }
 
 }

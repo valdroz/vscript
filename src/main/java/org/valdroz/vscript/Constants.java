@@ -76,10 +76,10 @@ public interface Constants {
     int NT_LOP_EQUALS = 132;
     int NT_LOP_NOT_EQUALS = 136;
 
-    ConstantNode C_TRUE = new ConstantNode(Variant.fromBoolean(true));
-    ConstantNode C_FALSE = new ConstantNode(Variant.fromBoolean(false));
-    ConstantNode C_NULL = new ConstantNode(Variant.nullVariant());
-    ConstantNode C_PI = new ConstantNode(Variant.fromDouble(Math.PI));
-    ConstantNode C_E = new ConstantNode(Variant.fromDouble(Math.E));
+    ConstantNode C_TRUE = new ConstantNode("true", Variant.fromBoolean(true));
+    ConstantNode C_FALSE = new ConstantNode("false", Variant.fromBoolean(false));
+    ConstantNode C_NULL = new ConstantNode("null", Variant.nullVariant());
+    ConstantNode C_PI = new ConstantNode("PI", Variant.fromDouble(Math.PI));
+    ConstantNode C_E = new ConstantNode("E", Variant.fromDouble(Math.E));
 
 }

@@ -15,6 +15,8 @@
  */
 package org.valdroz.vscript;
 
+import com.google.common.base.Joiner;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -285,7 +287,7 @@ public abstract class Variant implements Comparable<Variant> {
 
         @Override
         public String toString() {
-            return "Numeric Variant of " + value;
+            return value.toString();
         }
     }
 
@@ -308,7 +310,7 @@ public abstract class Variant implements Comparable<Variant> {
 
         @Override
         public Boolean asBoolean() {
-            return "true".equalsIgnoreCase(value);
+            return "true" .equalsIgnoreCase(value);
         }
 
         @Override
@@ -405,9 +407,23 @@ public abstract class Variant implements Comparable<Variant> {
             if (!(o instanceof Variant)) return false;
             Variant that = (Variant) o;
             if (isCaseSensitive()) {
-                return Objects.equals(value, that.asString());
+                if (that.isArray()) {
+                    return that.asArray().contains(this);
+                } else {
+                    return Objects.equals(value, that.asString());
+                }
+            } else {
+                if (that.isArray()) {
+                    for (Variant thatV : that.asArray()){
+                        if (value.equalsIgnoreCase(thatV.asString())) {
+                            return true;
+                        }
+                    }
+                    return false;
+                } else {
+                    return value.equalsIgnoreCase(that.asString());
+                }
             }
-            return value.equalsIgnoreCase(that.asString());
         }
 
         @Override
@@ -417,7 +433,7 @@ public abstract class Variant implements Comparable<Variant> {
 
         @Override
         public String toString() {
-            return "String Variant of \"" + value + "\"";
+            return "\"" + value + "\"";
         }
     }
 
@@ -508,7 +524,7 @@ public abstract class Variant implements Comparable<Variant> {
 
         @Override
         public String toString() {
-            return "Boolean Variant of " + value;
+            return value.toString();
         }
     }
 
@@ -583,7 +599,7 @@ public abstract class Variant implements Comparable<Variant> {
 
         @Override
         public String toString() {
-            return "Null Variant";
+            return "null";
         }
 
         @Override
@@ -727,11 +743,11 @@ public abstract class Variant implements Comparable<Variant> {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (!(o instanceof Variant)) return false;
-            Variant v = (Variant) o;
-            if (v.isArray()) {
-                return valueArray.containsAll(v.asArray());
+            Variant that = (Variant) o;
+            if (that.isArray()) {
+                return valueArray.containsAll(that.asArray());
             }
-            return valueArray.contains(v);
+            return valueArray.contains(that);
         }
 
         @Override
@@ -741,7 +757,7 @@ public abstract class Variant implements Comparable<Variant> {
 
         @Override
         public String toString() {
-            return "Array Variant of " + asString();
+            return "[" + Joiner.on(", ").join(valueArray) + "]";
         }
     }
 }

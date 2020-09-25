@@ -22,11 +22,13 @@ package org.valdroz.vscript;
 public class ConstantNode extends BaseNode {
     private final Variant constant;
 
-    ConstantNode() {
+    ConstantNode(String id) {
+        super(id);
         this.constant = Variant.nullVariant();
     }
 
-    ConstantNode(Variant value) {
+    ConstantNode(String id, Variant value) {
+        super(id);
         this.constant = Variant.sanitize(value);
     }
 

@@ -17,7 +17,6 @@ package org.valdroz.vscript;
 
 import com.google.common.collect.Lists;
 
-import java.util.LinkedList;
 import java.util.List;
 
 /**

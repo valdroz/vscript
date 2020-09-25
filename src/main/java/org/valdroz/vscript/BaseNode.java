@@ -22,7 +22,6 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.function.Supplier;
 
 /**
@@ -31,6 +30,7 @@ import java.util.function.Supplier;
  * @author Valerijus Drozdovas
  */
 class BaseNode implements Node, Constants {
+    private final String id;
     private int operation = 0;
     private String name = "";
 
@@ -43,11 +43,20 @@ class BaseNode implements Node, Constants {
 
     static Supplier<Long> currentTime = () -> DateTime.now().getMillis();
 
-    BaseNode() {
+    BaseNode(String id) {
+        this.id = id;
     }
 
     public String getName() {
         return name;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    protected Iterable<BaseNode> getParams() {
+        return params;
     }
 
     BaseNode withName(String name) {
@@ -340,6 +349,9 @@ class BaseNode implements Node, Constants {
             break;
 
             case NT_FUNCTION: {
+                if (parentRunBlock == null) {
+                    throw new UndefinedFunction(getName());
+                }
                 AbstractFunction function = parentRunBlock.resolveFunction(getName());
                 if (function == null) {
                     throw new UndefinedFunction(getName());
@@ -458,12 +470,7 @@ class BaseNode implements Node, Constants {
 
     @Override
     public String toString() {
-        return new StringJoiner(", ", "{", "}")
-                .add("o=" + operation)
-                .add("l=" + leftNode)
-                .add("r=" + rightNode)
-                .add("var='" + name + "'")
-                .toString();
+        return this.id;
     }
 
     static Duration durationTillNow(Variant from) {
@@ -483,4 +490,5 @@ class BaseNode implements Node, Constants {
     static DateTime now() {
         return new DateTime(currentTime.get());
     }
+
 }

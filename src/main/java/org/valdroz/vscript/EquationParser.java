@@ -17,8 +17,10 @@ package org.valdroz.vscript;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ImmutableBiMap;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Equation parser.
@@ -30,6 +32,9 @@ class EquationParser implements Constants {
     private int currentLine = 0;
     private int position = 0;
     private int stopAt = -1;
+    private AtomicInteger idgen = new AtomicInteger(1);
+
+    private final Tracer tracer;
 
     private static final BiMap<String, Integer> functionCodes = ImmutableBiMap.<String, Integer>builder()
             .put("sin", NT_MF_SIN)
@@ -66,13 +71,17 @@ class EquationParser implements Constants {
             .build();
 
 
-
     /**
      * Construct equation parser
      *
      * @param source - Equation expression
      */
-    EquationParser(String source) {
+    EquationParser(String source, TraceListener traceListener) {
+        if (traceListener != null) {
+            this.tracer = new Tracer(traceListener);
+        } else {
+            this.tracer = null;
+        }
         this.source = Optional.ofNullable(source).orElse(Variant.EMPTY_STRING).trim();
         if (this.source.length() == 0) {
             this.source = Configuration.getExpressionForEmptyEval();
@@ -122,73 +131,35 @@ class EquationParser implements Constants {
      * Method <src>determineMathFuncCode</src> return internal script
      * function code by it name.
      */
-    private static int determineMathFuncCode(String funcName) {
+    private static int determineBuildinFuncCode(String funcName) {
         String fn = funcName.toLowerCase();
         return functionCodes.getOrDefault(fn, 0);
+    }
 
-//        switch (fn) {
-//            case "sin":
-//                return NT_MF_SIN;
-//            case "cos":
-//                return NT_MF_COS;
-//            case "asin":
-//                return NT_MF_ASIN;
-//            case "acos":
-//                return NT_MF_ACOS;
-//            case "tan":
-//                return NT_MF_TAN;
-//            case "atan":
-//                return NT_MF_ATAN;
-//            case "abs":
-//                return NT_MF_ABS;
-//            case "neg":
-//                return NT_MF_NEG;
-//            case "sqrt":
-//                return NT_MF_SQRT;
-//            case "log":
-//                return NT_MF_LOG;
-//            case "exp":
-//                return NT_MF_EXP;
-//            case "debug":
-//                return NT_MF_DEBUG;
-//            case "day":
-//                return NT_MF_DAY;
-//            case "month":
-//                return NT_MF_MONTH;
-//            case "year":
-//                return NT_MF_YEAR;
-//            case "day_of_year":
-//                return NT_MF_DAY_OF_YEAR;
-//            case "days_in_month":
-//                return NT_MF_DAYS_IN_MONTH;
-//            case "now":
-//                return NT_MF_NOW;
-//            case "iso":
-//                return NT_MF_ISO;
-//            case "days_before_now":
-//                return NT_MF_DAYS_BEFORE_NOW;
-//            case "hours_before_now":
-//                return NT_MF_HOURS_BEFORE_NOW;
-//            case "size":
-//                return NT_MF_SIZE;
-//            case "isnull":
-//            case "is_null":
-//                return NT_MF_IS_NULL;
-//            case "isnumeric":
-//            case "is_numeric":
-//                return NT_MF_IS_NUMBER;
-//            case "isstring":
-//            case "is_string":
-//                return NT_MF_IS_STRING;
-//            case "isarray":
-//            case "is_array":
-//                return NT_MF_IS_ARRAY;
-//            case "to_array":
-//                return NT_MF_TO_ARRAY;
-//            default:
-//                return '\0';
-//
-//        }
+    static String functionNameFromCode(int code) {
+        return functionCodes.inverse().getOrDefault(code, StringUtils.EMPTY);
+    }
+
+    private BaseNode newNode() {
+        return (tracer != null) ?
+                new TracingBaseNode(newNodeId(), tracer) :
+                new BaseNode(newNodeId());
+    }
+
+    private BaseNode newConstantNode(){
+        return (tracer != null) ?
+                new TracingConstantNode(newNodeId(), tracer) :
+                new ConstantNode(newNodeId());
+    }
+
+    private String newNodeId(){
+        return "n" + idgen.getAndIncrement();
+    }
+
+    private BaseNode newConstantNode(Variant variant){
+        return (tracer != null) ?
+                new TracingConstantNode(newNodeId(), variant, tracer) :
+                new ConstantNode(newNodeId(), variant);
     }
 
     /**
@@ -204,7 +175,7 @@ class EquationParser implements Constants {
             if (left.getNodeOperation() != NT_VARIABLE && left.getNodeOperation() != NT_LOCAL_VARIABLE) {
                 throw new EvaluationException(CE_CONST_ASSIGNMENT, currentLineNumber(), currentPosition());
             }
-            BaseNode node = new BaseNode()
+            BaseNode node = newNode()
                     .withLeftNode(left)
                     .withNodeOperation(currentCharCheckExpSeparator());
             forwardPosition();
@@ -228,7 +199,7 @@ class EquationParser implements Constants {
         skipSpaces();
 
         while (currentCharCheckExpSeparator() == '|' && charAtCheckExpSeparator(position + 1) == '|') {
-            BaseNode node = new BaseNode()
+            BaseNode node = newNode()
                     .withLeftNode(left)
                     .withNodeOperation(NT_LOP_OR);
 
@@ -251,7 +222,7 @@ class EquationParser implements Constants {
         skipSpaces();
 
         while (currentCharCheckExpSeparator() == '&' && charAtCheckExpSeparator(position + 1) == '&') {
-            BaseNode node = new BaseNode()
+            BaseNode node = newNode()
                     .withLeftNode(left)
                     .withNodeOperation(NT_LOP_AND);
 
@@ -278,7 +249,7 @@ class EquationParser implements Constants {
         skipSpaces();
 
         while (currentCharCheckExpSeparator() == '-' || currentCharCheckExpSeparator() == '+') {
-            BaseNode node = new BaseNode()
+            BaseNode node = newNode()
                     .withLeftNode(left)
                     .withNodeOperation(currentCharCheckExpSeparator());
 
@@ -301,7 +272,7 @@ class EquationParser implements Constants {
         skipSpaces();
 
         while (currentCharCheckExpSeparator() == '*' || currentCharCheckExpSeparator() == '/') {
-            BaseNode node = new BaseNode()
+            BaseNode node = newNode()
                     .withLeftNode(left)
                     .withNodeOperation(currentCharCheckExpSeparator());
             forwardPosition();
@@ -326,7 +297,7 @@ class EquationParser implements Constants {
         skipSpaces();
 
         while (currentCharCheckExpSeparator() == '^' || currentCharCheckExpSeparator() == '$') {
-            BaseNode node = new BaseNode()
+            BaseNode node = newNode()
                     .withLeftNode(left)
                     .withNodeOperation(currentCharCheckExpSeparator());
             forwardPosition();
@@ -353,7 +324,7 @@ class EquationParser implements Constants {
         if (currentCharCheckExpSeparator() == '>' || currentCharCheckExpSeparator() == '<' ||
                 (currentCharCheckExpSeparator() == '=' && charAtCheckExpSeparator(position + 1) == '=') ||
                 (currentCharCheckExpSeparator() == '!' && charAtCheckExpSeparator(position + 1) == '=')) {
-            BaseNode node = new BaseNode()
+            BaseNode node = newNode()
                     .withLeftNode(left)
                     .withNodeOperation(currentCharCheckExpSeparator());
 
@@ -402,7 +373,7 @@ class EquationParser implements Constants {
 
         while ((currentCharCheckExpSeparator() == '&' && charAtCheckExpSeparator(position + 1) != '&') ||
                 (currentCharCheckExpSeparator() == '|' && charAtCheckExpSeparator(position + 1) != '|')) {
-            BaseNode node = new BaseNode()
+            BaseNode node = newNode()
                     .withLeftNode(left)
                     .withNodeOperation(currentCharCheckExpSeparator());
 
@@ -426,7 +397,7 @@ class EquationParser implements Constants {
         skipSpaces();
 
         if (currentCharCheckExpSeparator() == '!') {
-            BaseNode node = new BaseNode()
+            BaseNode node = newNode()
                     .withNodeOperation(currentCharCheckExpSeparator());
             forwardPosition();
             skipSpaces();
@@ -450,7 +421,7 @@ class EquationParser implements Constants {
             forwardPosition();
             skipSpaces();
             if (currentCharCheckExpSeparator() == ')') {
-                node = new ConstantNode();
+                node = newConstantNode();
             } else {
                 node = parseAssignmentNode();
                 if (node == null) return null;
@@ -481,7 +452,7 @@ class EquationParser implements Constants {
             if (isDigit()) {
                 digit = readWord();
                 try {
-                    node = new ConstantNode(Variant.fromBigDecimal('-' + digit));
+                    node = newConstantNode(Variant.fromBigDecimal('-' + digit));
                 } catch (Exception ex) {
                     throw new EvaluationException(ex.getMessage(), currentLineNumber(), currentPosition());
                 }
@@ -492,13 +463,13 @@ class EquationParser implements Constants {
         } else if (isDigit()) {
             String digit = readWord();
             try {
-                node = new ConstantNode(Variant.fromBigDecimal(digit));
+                node = newConstantNode(Variant.fromBigDecimal(digit));
             } catch (Exception ex) {
                 throw new EvaluationException(ex.getMessage(), currentLineNumber(), currentPosition());
             }
         } else if (isText()) {
             String text = readTextSequence();
-            node = new ConstantNode(Variant.fromString(text));
+            node = newConstantNode(Variant.fromString(text));
         } else if (isLiteralChar()) {
             String word = readWord();
             if (word.length() == 0) return null;
@@ -507,17 +478,17 @@ class EquationParser implements Constants {
             boolean isFunction = currentCharCheckExpSeparator() == '(';
             boolean isArray = currentCharCheckExpSeparator() == '[';
 
-            int mathFuncOpCode = determineMathFuncCode(word);
+            int mathFuncOpCode = determineBuildinFuncCode(word);
 
             if (isFunction) {
                 if (mathFuncOpCode > 0) {
-                    node = new BaseNode()
+                    node = newNode()
                             .withNodeOperation(mathFuncOpCode);
                     if (parseParamsFor(node, '(', ')', ',') == 0) {
                         node.addParameterNode(Constants.C_NULL);
                     }
                 } else {
-                    node = new BaseNode()
+                    node = newNode()
                             .withNodeOperation(NT_FUNCTION)
                             .withName(word);
                     parseParamsFor(node, '(', ')', ',');
@@ -528,7 +499,7 @@ class EquationParser implements Constants {
                     node.setValueSubstitution(parseNotOperator());
                 }
             } else if (isArray) {
-                node = new BaseNode()
+                node = newNode()
                         .withNodeOperation(NT_VARIABLE)
                         .withName(word);
                 if (parseParamsFor(node, '[', ']', ',') != 1) return null;
@@ -538,7 +509,7 @@ class EquationParser implements Constants {
                     node.setValueSubstitution(parseNotOperator());
                 }
             } else {
-                node = new BaseNode();
+                node = newNode();
                 if (word.equals("var")) {
                     skipSpaces();
                     if (isLiteralChar()) {
@@ -571,7 +542,7 @@ class EquationParser implements Constants {
         return node;
     }
 
-    private BaseNode checkConstants(String constName) {
+    private static BaseNode checkConstants(String constName) {
         switch (constName) {
             case "true":
                 return C_TRUE;

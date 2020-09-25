@@ -32,7 +32,14 @@ public final class EquationEval {
      * @param equation is a text with interpretable equation. E.g. "10 * 2"
      */
     public EquationEval(String equation) {
-        EquationParser parser = new EquationParser(equation);
+        this(equation, null);
+    }
+
+    /**
+     * @param equation is a text with interpretable equation. E.g. "10 * 2"
+     */
+    public EquationEval(String equation, TraceListener traceListener) {
+        EquationParser parser = new EquationParser(equation, traceListener);
 
         this.node = new CompositeNode();
         String leftover = "";
@@ -53,6 +60,10 @@ public final class EquationEval {
 
     public static Node parse(String equation) {
         return new EquationEval(equation).getNode();
+    }
+
+    public static Node parse(String equation, TraceListener traceListener) {
+        return new EquationEval(equation, traceListener).getNode();
     }
 
     public Node getNode() {
