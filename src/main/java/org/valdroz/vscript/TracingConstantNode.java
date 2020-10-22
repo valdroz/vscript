@@ -7,6 +7,11 @@ package org.valdroz.vscript;
 public class TracingConstantNode extends ConstantNode {
     private final Tracer tracer;
 
+    public TracingConstantNode(ConstantNode node, Tracer tracer) {
+        super(node.getId(), node.getConstantValue());
+        this.tracer = tracer;
+    }
+
     public TracingConstantNode(String id, Tracer tracer) {
         super(id);
         this.tracer = tracer;

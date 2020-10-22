@@ -37,4 +37,8 @@ public class ConstantNode extends BaseNode {
         return constant;
     }
 
+    Variant getConstantValue() {
+        return constant;
+    }
+
 }

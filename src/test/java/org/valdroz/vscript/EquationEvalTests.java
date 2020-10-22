@@ -16,6 +16,7 @@
 package org.valdroz.vscript;
 
 
+import com.google.common.collect.Lists;
 import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -24,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import static org.hamcrest.Matchers.*;
@@ -477,5 +479,16 @@ public class EquationEvalTests {
         assertThat(res.isBoolean(), is(true));
         assertThat(res.asBoolean(), is(true));
     }
+
+    @Test
+    public void testTraceConstants() {
+        List<String> trace = Lists.newLinkedList();
+        Variant var = new EquationEval("true == true", trace::add).eval();
+        assertThat(var.isBoolean(), is(true));
+        assertThat(var.asBoolean(), is(true));
+        assertThat(trace.size(), is(1));
+        assertThat(trace.get(0), containsString("true EQUALS TO true YIELDS true"));
+    }
+
 
 }

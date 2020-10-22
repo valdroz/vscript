@@ -32,7 +32,7 @@ class EquationParser implements Constants {
     private int currentLine = 0;
     private int position = 0;
     private int stopAt = -1;
-    private AtomicInteger idgen = new AtomicInteger(1);
+    private final AtomicInteger idgen = new AtomicInteger(1);
 
     private final Tracer tracer;
 
@@ -59,13 +59,9 @@ class EquationParser implements Constants {
             .put("days_before_now", NT_MF_DAYS_BEFORE_NOW)
             .put("hours_before_now", NT_MF_HOURS_BEFORE_NOW)
             .put("size", NT_MF_SIZE)
-            //.put("isnull", NT_MF_IS_NULL)
             .put("is_null", NT_MF_IS_NULL)
-            //.put("isnumeric", NT_MF_IS_NUMBER)
             .put("is_numeric", NT_MF_IS_NUMBER)
-            //.put("isstring", NT_MF_IS_STRING)
             .put("is_string", NT_MF_IS_STRING)
-            //.put("isarray", NT_MF_IS_ARRAY)
             .put("is_array", NT_MF_IS_ARRAY)
             .put("to_array", NT_MF_TO_ARRAY)
             .build();
@@ -542,21 +538,32 @@ class EquationParser implements Constants {
         return node;
     }
 
-    private static BaseNode checkConstants(String constName) {
+    private BaseNode checkConstants(String constName) {
+        ConstantNode node;
         switch (constName) {
             case "true":
-                return C_TRUE;
+                node = C_TRUE;
+                break;
             case "false":
-                return C_FALSE;
+                node = C_FALSE;
+                break;
             case "PI":
-                return C_PI;
+                node = C_PI;
+                break;
             case "E":
-                return C_E;
+                node = C_E;
+                break;
             case "NULL":
             case "null":
-                return C_NULL;
+                node = C_NULL;
+                break;
+            default:
+                return null;
         }
-        return null;
+
+        return (tracer != null) ?
+                new TracingConstantNode(node, tracer) :
+                node;
     }
 
     private int parseParamsFor(BaseNode node, char openChar, char closeChar, char sep) {

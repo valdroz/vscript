@@ -23,23 +23,28 @@ package org.valdroz.vscript;
 public interface RunBlock {
 
     /**
-     * Set the reference to parent.
+     * Set the reference to parent. Implementation of RunBlock should use provided reference for cascaded function
+     * resolution.
      *
      * @param runBlock parent run block.
      */
     void setParentRunBlock(RunBlock runBlock);
 
     /**
+     * Implementation of a RunBlock must return Variant instance reflecting the result.
      *
-     * @param variantContainer
-     * @return
+     * @param variantContainer Variant value container instance.
+     * @return Resulting Variant instance. Cannot be `null`.
      */
     Variant execute(VariantContainer variantContainer);
 
     /**
+     * Implementation must return an instance of AbstractFunction matching provided function name.
+     * This method will be executed when equation is being evaluated.
      *
-     * @param name
-     * @return
+     * @param name Name of the function to resolve at runtime.
+     *
+     * @return Instance of a function matching the name. If no matching function is available `null` might be returned.
      */
     AbstractFunction resolveFunction(String name);
 

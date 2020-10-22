@@ -40,7 +40,7 @@ public interface Node {
     /**
      * If applicable node must report variable(s) and/or function name(s) it might be referencing.
      *
-     * @param stats
+     * @param stats Stats holder
      */
     void collectStats(NodeStats stats);
 

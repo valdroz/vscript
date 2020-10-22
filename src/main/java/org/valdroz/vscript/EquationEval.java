@@ -37,6 +37,7 @@ public final class EquationEval {
 
     /**
      * @param equation is a text with interpretable equation. E.g. "10 * 2"
+     * @param traceListener an instance if evaluation trance listener
      */
     public EquationEval(String equation, TraceListener traceListener) {
         EquationParser parser = new EquationParser(equation, traceListener);
