@@ -319,6 +319,10 @@ class BaseNode implements Node, Constants {
                 result = Variant.fromLong(durationTillNow(getParameterOrNullNode().execute(variantContainer)).getStandardHours());
                 break;
 
+            case NT_MF_MINUTES_BEFORE_NOW:
+                result = Variant.fromLong(durationTillNow(getParameterOrNullNode().execute(variantContainer)).getStandardMinutes());
+                break;
+
             case NT_MF_SIZE:
                 result = Variant.fromInt(getParameterOrNullNode().execute(variantContainer).size());
                 break;

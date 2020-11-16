@@ -100,6 +100,7 @@ Date functions:
 - now()             - Current time in millis.
 - days_before_now(x) - (`x` is string or numeric) Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of days passed until now. 					
 - hours_before_now(x) - (`x` is string or numeric) Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of hours passed until now.
+- minutes_before_now(x) - (`x` is string or numeric) Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of minutes passed until now.
 
 Misc. functions:
 - size(x)			- Length of string variable value or count of elements in array.

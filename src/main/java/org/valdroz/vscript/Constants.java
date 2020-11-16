@@ -67,6 +67,7 @@ public interface Constants {
     int NT_MF_HOURS_BEFORE_NOW = 165;
     int NT_MF_DAYS_BEFORE_NOW = 166;
     int NT_MF_TO_ARRAY = 167;
+    int NT_MF_MINUTES_BEFORE_NOW = 168;
 
 
     int NT_LOP_AND = 128;

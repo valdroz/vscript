@@ -58,6 +58,7 @@ class EquationParser implements Constants {
             .put("iso", NT_MF_ISO)
             .put("days_before_now", NT_MF_DAYS_BEFORE_NOW)
             .put("hours_before_now", NT_MF_HOURS_BEFORE_NOW)
+            .put("minutes_before_now", NT_MF_MINUTES_BEFORE_NOW)
             .put("size", NT_MF_SIZE)
             .put("is_null", NT_MF_IS_NULL)
             .put("is_numeric", NT_MF_IS_NUMBER)

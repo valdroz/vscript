@@ -311,6 +311,36 @@ public class EquationEvalTests {
         EquationEval.setCurrentTimeSupplier(prevNow);
     }
 
+    @Test
+    public void testMinutesBeforeNowFunc() {
+
+        // Now is always 2010-02-05T17:30:00Z
+        Supplier<Long> prevNow = EquationEval.setCurrentTimeSupplier(() -> 1265391000000L);
+
+        VariantContainer container = new DefaultVariantContainer();
+        container.setVariant("testDate", Variant.fromString("2010-02-05T17:00:00Z"));
+        Variant var = new EquationEval("minutes_before_now(testDate)").eval(container);
+
+        assertThat(var.asNumeric().intValue(), is(30));
+
+        EquationEval.setCurrentTimeSupplier(prevNow);
+    }
+
+    @Test
+    public void testMinutesBeforeNowFuncMillis() {
+
+        // Now is always 2010-02-05T17:30:00Z
+        Supplier<Long> prevNow = EquationEval.setCurrentTimeSupplier(() -> 1265391000000L);
+
+        VariantContainer container = new DefaultVariantContainer();
+        container.setVariant("testDate", Variant.fromLong(new DateTime(2010, 2, 5, 17, 0, DateTimeZone.UTC).getMillis()));
+        Variant var = new EquationEval("minutes_before_now(testDate)").eval(container);
+
+        assertThat(var.asNumeric().intValue(), is(30));
+
+        EquationEval.setCurrentTimeSupplier(prevNow);
+    }
+
 
     @Test
     public void testSubstitutions() {
