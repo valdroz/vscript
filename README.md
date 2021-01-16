@@ -53,8 +53,8 @@ public class Example {
 
 ## Syntax
 
-Supported numeric operators `+ -  * / ^`, binary operators
- `&, |`, logical operators ` ==, >, <, >=, <=, !=, ! ` and `=` assignment;
+Supported numeric operators `+ -  * /`, binary operators
+ `&, |, ^`, logical operators ` ==, >, <, >=, <=, !=, ! ` and `=` assignment;
 
 
 ### Reserved Keywords

@@ -45,10 +45,12 @@ public class DefaultVariantContainer implements VariantContainer {
     @Override
     public void setVariant(String name, int index, Variant varValue) {
         Variant variant = Variant.sanitize(variantMap.get(name));
-        if (variant.isNull()) {
+        if (variant.isArray()) {
+            Variant.setArrayItem(variant, index, varValue);
+        } else {
+            variant = Variant.setArrayItem(variant, index, varValue);
             variantMap.put(name, variant);
         }
-        Variant.setArrayItem(variant, index, varValue);
     }
 
     @Override

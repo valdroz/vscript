@@ -51,7 +51,6 @@ public interface Constants {
     int NT_MF_LN = 149;
     int NT_MF_LOG = 150;
     int NT_MF_EXP = 151;
-    int NT_MF_DEBUG = 152;
     int NT_MF_DAY = 153;
     int NT_MF_MONTH = 154;
     int NT_MF_YEAR = 155;
@@ -68,6 +67,7 @@ public interface Constants {
     int NT_MF_DAYS_BEFORE_NOW = 166;
     int NT_MF_TO_ARRAY = 167;
     int NT_MF_MINUTES_BEFORE_NOW = 168;
+    int NT_MF_POWER = 169;
 
 
     int NT_LOP_AND = 128;

@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.valdroz.vscript.Configuration.*;
+import static org.valdroz.vscript.Constants.*;
+import static org.valdroz.vscript.EquationParser.functionNameFromCode;
 
 /**
  * Variant object.
@@ -177,14 +179,39 @@ public abstract class Variant implements Comparable<Variant> {
 
     public abstract Variant pow(Variant variant);
 
-    public abstract Variant sqrt();
-
-    public abstract Variant abs();
-
     public abstract Variant negate();
 
+    public abstract Variant mfunc(int func);
+
     protected RuntimeException invalidOperator(String operator) {
-        return new UnsupportedOperationException("Invalid " + operator + " operator on [" + this + "]");
+        return new EvaluationException("Invalid " + operator + " operator on [" + this + "]");
+    }
+
+    protected static Variant mfunc(int func, double dec) {
+        switch (func) {
+            case NT_MF_SIN:
+                return Variant.fromDouble(Math.sin(dec));
+            case NT_MF_COS:
+                return Variant.fromDouble(Math.cos(dec));
+            case NT_MF_ASIN:
+                return Variant.fromDouble(Math.asin(dec));
+            case NT_MF_ACOS:
+                return Variant.fromDouble(Math.acos(dec));
+            case NT_MF_TAN:
+                return Variant.fromDouble(Math.tan(dec));
+            case NT_MF_ATAN:
+                return Variant.fromDouble(Math.atan(dec));
+            case NT_MF_EXP:
+                return Variant.fromDouble(Math.exp(dec));
+            case NT_MF_LN:
+            case NT_MF_LOG:
+                return Variant.fromDouble(Math.log(dec));
+            case NT_MF_SQRT:
+                return Variant.fromDouble(Math.sqrt(dec));
+            case NT_MF_ABS:
+                return Variant.fromDouble(Math.abs(dec));
+        }
+        return Variant.nullVariant();
     }
 
 
@@ -249,18 +276,13 @@ public abstract class Variant implements Comparable<Variant> {
         }
 
         @Override
+        public Variant mfunc(int func) {
+            return mfunc(func, value.doubleValue());
+        }
+
+        @Override
         public Variant pow(Variant variant) {
             return Variant.fromBigDecimal(value.pow(sanitize(variant).asNumeric().intValue()));
-        }
-
-        @Override
-        public Variant sqrt() {
-            return Variant.fromDouble(Math.sqrt(value.doubleValue()));
-        }
-
-        @Override
-        public Variant abs() {
-            return Variant.fromDouble(Math.abs(value.doubleValue()));
         }
 
         @Override
@@ -276,8 +298,6 @@ public abstract class Variant implements Comparable<Variant> {
             if (that.isNull() || that.isArray()) return false;
 
             return value.compareTo(that.asNumeric()) == 0;
-
-            //return Objects.equals(value, that.asNumeric());
         }
 
         @Override
@@ -310,7 +330,7 @@ public abstract class Variant implements Comparable<Variant> {
 
         @Override
         public Boolean asBoolean() {
-            return "true" .equalsIgnoreCase(value);
+            return "true".equalsIgnoreCase(value);
         }
 
         @Override
@@ -382,18 +402,25 @@ public abstract class Variant implements Comparable<Variant> {
         }
 
         @Override
+        public Variant mfunc(int func) {
+            try {
+                return mfunc(func, new BigDecimal(value).doubleValue());
+            } catch (Exception ex) {
+                throw new EvaluationException("Invalid argument " + this + " for function " + functionNameFromCode(func));
+            }
+        }
+
+
+        @Override
         public Variant pow(Variant variant) {
+            if (variant != null && variant.isNumeric()) {
+                try {
+                    return Variant.fromBigDecimal(value).pow(variant);
+                } catch (Exception ex) {
+                    // do nothing
+                }
+            }
             throw invalidOperator("pow");
-        }
-
-        @Override
-        public Variant sqrt() {
-            throw invalidOperator("sqrt");
-        }
-
-        @Override
-        public Variant abs() {
-            throw invalidOperator("sqrt");
         }
 
         @Override
@@ -414,7 +441,7 @@ public abstract class Variant implements Comparable<Variant> {
                 }
             } else {
                 if (that.isArray()) {
-                    for (Variant thatV : that.asArray()){
+                    for (Variant thatV : that.asArray()) {
                         if (value.equalsIgnoreCase(thatV.asString())) {
                             return true;
                         }
@@ -489,19 +516,15 @@ public abstract class Variant implements Comparable<Variant> {
             throw invalidOperator("divide");
         }
 
+
+        @Override
+        public Variant mfunc(int func) {
+            throw new EvaluationException("Invalid argument " + this + " for function " + functionNameFromCode(func));
+        }
+
         @Override
         public Variant pow(Variant variant) {
             throw invalidOperator("pow");
-        }
-
-        @Override
-        public Variant sqrt() {
-            throw invalidOperator("sqrt");
-        }
-
-        @Override
-        public Variant abs() {
-            throw invalidOperator("abs");
         }
 
         @Override
@@ -583,16 +606,6 @@ public abstract class Variant implements Comparable<Variant> {
         }
 
         @Override
-        public Variant sqrt() {
-            return nullVariant();
-        }
-
-        @Override
-        public Variant abs() {
-            return nullVariant();
-        }
-
-        @Override
         public Variant negate() {
             return nullVariant();
         }
@@ -605,6 +618,11 @@ public abstract class Variant implements Comparable<Variant> {
         @Override
         public int hashCode() {
             return super.hashCode();
+        }
+
+        @Override
+        public Variant mfunc(int func) {
+            return Variant.nullVariant();
         }
 
         @Override
@@ -665,7 +683,7 @@ public abstract class Variant implements Comparable<Variant> {
         }
 
         public ArrayVariant setArrayItem(int index, Variant value) {
-            for (int i = 0; i < index - valueArray.size() + 1; ++i) {
+            while (valueArray.size() < index + 1) {
                 valueArray.add(nullVariant());
             }
             valueArray.set(index, Variant.sanitize(value));
@@ -720,18 +738,21 @@ public abstract class Variant implements Comparable<Variant> {
         }
 
         @Override
+        public Variant mfunc(int func) {
+            List<Variant> newValue = new ArrayList<>(valueArray);
+            for (int i = 0; i < newValue.size(); ++i) {
+                newValue.set(i, newValue.get(i).mfunc(func));
+            }
+            return Variant.fromArray(newValue);
+        }
+
+        @Override
         public Variant pow(Variant variant) {
-            throw invalidOperator("pow");
-        }
-
-        @Override
-        public Variant sqrt() {
-            throw invalidOperator("sqrt");
-        }
-
-        @Override
-        public Variant abs() {
-            throw invalidOperator("abs");
+            List<Variant> newValue = new ArrayList<>(valueArray);
+            for (int i = 0; i < newValue.size(); ++i) {
+                newValue.set(i, newValue.get(i).pow(variant));
+            }
+            return Variant.fromArray(newValue);
         }
 
         @Override

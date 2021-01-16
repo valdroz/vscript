@@ -46,9 +46,9 @@ class EquationParser implements Constants {
             .put("abs", NT_MF_ABS)
             .put("neg", NT_MF_NEG)
             .put("sqrt", NT_MF_SQRT)
+            .put("pow", NT_MF_POWER)
             .put("log", NT_MF_LOG)
             .put("exp", NT_MF_EXP)
-            .put("debug", NT_MF_DEBUG)
             .put("day", NT_MF_DAY)
             .put("month", NT_MF_MONTH)
             .put("year", NT_MF_YEAR)
@@ -213,7 +213,7 @@ class EquationParser implements Constants {
     }
 
     private BaseNode parseLogicAndNode() {
-        BaseNode left = parsePlusMinus();
+        BaseNode left = parseComparisonOperator();
 
         if (left == null) return null;
         skipSpaces();
@@ -226,7 +226,7 @@ class EquationParser implements Constants {
             forwardPosition();
             forwardPosition();
             skipSpaces();
-            if (node.setRightNode(parsePlusMinus()) == null) {
+            if (node.setRightNode(parseComparisonOperator()) == null) {
                 return null;
             }
             left = node;
@@ -263,7 +263,7 @@ class EquationParser implements Constants {
 
 
     private BaseNode parseMultiplicationDivisionOperator() {
-        BaseNode left = parsePowerOperator();
+        BaseNode left = parseBinAndOrOperator();
 
         if (left == null) return null;
         skipSpaces();
@@ -274,7 +274,7 @@ class EquationParser implements Constants {
                     .withNodeOperation(currentCharCheckExpSeparator());
             forwardPosition();
             skipSpaces();
-            if (node.setRightNode(parsePowerOperator()) == null) {
+            if (node.setRightNode(parseBinAndOrOperator()) == null) {
                 return null;
             }
             left = node;
@@ -284,36 +284,36 @@ class EquationParser implements Constants {
     }
 
 
-    /**
-     * Parses power/root operator: ^, $
-     */
-    private BaseNode parsePowerOperator() {
-        BaseNode left = parseComparisonOperator();
-
-        if (left == null) return null;
-        skipSpaces();
-
-        while (currentCharCheckExpSeparator() == '^' || currentCharCheckExpSeparator() == '$') {
-            BaseNode node = newNode()
-                    .withLeftNode(left)
-                    .withNodeOperation(currentCharCheckExpSeparator());
-            forwardPosition();
-            skipSpaces();
-            if (node.setRightNode(parseComparisonOperator()) == null) {
-                return null;
-            }
-            left = node;
-        }
-
-        return left;
-    }
+//    /**
+//     * Parses power operator: ^
+//     */
+//    private BaseNode parsePowerOperator() {
+//        BaseNode left = parseBinAndOrOperator();
+//
+//        if (left == null) return null;
+//        skipSpaces();
+//
+//        while (currentCharCheckExpSeparator() == '^') {
+//            BaseNode node = newNode()
+//                    .withLeftNode(left)
+//                    .withNodeOperation(currentCharCheckExpSeparator());
+//            forwardPosition();
+//            skipSpaces();
+//            if (node.setRightNode(parseBinAndOrOperator()) == null) {
+//                return null;
+//            }
+//            left = node;
+//        }
+//
+//        return left;
+//    }
 
 
     /**
      * Parses: >, <, >=, <=, ==.
      */
     private BaseNode parseComparisonOperator() {
-        BaseNode left = parseBinAndOrOperator(); // for ! oprs.
+        BaseNode left = parsePlusMinus(); // for ! oprs.
 
         if (left == null) return null;
         skipSpaces();
@@ -349,7 +349,7 @@ class EquationParser implements Constants {
             forwardPosition();
             skipSpaces();
 
-            if (node.setRightNode(parseBinAndOrOperator()) == null) {
+            if (node.setRightNode(parsePlusMinus()) == null) {
                 return null;
             }
             return node;
@@ -360,7 +360,7 @@ class EquationParser implements Constants {
 
 
     /**
-     * Parse: AND/OR (&, |)
+     * Parse: AND/OR/XOR (&, |, ^)
      */
     private BaseNode parseBinAndOrOperator() {
         BaseNode left = parseNotOperator();
@@ -369,7 +369,8 @@ class EquationParser implements Constants {
         skipSpaces();
 
         while ((currentCharCheckExpSeparator() == '&' && charAtCheckExpSeparator(position + 1) != '&') ||
-                (currentCharCheckExpSeparator() == '|' && charAtCheckExpSeparator(position + 1) != '|')) {
+                (currentCharCheckExpSeparator() == '|' && charAtCheckExpSeparator(position + 1) != '|') ||
+                currentCharCheckExpSeparator() == '^') {
             BaseNode node = newNode()
                     .withLeftNode(left)
                     .withNodeOperation(currentCharCheckExpSeparator());
