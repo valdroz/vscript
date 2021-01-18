@@ -75,7 +75,7 @@ public class DefaultRunBlock implements RunBlock {
 
     /**
      * Register function with this runtime block.
-     * @param sinature function singature as name(p1,p2,...,pN), e.g. max(inpu1, input2).
+     * @param signature function signature as name(p1,p2,...,pN), e.g. max(input1, input2).
      * @param body function body.
      */
     public void registerFunction(String signature, Function<VariantContainer, Variant> body) {
