@@ -21,20 +21,16 @@ import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import java.util.List;
 import java.util.function.Supplier;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertThrows;
 
 public class EquationEvalTests {
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     @Test
     public void testEquationEvaluator() {
@@ -51,23 +47,23 @@ public class EquationEvalTests {
         DefaultVariantContainer container = new DefaultVariantContainer();
         container.setVariant("movie.price", Variant.fromInt(5));
 
-        Variant var = new EquationEval("(3 + movie.price * sqrt(4)) >= 13.0").eval(container);
+        Variant var = new EquationEval("3 + movie.price * sqrt(4) >= 13.0").eval(container);
         assertThat(var.isBoolean(), is(true));
         assertThat(var.asBoolean(), is(true));
 
-        var = new EquationEval("(3 + movie.price * sqrt(4)) == 13.0").eval(container);
+        var = new EquationEval("3 + movie.price * sqrt(4) == 13.0").eval(container);
         assertThat(var.isBoolean(), is(true));
         assertThat(var.asBoolean(), is(true));
 
-        var = new EquationEval("(3 + movie.price * sqrt(4)) <= 13.0").eval(container);
+        var = new EquationEval("3 + movie.price * sqrt(4) <= 13.0").eval(container);
         assertThat(var.isBoolean(), is(true));
         assertThat(var.asBoolean(), is(true));
 
-        var = new EquationEval("(3 + movie.price * sqrt(4)) < 13.0").eval(container);
+        var = new EquationEval("3 + movie.price * sqrt(4) < 13.0").eval(container);
         assertThat(var.isBoolean(), is(true));
         assertThat(var.asBoolean(), is(false));
 
-        var = new EquationEval("(3 + movie.price * sqrt(4)) >= 13.1").eval(container);
+        var = new EquationEval("3 + movie.price * sqrt(4) >= 13.1").eval(container);
         assertThat(var.isBoolean(), is(true));
         assertThat(var.asBoolean(), is(false));
     }
@@ -75,8 +71,8 @@ public class EquationEvalTests {
 
     @Test
     public void testEquationEvaluatorBooleans() {
-        exception.expectMessage("Invalid add operator on [true]");
-        new EquationEval("true + true").eval();
+        Assert.assertThrows(EvaluationException.class,
+                () -> new EquationEval("true + true").eval());
     }
 
     @Test
@@ -109,28 +105,31 @@ public class EquationEvalTests {
 
     @Test
     public void testEquationEvaluatorConstAssignment() {
-        exception.expect(EvaluationException.class);
-        new EquationEval("true = -1.0 * (2.5 + 3.5)").eval();
+        assertThrows(EvaluationException.class,
+                () -> new EquationEval("true = 1").eval());
     }
 
     @Test
     public void testEquationEvaluatorEqualPriorityPlusOpr() {
-        Variant var = new EquationEval("1+2+3").eval();
-        assertThat(var.asNumeric().doubleValue(), is(6.0));
+        Variant var = new EquationEval("1+2+3 == 6").eval();
+        assertThat(var.isBoolean(), is(true));
+        assertThat(var.asBoolean(), is(true));
     }
 
     @Test
     public void testEquationEvaluatorEqualPriorityMinusOpr() {
-        Node node = new EquationEval("4 - 3 - 2").getNode();
+        Node node = new EquationEval("0 > 4 - 3 - 2").getNode();
         Variant var = node.execute(new DefaultVariantContainer());
-        assertThat(var.asNumeric().doubleValue(), is(-1.0));
+        assertThat(var.isBoolean(), is(true));
+        assertThat(var.asBoolean(), is(true));
     }
 
 
     @Test
     public void testEquationEvaluatorEqualPriorityMultiDivOpr() {
-        Variant var = new EquationEval("2*3*4").eval();
-        assertThat(var.asNumeric().doubleValue(), is(24.0));
+        Variant var = new EquationEval("2*3*4 == 24").eval();
+        assertThat(var.isBoolean(), is(true));
+        assertThat(var.asBoolean(), is(true));
     }
 
     @Test
@@ -146,9 +145,9 @@ public class EquationEvalTests {
     }
 
     @Test
-    public void testEquationEvaluatorPriority() {
-        exception.expectMessage("Invalid add operator on [false]");
-        new EquationEval(" false + 1 && true").eval();
+    public void testBooleanErrorOnArithmetics() {
+        assertThrows(EvaluationException.class,
+                () -> new EquationEval("false + 1").eval());
     }
 
     @Test
@@ -159,7 +158,7 @@ public class EquationEvalTests {
     }
 
     @Test
-    public void testDayFunc() {
+    public void testDayOfTheMonthFunc() {
         // Now is always 2010-02-05T17:31:15Z
         Supplier<Long> prevNow = EquationEval.setCurrentTimeSupplier(() -> 1265391075000L);
         Variant var = new EquationEval("day()").eval();
@@ -422,7 +421,7 @@ public class EquationEvalTests {
         Variant res = EquationEval.parse(null).execute(new DefaultVariantContainer());
         Configuration.setExpressionForEmptyEval(backup);
 
-        Assert.assertThat(res.isBoolean(), Matchers.is(true));
+        assertThat(res.isBoolean(), Matchers.is(true));
     }
 
 
@@ -435,21 +434,18 @@ public class EquationEvalTests {
         Variant var = EquationEval.parse("res = 3 + myVar1 * sqrt(4); res == 13.4").execute(container);
         Variant res = container.getVariant("res");
 
-        Assert.assertThat(var.isBoolean(), Matchers.is(true));
-        Assert.assertThat(var.asBoolean(), Matchers.is(true));
+        assertThat(var.isBoolean(), Matchers.is(true));
+        assertThat(var.asBoolean(), Matchers.is(true));
 
-        Assert.assertThat(res.isNumeric(), Matchers.is(true));
-        Assert.assertThat(res.asNumeric().doubleValue(), Matchers.is(13.4));
-        Assert.assertThat(res.asString(), Matchers.is("13.40"));
+        assertThat(res.isNumeric(), Matchers.is(true));
+        assertThat(res.asNumeric().doubleValue(), Matchers.is(13.4));
+        assertThat(res.asString(), Matchers.is("13.40"));
     }
 
 
     @Test
     public void invalidAssignments() {
-        exception.expect(EvaluationException.class);
-        VariantContainer variantContainer = new DefaultVariantContainer();
-        EquationEval eq = new EquationEval("1=3");
-        eq.eval(variantContainer);
+        assertThrows(EvaluationException.class, () -> new EquationEval("1=3"));
     }
 
 
@@ -518,6 +514,46 @@ public class EquationEvalTests {
         assertThat(var.asBoolean(), is(true));
         assertThat(trace.size(), is(1));
         assertThat(trace.get(0), containsString("true EQUALS TO true YIELDS true"));
+    }
+
+
+    @Test
+    public void testPower() {
+        Variant var = new EquationEval("pow(1+1,\"3\")").eval();
+        assertThat(var.isNumeric(), is(true));
+        assertThat(var.asNumeric().intValue(), is(8));
+        var = new EquationEval("pow(\"2\",\"3\" + 1)").eval();
+        assertThat(var.isNumeric(), is(true));
+        assertThat(var.asNumeric().intValue(), is(16));
+
+        var = new EquationEval("pow(\"a\",\"3\" + 1)", System.out::println).eval();
+        assertThat(var.isNull(), is(true));
+    }
+
+    @Test
+    public void testCosine() {
+        Variant var = new EquationEval("cos(0)").eval();
+        assertThat(var.isNumeric(), is(true));
+        assertThat(var.asNumeric().intValue(), is(1));
+
+        var = new EquationEval("cos(null)").eval();
+        assertThat(var.isNull(), is(true));
+
+        assertThrows(EvaluationException.class, () -> new EquationEval("cos(false)").eval());
+
+        var = new EquationEval("a=cos(to_array(0,0,PI)); a[0]==1 && a[1]==1 && a[2]==-1").eval();
+        assertThat(var.isBoolean(), is(true));
+        assertThat(var.asBoolean(), is(true));
+
+    }
+
+
+    @Test
+    public void testBinOperators() {
+        
+        Variant var = new EquationEval("1|2 == 3 && 1&2 == 0 && 1^3==2", System.out::println).eval();
+        assertThat(var.isBoolean(), is(true));
+        assertThat(var.asBoolean(), is(true));
     }
 
 

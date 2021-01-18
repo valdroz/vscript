@@ -6,7 +6,7 @@
 
   <groupId>org.valdroz.vscript</groupId>
   <artifactId>vscript</artifactId>
-  <version>3.2.0</version>
+  <version>3.3.0</version>
 
   <name>vscript</name>
   <description>Equation evaluator</description>
@@ -40,7 +40,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>[4.13.1,)</version>
+      <version>4.13.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>

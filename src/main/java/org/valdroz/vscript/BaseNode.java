@@ -164,6 +164,12 @@ class BaseNode implements Node, Constants {
                 result = Variant.fromLong(leftNodeResult.asNumeric().longValue() | rightNodeResult.asNumeric().longValue());
                 break;
 
+            case '^':
+                leftNodeResult = leftNode.execute(variantContainer);
+                rightNodeResult = rightNode.execute(variantContainer);
+                result = Variant.fromLong(leftNodeResult.asNumeric().longValue() ^ rightNodeResult.asNumeric().longValue());
+                break;
+
             case '>':
                 leftNodeResult = leftNode.execute(variantContainer);
                 rightNodeResult = rightNode.execute(variantContainer);
@@ -176,10 +182,9 @@ class BaseNode implements Node, Constants {
                 result = Variant.fromBoolean(leftNodeResult.compareTo(rightNodeResult) < 0);
                 break;
 
-            case '^':
-                leftNodeResult = leftNode.execute(variantContainer);
-                rightNodeResult = rightNode.execute(variantContainer);
-                result = leftNodeResult.pow(rightNodeResult);
+            case NT_MF_POWER:
+                result = getParameterOrNullNode(0).execute(variantContainer)
+                        .pow(getParameterOrNullNode(1).execute(variantContainer));
                 break;
 
             case NT_LOP_AND:
@@ -226,52 +231,21 @@ class BaseNode implements Node, Constants {
                 break;
 
             case NT_MF_SIN:
-                result = Variant.fromDouble(Math.sin(getParameterOrNullNode().execute(variantContainer).asNumeric().doubleValue()));
-                break;
-
             case NT_MF_COS:
-                result = Variant.fromDouble(Math.cos(getParameterOrNullNode().execute(variantContainer).asNumeric().doubleValue()));
-                break;
-
             case NT_MF_ASIN:
-                result = Variant.fromDouble(Math.asin(getParameterOrNullNode().execute(variantContainer).asNumeric().doubleValue()));
-                break;
-
             case NT_MF_ACOS:
-                result = Variant.fromDouble(Math.acos(getParameterOrNullNode().execute(variantContainer).asNumeric().doubleValue()));
-                break;
-
             case NT_MF_TAN:
-                result = Variant.fromDouble(Math.tan(getParameterOrNullNode().execute(variantContainer).asNumeric().doubleValue()));
-                break;
-
             case NT_MF_ATAN:
-                result = Variant.fromDouble(Math.atan(getParameterOrNullNode().execute(variantContainer).asNumeric().doubleValue()));
-                break;
-
             case NT_MF_EXP:
-                result = Variant.fromDouble(Math.exp(getParameterOrNullNode().execute(variantContainer).asNumeric().doubleValue()));
-                break;
-
             case NT_MF_LN:
             case NT_MF_LOG:
-                result = Variant.fromDouble(Math.log(getParameterOrNullNode().execute(variantContainer).asNumeric().doubleValue()));
+            case NT_MF_SQRT:
+            case NT_MF_ABS:
+                result = getParameterOrNullNode().execute(variantContainer).mfunc(operation);
                 break;
 
             case NT_MF_NEG:
                 result = getParameterOrNullNode().execute(variantContainer).negate();
-                break;
-
-            case NT_MF_ABS:
-                result = getParameterOrNullNode().execute(variantContainer).abs();
-                break;
-
-            case NT_MF_SQRT:
-                result = getParameterOrNullNode().execute(variantContainer).sqrt();
-                break;
-
-            case NT_MF_DEBUG:
-                System.out.print(Variant.sanitize(getParameterOrNullNode().execute(variantContainer)).asString());
                 break;
 
             case NT_MF_DAY:
@@ -301,7 +275,7 @@ class BaseNode implements Node, Constants {
             case NT_MF_ISO: {
                 Variant isoDate = getParameterOrNullNode().execute(variantContainer);
                 if (!isoDate.isString()) {
-                    throw new RuntimeException("iso expects string as input.");
+                    throw new EvaluationException("ISO-8601 formated string expected. Got: " + isoDate);
                 }
                 result = Variant.fromLong(ISODateTimeFormat.dateOptionalTimeParser().parseDateTime(isoDate.asString()).getMillis());
             }
@@ -401,6 +375,12 @@ class BaseNode implements Node, Constants {
         return C_NULL;
     }
 
+    private BaseNode getParameterOrNullNode(int index) {
+        if (params != null && params.size() > index) {
+            return params.get(index);
+        }
+        return C_NULL;
+    }
 
     /**
      * Set variable node value.

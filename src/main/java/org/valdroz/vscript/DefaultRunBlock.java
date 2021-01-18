@@ -19,6 +19,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * Master Run Block container and executor.
@@ -68,6 +69,23 @@ public class DefaultRunBlock implements RunBlock {
      * @param func function instance.
      */
     public void registerFunction(AbstractFunction func) {
+        functions.put(func.getName(), func);
+    }
+
+
+    /**
+     * Register function with this runtime block.
+     * @param sinature function singature as name(p1,p2,...,pN), e.g. max(inpu1, input2).
+     * @param body function body.
+     */
+    public void registerFunction(String signature, Function<VariantContainer, Variant> body) {
+        AbstractFunction func = new AbstractFunction(signature){
+
+            @Override
+            public Variant execute(VariantContainer variantContainer) {
+                return body.apply(variantContainer);
+            }            
+        };
         functions.put(func.getName(), func);
     }
 

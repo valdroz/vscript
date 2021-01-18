@@ -7,54 +7,50 @@ and logical expression.
 ## Example
 
 ```java
-
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.valdroz.vscript.*;
+
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat; 
 
 public class Example {
     public static void main(String[] args) {
-        // Configure decimal scale for numeric operations to 2 
+         // Configure decimal scale for numeric operations to 2
         Configuration.setDecimalScale(2);
 
         // Initialize variant container with one variable as
-        // myVar1 = 5.2
+        // myVar1 = 5.2        
         VariantContainer container = new DefaultVariantContainer();
         container.setVariant("myVar1", Variant.fromDouble(5.2));
 
-        // Execute expression with given variant container 
+        // Execute expression with given variant container
         Variant var = EquationEval.parse("res = 3 + myVar1 * sqrt(4); res == 13.4").execute(container);
-
-        // Expecting variant container now also includes variable `res`
-        // as it was initialized through expression 
         Variant res = container.getVariant("res");
 
         // Evaluation response expected to be boolean `true` due to `res == 13.4`
-        Assert.assertThat(var.isBoolean(), Matchers.is(true));
-        Assert.assertThat(var.asBoolean(), Matchers.is(true));
-    
-        // Expecting res as numeric as a result of algebraic result assignment
-        Assert.assertThat(res.isNumeric(), Matchers.is(true));
+        assertThat(var.isBoolean(), is(true));
+        assertThat(var.asBoolean(), is(true));
+
+        // Expecting res to be of numeric type since it is a result of algebraic expression
+        assertThat(res.isNumeric(), is(true));
         
         // `res` must be equal to 13.4
-        Assert.assertThat(res.asNumeric().doubleValue(), Matchers.is(13.4));
+        assertThat(res.asNumeric().doubleValue(), is(13.4));
 
         // String should have two places after decimal due to `Configuration.setDecimalScale(2)`
-        Assert.assertThat(res.asString(), Matchers.is("13.40"));
+        assertThat(res.asString(), is("13.40"));
 
         System.out.println(var); // prints: Boolean Variant of true
         System.out.println(res); // prints: Numeric Variant of 13.40
     }
 }
-
 ```
 
 
 
 ## Syntax
 
-Supported numeric operators `+ -  * / ^`, binary operators
- `&, |`, logical operators ` ==, >, <, >=, <=, !=, ! ` and `=` assignment;
+Supported numeric operators `+ -  * /`, binary operators
+ `&, |, ^`, logical operators ` ==, >, <, >=, <=, !=, ! ` and `=` assignment;
 
 
 ### Reserved Keywords
@@ -118,31 +114,21 @@ Simplified example of adding one custom function is shown here:
 ```java
 import org.valdroz.vscript.*;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ExampleCustomFunction {
     public static void main(String[] args) {
         VariantContainer variantContainer = new DefaultVariantContainer();
 
         DefaultRunBlock masterRunBlock = new DefaultRunBlock();
-        masterRunBlock.registerFunction(
-                new AbstractFunction("custom_multiply(first, second)") {
-                    @Override
-                    public Variant execute(VariantContainer variantContainer) {
-                        Variant first = variantContainer.getVariant("first");
-                        Variant second = variantContainer.getVariant("second");
-                        return first.multiply(second);
-                    }
-                }
-        );
+        masterRunBlock.registerFunction("custom_multiply(first, second)",
+                (lvc) -> lvc.getVariant("first").multiply(lvc.getVariant("second")));
 
-        Variant result = new EquationEval("2 + custom_multiply(3, 4)")
-                .withMasterBlock(masterRunBlock)
+        Variant result = new EquationEval("2 + custom_multiply(3, 4)").withMasterBlock(masterRunBlock)
                 .eval(variantContainer);
 
         assertThat(result.asNumeric().doubleValue(), is(14.0));
     }
 }
-
 ```

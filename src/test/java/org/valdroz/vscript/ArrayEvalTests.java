@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ArrayEvalTests {
 
@@ -171,7 +171,7 @@ public class ArrayEvalTests {
     }
 
     @Test
-    public void testArrayParsingError() {
+    public void testArrayIndexValueReplacement() {
         DefaultVariantContainer container = new DefaultVariantContainer();
         List<Variant> variants = new ArrayList<>();
         variants.add(Variant.fromString("a"));
@@ -194,8 +194,40 @@ public class ArrayEvalTests {
         assertThat("arr[1] is 2", container.getVariant("arr", 1).asNumeric(), is(BigDecimal.valueOf(2)));
         assertThat("arr[2] is \"3\"", container.getVariant("arr", 2).asString(), is("3"));
         assertThat("arr[3] is \"true\"", container.getVariant("arr", 3).asBoolean(), is(true));
-
     }
 
 
+    @Test
+    public void testArrayConcatenation() {
+        Variant result = new EquationEval("a = to_array(1,2,3,4) + to_array(5,6,7,8); " +
+                "size(a) == 8 && a[0]==1 && a[7]==8").eval();
+
+        assertThat(result.isBoolean(), is(true));
+        assertThat(result.asBoolean(), is(true));
+    }
+
+    @Test
+    public void testArraySubtraction() {
+        Variant result = new EquationEval("a = to_array(1,2,4,3,4) - to_array(1,4,8); " +
+                "size(a) == 2 && a[0]==2 && a[1]==3", System.out::println).eval();
+
+        assertThat(result.isBoolean(), is(true));
+        assertThat(result.asBoolean(), is(true));
+    }
+
+    @Test
+    public void testDynamicArrayAllocation() {
+        Variant result = new EquationEval("a[2]=10; size(a) == 3; a[0] == null && a[2] == 10", System.out::println).eval();
+
+        assertThat(result.isBoolean(), is(true));
+        assertThat(result.asBoolean(), is(true));
+    }
+
+    @Test
+    public void testDynamicArrayReallocation() {
+        Variant result = new EquationEval("a=1; a[1]=2; a[2]=3; size(a) == 3 && a[0]==1 && a[1]==2 && a[2]==3", System.out::println).eval();
+
+        assertThat(result.isBoolean(), is(true));
+        assertThat(result.asBoolean(), is(true));
+    }
 }

@@ -44,17 +44,21 @@ public class TracingBaseNode extends BaseNode {
                 switch (getNodeOperation()) {
                     case NT_VARIABLE:
                     case NT_LOCAL_VARIABLE:
-                        message += "GET: \"" + getName() + "\"";
+                        message += "GET: " + getName() + "";
                         if (StringUtils.isNotBlank(paramsMsg)) {
                             message += "[" + paramsMsg + "]";
                         }
-                        message += " GOT " + result;
+                        message += " IS " + result;
                         break;
                     case NT_FUNCTION:
                         message += "FUN: " + getName() + "(" + paramsMsg + ") YIELDS " + result;
                         break;
                     case '=':
-                        message += "OPR: \"" + getLeftNode().getName() + "\" ASSIGN " + result;
+                        message += "SET: " + getLeftNode().getName();
+                        if (StringUtils.isNotBlank(paramsMsg)) {
+                            message += "[" + paramsMsg + "]";
+                        }
+                        message += " TO " + result;
                         break;
                     case '!':
                         message += "OPR: NOT " + nodeAsTrace(getLeftNode()) + " YIELDS " + result;
