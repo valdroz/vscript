@@ -547,4 +547,14 @@ public class EquationEvalTests {
 
     }
 
+
+    @Test
+    public void testBinOperators() {
+        
+        Variant var = new EquationEval("1|2 == 3 && 1&2 == 0 && 1^3==2", System.out::println).eval();
+        assertThat(var.isBoolean(), is(true));
+        assertThat(var.asBoolean(), is(true));
+    }
+
+
 }

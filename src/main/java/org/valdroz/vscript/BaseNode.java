@@ -275,7 +275,7 @@ class BaseNode implements Node, Constants {
             case NT_MF_ISO: {
                 Variant isoDate = getParameterOrNullNode().execute(variantContainer);
                 if (!isoDate.isString()) {
-                    throw new EvaluationException("iso expects string as input.");
+                    throw new EvaluationException("ISO-8601 formated string expected. Got: " + isoDate);
                 }
                 result = Variant.fromLong(ISODateTimeFormat.dateOptionalTimeParser().parseDateTime(isoDate.asString()).getMillis());
             }

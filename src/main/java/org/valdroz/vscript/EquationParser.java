@@ -284,31 +284,6 @@ class EquationParser implements Constants {
     }
 
 
-//    /**
-//     * Parses power operator: ^
-//     */
-//    private BaseNode parsePowerOperator() {
-//        BaseNode left = parseBinAndOrOperator();
-//
-//        if (left == null) return null;
-//        skipSpaces();
-//
-//        while (currentCharCheckExpSeparator() == '^') {
-//            BaseNode node = newNode()
-//                    .withLeftNode(left)
-//                    .withNodeOperation(currentCharCheckExpSeparator());
-//            forwardPosition();
-//            skipSpaces();
-//            if (node.setRightNode(parseBinAndOrOperator()) == null) {
-//                return null;
-//            }
-//            left = node;
-//        }
-//
-//        return left;
-//    }
-
-
     /**
      * Parses: >, <, >=, <=, ==.
      */
