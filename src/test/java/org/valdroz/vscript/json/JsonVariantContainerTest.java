@@ -88,6 +88,9 @@ public class JsonVariantContainerTest {
 
         assertThat(v, booleanOf(true));
 
+        new EquationEval("options[3] = \"op4\"").eval(vc);
+        new EquationEval("test.a[1] = \"test\"").eval(vc);
+
         v = new EquationEval("size(options) == 4 && " +
                 "options == \"op4\" && " +
                 "objects.type == \"OBJ2\" && " +
