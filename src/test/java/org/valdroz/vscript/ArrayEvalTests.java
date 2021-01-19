@@ -15,170 +15,51 @@
  */
 package org.valdroz.vscript;
 
-import org.junit.Rule;
+import com.google.common.collect.Lists;
+
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.valdroz.vscript.Variant.*;
+import static org.valdroz.vscript.VariantMatchers.*;
+import static org.junit.Assert.*;
 
 public class ArrayEvalTests {
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     @Test
     public void testAddToArray() {
         DefaultVariantContainer container = new DefaultVariantContainer();
-        List<Variant> variants = new ArrayList<>();
-        variants.add(Variant.fromString("a"));
-        container.setVariant("arr", Variant.fromArray(variants));
 
-        Variant var = new EquationEval("arr + 2 + 3").eval(container);
+        container.setVariant("arr", emptyArray());
 
-        assertThat(var.size(), is(3));
-        assertThat(Variant.getArrayItem(var,0), is(Variant.fromString("a")));
-        assertThat(Variant.getArrayItem(var,1), is(Variant.fromInt(2)));
-        assertThat(Variant.getArrayItem(var,2), is(Variant.fromInt(3)));
+        Variant var = new EquationEval("arr = arr + \"a\" + 2 + 3").eval(container);
 
-    }
+        assertThat(var, arrayOf(fromString("a"), fromInt(2), fromInt(3)));
 
-    @Test
-    public void testArrayEquals() {
-        DefaultVariantContainer container = new DefaultVariantContainer();
-        List<Variant> variants = new ArrayList<>();
-        variants.add(Variant.fromString("a"));
-        variants.add(Variant.fromString("b"));
-        variants.add(Variant.fromString("c"));
-        container.setVariant("arr", Variant.fromArray(variants));
-        container.setVariant("arr2", Variant.fromArray(variants));
+        var = new EquationEval("arr[0]=1").eval(container);
 
-        Variant var = new EquationEval("arr == \"a\"").eval(container);
-
-        assertThat(var.isBoolean(), is(true));
-        assertThat(var.asBoolean(), is(true));
-
-        var = new EquationEval("arr == \"b\"").eval(container);
-
-        assertThat(var.isBoolean(), is(true));
-        assertThat(var.asBoolean(), is(true));
-
-        var = new EquationEval("arr == \"c\"").eval(container);
-
-        assertThat(var.isBoolean(), is(true));
-        assertThat(var.asBoolean(), is(true));
-
-        var = new EquationEval("arr == \"d\"").eval(container);
-
-        assertThat(var.isBoolean(), is(true));
-        assertThat(var.asBoolean(), is(false));
-
-        var = new EquationEval("size(arr)").eval(container);
-
-        assertThat(var.isNumeric(), is(true));
-        assertThat(var.asNumeric().intValue(), is(3));
-
-        var = new EquationEval("arr + \"e\"").eval(container);
-
-        assertThat(var.isArray(), is(true));
-        assertThat(var.size(), is(4));
-
-        var = container.getVariant("arr");
-        assertThat(var.isArray(), is(true));
-        assertThat(var.size(), is(3));
-
-        var = new EquationEval("arr - \"b\"").eval(container);
-
-        assertThat(var.isArray(), is(true));
-        assertThat(var.size(), is(2));
-
-        var = new EquationEval("arr - arr2").eval(container);
-
-        assertThat(var.isArray(), is(true));
-        assertThat(var.size(), is(0));
-
-        var = container.getVariant("arr");
-        assertThat(var.isArray(), is(true));
-        assertThat(var.size(), is(3));
-
-        var = new EquationEval("arr = arr - arr2").eval(container);
-
-        assertThat(var.isArray(), is(true));
-        assertThat(var.size(), is(0));
-
-        var = container.getVariant("arr");
-        assertThat(var.isArray(), is(true));
-        assertThat(var.size(), is(0));
-
-        var = container.getVariant("arr2");
-        assertThat(var.isArray(), is(true));
-        assertThat(var.size(), is(3));
-
-        var = new EquationEval("arr2 != \"a\"").eval(container);
-
-        assertThat(var.isBoolean(), is(true));
-        assertThat(var.asBoolean(), is(false));
-
-        var = new EquationEval("arr = arr2 - \"a\"").eval(container);
-
-        assertThat(var.isArray(), is(true));
-        assertThat(var.size(), is(2));
-
-        var = new EquationEval("arr != \"a\" && arr == \"b\" && arr == \"c\" ").eval(container);
-
-        assertThat(var.isBoolean(), is(true));
-        assertThat(var.asBoolean(), is(true));
-
-        var = new EquationEval("arr[0] = \"a\"").eval(container);
-
-        assertThat(var.isArray(), is(true));
-        assertThat(var.size(), is(2));
-
-        var = new EquationEval("arr[1] = \"a\"").eval(container);
-
-        assertThat(var.isArray(), is(true));
-        assertThat(var.size(), is(2));
-
-        var = new EquationEval("arr - arr2").eval(container);
-
-        assertThat(var.isArray(), is(true));
-        assertThat(var.size(), is(0));
-
-        var = new EquationEval("arr - \"a\"").eval(container);
-
-        assertThat(var.isArray(), is(true));
-        assertThat(var.size(), is(0));
-
+        assertThat(var, arrayOf(fromInt(1), fromInt(2), fromInt(3)));
     }
 
 
     @Test
     public void testArrayValueSubstitution() {
         DefaultVariantContainer container = new DefaultVariantContainer();
-        List<Variant> variants = new ArrayList<>();
-        variants.add(Variant.fromString("a"));
-        container.setVariant("arr", Variant.fromArray(variants));
+        container.setVariant("arr", fromArray(Lists.newArrayList(fromString("a"))));
 
         Variant var = new EquationEval("arr[0] + arr[1]?\"b\"").eval(container);
 
-        assertThat(var.isString(), is(true));
-        assertThat(var.asString(), is("ab"));
-
+        assertThat(var, stringOf("ab"));
     }
 
     @Test
     public void testArrayIndexValueReplacement() {
         DefaultVariantContainer container = new DefaultVariantContainer();
-        List<Variant> variants = new ArrayList<>();
-        variants.add(Variant.fromString("a"));
-        container.setVariant("arr", Variant.fromArray(variants));
+        container.setVariant("arr", fromArray(Lists.newArrayList(fromString("a"))));
 
         Variant var = new EquationEval("arr[0]=2; arr[1]=arr[0]; arr[0]==arr[1]").eval(container);
-        assertThat("Last evaluation value `true`", var.asBoolean(), is(true));
+        assertThat("Expect that arr[0]==arr[1] evaluates to `true` ", var, booleanOf(true));
+        assertThat(container.getVariant("arr"), arrayOf(fromInt(2), fromInt(2)));
     }
 
     @Test
@@ -187,23 +68,20 @@ public class ArrayEvalTests {
 
         Variant var = new EquationEval("arr = to_array(1,2,\"3\",true); is_size_4 = size(arr); arr == 3").eval(container);
 
-        assertThat("Last evaluation result should be off boolean type", var.isBoolean(), is(true));
-        assertThat("Last evaluation value `true` as arr includes item matching \"3\" == 3", var.asBoolean(), is(true));
-        assertThat("is_size_4 must be 4", container.getVariant("is_size_4").asNumeric(), is(BigDecimal.valueOf(4)));
-        assertThat("arr[0] is 1", container.getVariant("arr", 0).asNumeric(), is(BigDecimal.valueOf(1)));
-        assertThat("arr[1] is 2", container.getVariant("arr", 1).asNumeric(), is(BigDecimal.valueOf(2)));
-        assertThat("arr[2] is \"3\"", container.getVariant("arr", 2).asString(), is("3"));
-        assertThat("arr[3] is \"true\"", container.getVariant("arr", 3).asBoolean(), is(true));
+        assertThat("Last evaluation value `true` as arr includes item matching \"3\" == 3", var, booleanOf(true));
+        assertThat(container.getVariant("arr"), arrayOf(fromInt(1), fromInt(2), fromString("3"), fromBoolean(true)));
     }
 
 
     @Test
     public void testArrayConcatenation() {
+        DefaultVariantContainer container = new DefaultVariantContainer();
         Variant result = new EquationEval("a = to_array(1,2,3,4) + to_array(5,6,7,8); " +
-                "size(a) == 8 && a[0]==1 && a[7]==8").eval();
+                "size(a) == 8 && a[0]==1 && a[7]==8").eval(container);
 
-        assertThat(result.isBoolean(), is(true));
-        assertThat(result.asBoolean(), is(true));
+        assertThat(result, booleanOf(true));
+        assertThat(container.getVariant("a"),
+                arrayOf(fromInt(1), fromInt(2), fromInt(3), fromInt(4), fromInt(5), fromInt(6), fromInt(7), fromInt(8)));
     }
 
     @Test
@@ -211,23 +89,43 @@ public class ArrayEvalTests {
         Variant result = new EquationEval("a = to_array(1,2,4,3,4) - to_array(1,4,8); " +
                 "size(a) == 2 && a[0]==2 && a[1]==3", System.out::println).eval();
 
-        assertThat(result.isBoolean(), is(true));
-        assertThat(result.asBoolean(), is(true));
+        assertThat(result, booleanOf(true));
     }
+
+    @Test
+    public void testRemoveMatchingItemsFromArray() {
+        Variant result = new EquationEval("a=to_array(1,2,4,3,4); a - 4", System.out::println).eval();
+
+        assertThat(result, arrayOf(fromInt(1), fromInt(2), fromInt(3)));
+    }
+
+    @Test
+    public void testRemoveMatchingItemFromArray1() {
+        // What is happenig here is that 4-a, converting `a` to numeric variant.
+        // Since `a` is an array, it size value is taken, hence we have 4 - 5, where 5 is size of array.
+        // This is not particularly intuitive, therefore this expression will yield error in next release
+        Variant result = new EquationEval("a=to_array(1,2,4,3,4); 4 - a", System.out::println).eval();
+
+        assertThat(result, numericOf(-1));
+    }
+
+    @Test
+    public void testMultiplyIsNotSupported() {
+        assertThrows(EvaluationException.class, () -> new EquationEval("a=to_array(1,2,4,3,4); a * 4").eval());
+    }
+
 
     @Test
     public void testDynamicArrayAllocation() {
         Variant result = new EquationEval("a[2]=10; size(a) == 3; a[0] == null && a[2] == 10", System.out::println).eval();
 
-        assertThat(result.isBoolean(), is(true));
-        assertThat(result.asBoolean(), is(true));
+        assertThat(result, booleanOf(true));
     }
 
     @Test
     public void testDynamicArrayReallocation() {
         Variant result = new EquationEval("a=1; a[1]=2; a[2]=3; size(a) == 3 && a[0]==1 && a[1]==2 && a[2]==3", System.out::println).eval();
 
-        assertThat(result.isBoolean(), is(true));
-        assertThat(result.asBoolean(), is(true));
+        assertThat(result, booleanOf(true));
     }
 }

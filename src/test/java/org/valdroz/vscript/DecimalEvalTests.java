@@ -15,27 +15,25 @@
  */
 package org.valdroz.vscript;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import java.math.BigDecimal;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.valdroz.vscript.VariantMatchers.*;
+import static org.valdroz.vscript.Variant.*;
+import static org.junit.Assert.assertThrows;
 
 public class DecimalEvalTests {
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     @Test
     public void testDivision() {
         int restore = Configuration.setDecimalScale(4);
         DefaultVariantContainer container = new DefaultVariantContainer();
-        container.setVariant("d1", Variant.fromInt(1));
-        container.setVariant("d2", Variant.fromInt(3));
-        container.setVariant("s1", Variant.fromString("10.1"));
+        container.setVariant("d1", fromInt(1));
+        container.setVariant("d2", fromInt(3));
+        container.setVariant("s1", fromString("10.1"));
 
         Variant var = new EquationEval("d1/d2").eval(container);
 
@@ -44,108 +42,91 @@ public class DecimalEvalTests {
 
         var = new EquationEval("d1 + s1").eval(container);
 
-        assertThat(var.isNumeric(), is(true));
+        assertThat(var, numericOf(BigDecimal.valueOf(11.1)));
         assertThat(var.asString(), is("11.1000"));
-        assertThat(var.asNumeric().compareTo(BigDecimal.valueOf(11.1)), is(0));
+
         Configuration.setDecimalScale(restore);
     }
 
     @Test
     public void testDivisionByZero() {
-        exception.expectMessage("Division by zero");
         DefaultVariantContainer container = new DefaultVariantContainer();
-        container.setVariant("d1", Variant.fromDouble(1000.0));
-        container.setVariant("d2", Variant.fromDouble(0.0));
+        container.setVariant("d1", fromDouble(1000.0));
+        container.setVariant("d2", fromDouble(0.0));
 
-        new EquationEval("d1/d2").eval(container);
-
+        assertThrows(EvaluationException.class, () -> new EquationEval("d1/d2").eval(container));
     }
 
     @Test
     public void testCasting() {
 
         DefaultVariantContainer container = new DefaultVariantContainer();
-        container.setVariant("d1", Variant.fromInt(2));
-        container.setVariant("d2", Variant.fromInt(3));
-        container.setVariant("s1", Variant.fromString("10.1"));
-        container.setVariant("s2", Variant.fromString("a10.1"));
+        container.setVariant("d1", fromInt(2));
+        container.setVariant("d2", fromInt(3));
+        container.setVariant("s1", fromString("10.1"));
+        container.setVariant("s2", fromString("a10.1"));
 
         Variant var = new EquationEval("d1 + s1").eval(container);
 
-        assertThat(var.isNumeric(), is(true));
-        assertThat(var.asNumeric().compareTo(BigDecimal.valueOf(12.1)), is(0));
+        assertThat(var, numericOf(12.1));
 
         var = new EquationEval("s1 + d1").eval(container);
 
-        assertThat(var.isNumeric(), is(true));
-        assertThat(var.asNumeric().compareTo(BigDecimal.valueOf(12.1)), is(0));
+        assertThat(var, numericOf(12.1));
 
         var = new EquationEval("s2 + d1").eval(container);
 
-        assertThat(var.isString(), is(true));
-        assertThat(var.asString(), is("a10.12"));
+        assertThat(var, stringOf("a10.12"));
 
         var = new EquationEval("s1 * d1").eval(container);
 
-        assertThat(var.isNumeric(), is(true));
-        assertThat(var.asString(), is("20.2"));
+        assertThat(var, numericOf(20.2));
 
         var = new EquationEval("s1 / d1").eval(container);
 
-        assertThat(var.isNumeric(), is(true));
-        assertThat(var.asString(), is("5.05"));
+        assertThat(var, numericOf(5.05));
 
         var = new EquationEval("s1 - d1").eval(container);
 
-        assertThat(var.isNumeric(), is(true));
-        assertThat(var.asString(), is("8.1"));
+        assertThat(var, numericOf(8.1));
 
     }
 
 
     @Test
     public void testErrorOnSubtractStringArithmetic() {
-        exception.expectMessage("Invalid minus operator on [\"a10.1\"]");
-
         DefaultVariantContainer container = new DefaultVariantContainer();
         container.setVariant("d1", Variant.fromInt(2));
         container.setVariant("s2", Variant.fromString("a10.1"));
 
-        new EquationEval("s2 - d1").eval(container);
+        assertThrows(EvaluationException.class, () -> new EquationEval("s2 - d1").eval(container));
     }
 
     @Test
     public void testErrorOnAddMultiplyStringArithmetic() {
-        exception.expectMessage("Invalid multiply operator on [\"a10.1\"]");
-
         DefaultVariantContainer container = new DefaultVariantContainer();
         container.setVariant("d1", Variant.fromInt(2));
         container.setVariant("s2", Variant.fromString("a10.1"));
 
-        new EquationEval("s2 * d1").eval(container);
+        assertThrows(EvaluationException.class, () -> new EquationEval("s2 * d1").eval(container));
     }
 
     @Test
     public void testErrorOnAddDivideStringArithmetic() {
-        exception.expectMessage("Invalid divide operator on [\"a10.1\"]");
-
         DefaultVariantContainer container = new DefaultVariantContainer();
         container.setVariant("d1", Variant.fromInt(2));
         container.setVariant("s2", Variant.fromString("a10.1"));
 
-        new EquationEval("s2 / d1").eval(container);
+        assertThrows(EvaluationException.class, () -> new EquationEval("s2 / d1").eval(container));
     }
 
     @Test
     public void testErrorOnAddDivideStringArithmetic2() {
-        exception.expectMessage("Division by zero");
-
         DefaultVariantContainer container = new DefaultVariantContainer();
         container.setVariant("d1", Variant.fromInt(2));
         container.setVariant("s2", Variant.fromString("a10.1"));
 
-        new EquationEval("d1 / s2").eval(container);
-
+        assertThrows(EvaluationException.class, () -> new EquationEval("d1 / s2").eval(container));
     }
 
 }

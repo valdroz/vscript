@@ -26,8 +26,9 @@ import org.valdroz.vscript.Variant;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.valdroz.vscript.VariantMatchers.*;
 
 /**
  * @author Valerijus Drozdovas
@@ -49,8 +50,7 @@ public class JsonVariantContainerTest {
 
         Variant v = vc.getVariant("objects.type");
 
-        assertThat(v.isString(), is(true));
-        assertThat(v.asString(), is("obj1"));
+        assertThat(v, stringOf("obj1"));
 
         v = new EquationEval("size(options) == 3 && " +
                 "options == \"op2\" && " +
@@ -59,8 +59,7 @@ public class JsonVariantContainerTest {
                 "objects.p == 3 && " +
                 "objects.b").eval(vc);
 
-        assertThat(v.isBoolean(), is(true));
-        assertThat(v.asBoolean(), is(true));
+        assertThat(v, booleanOf(true));
 
         vc = variantContainers.get(1);
 
@@ -70,15 +69,13 @@ public class JsonVariantContainerTest {
                 "objects.data == 0 &&" +
                 "!is_null(objects.b) && !objects.b").eval(vc);
 
-        assertThat(v.isBoolean(), is(true));
-        assertThat(v.asBoolean(), is(true));
+        assertThat(v, booleanOf(true));
 
         new EquationEval("test.a = 10/3.1").eval(vc);
 
         v = new EquationEval("test.a == 3.226").eval(vc);
 
-        assertThat(v.isBoolean(), is(true));
-        assertThat(v.asBoolean(), is(true));
+        assertThat(v, booleanOf(true));
 
         Configuration.setCaseSensitive(false);
 
@@ -89,21 +86,13 @@ public class JsonVariantContainerTest {
                 "objects.type == \"OBJ2\" && " +
                 "objects.data == 5 && test.a == 3.226").eval(vc);
 
-        assertThat(v.isBoolean(), is(true));
-        assertThat(v.asBoolean(), is(true));
-
-        v = new EquationEval("options[3] = \"op4\"").eval(vc);
-        v = new EquationEval("test.a[1] = \"test\"").eval(vc);
-
-        System.out.println(vc.getJsonObject());
+        assertThat(v, booleanOf(true));
 
         v = new EquationEval("size(options) == 4 && " +
                 "options == \"op4\" && " +
                 "objects.type == \"OBJ2\" && " +
                 "objects.data == 5 && test.a == 3.226 && test.a == \"test\"").eval(vc);
 
-        assertThat(v.isBoolean(), is(true));
-        assertThat(v.asBoolean(), is(true));
-
+        assertThat(v, booleanOf(true));
     }
 }

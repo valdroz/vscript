@@ -17,8 +17,8 @@ package org.valdroz.vscript;
 
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * @author Valerijus Drozdovas
@@ -56,23 +56,14 @@ public class ScriptEvalTests {
     @Test
     public void testCustomFunctionNullResponseSubstitution() {
 
-        VariantContainer variantContainer = new DefaultVariantContainer();
-
-
         DefaultRunBlock masterRunBlock = new DefaultRunBlock();
 
-        masterRunBlock.registerFunction(
-                new AbstractFunction("produce_null(first, second)") {
-                    @Override
-                    public Variant execute(VariantContainer variantContainer) {
-                        return Variant.nullVariant();
-                    }
-                }
-        );
+        masterRunBlock.registerFunction("produce_null(first, second)",
+                (lvc) -> Variant.nullVariant() );
 
         Variant result = new EquationEval("2 + produce_null(1, 2)?-10")
                 .withMasterBlock(masterRunBlock)
-                .eval(variantContainer);
+                .eval();
 
         assertThat(result.asNumeric().intValue(), is(-8));
 

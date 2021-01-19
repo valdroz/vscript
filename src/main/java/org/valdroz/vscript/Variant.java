@@ -16,6 +16,7 @@
 package org.valdroz.vscript;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -60,9 +61,7 @@ public abstract class Variant implements Comparable<Variant> {
     public abstract String asString();
 
     public List<Variant> asArray() {
-        List<Variant> arr = new ArrayList<>();
-        arr.add(this);
-        return arr;
+        return Lists.newArrayList(this);
     }
 
     public int size() {
@@ -267,7 +266,7 @@ public abstract class Variant implements Comparable<Variant> {
         public Variant divide(Variant variant) {
             BigDecimal divisor = sanitize(variant).asNumeric();
             if (divisor.compareTo(BigDecimal.ZERO) == 0) {
-                throw new UnsupportedOperationException("Division by zero");
+                throw new EvaluationException("Division by zero");
             }
             return Variant.fromBigDecimal(
                     value.setScale(getDecimalScale(), getRoundingMode())
