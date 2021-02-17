@@ -59,11 +59,7 @@ public class JsonDataSetMaker {
 
     private void flatten(JfObject parent, String pref, JsonElement je) {
         if (je.isJsonPrimitive()) {
-            if (mode == Mode.KEEP_ARRAYS_FOR_PRIMITIVES) {
-                parent.addNodeAsArray(pref, je.getAsJsonPrimitive());
-            } else {
-                parent.addNode(pref, je.getAsJsonPrimitive());
-            }
+            parent.addNode(pref, je.getAsJsonPrimitive());
         } else if (je.isJsonObject()) {
             JfObject child = parent.addChild(new JfObject(pref));
             JsonObject jo = je.getAsJsonObject();
@@ -74,7 +70,16 @@ public class JsonDataSetMaker {
         } else if (je.isJsonArray()) {
             JsonArray ja = je.getAsJsonArray();
             for (int i = 0; i < ja.size(); ++i) {
-                flatten(parent, pref, ja.get(i));
+                JsonElement item = ja.get(i);
+                if (item.isJsonPrimitive()) {
+                    if (mode == Mode.KEEP_ARRAYS_FOR_PRIMITIVES) {
+                        parent.addNodeAsArray(pref, item.getAsJsonPrimitive());
+                    } else {
+                        parent.addNode(pref, item.getAsJsonPrimitive());
+                    }
+                } else {
+                    flatten(parent, pref, ja.get(i));
+                }
             }
         }
     }
@@ -132,7 +137,9 @@ public class JsonDataSetMaker {
                         jo.add(key, ja);
                     }
                 } else {
-                    jo.add(key, value);
+                    JsonArray ja = new JsonArray();
+                    ja.add(value);
+                    jo.add(key, ja);
                 }
             }
             flats.clear();
@@ -166,13 +173,13 @@ public class JsonDataSetMaker {
 
     }
 
-    private static List<JsonObject> replicate(List<JsonObject> base, List<JsonObject> source ){
+    private static List<JsonObject> replicate(List<JsonObject> base, List<JsonObject> source) {
         if (base.size() == 0) {
             return source;
         }
         List<JsonObject> res = Lists.newLinkedList();
-        for (JsonObject jo1: base) {
-            for (JsonObject jo2: source) {
+        for (JsonObject jo1 : base) {
+            for (JsonObject jo2 : source) {
                 JsonObject jo = jo1.deepCopy();
                 for (Map.Entry<String, JsonElement> entry : jo2.entrySet()) {
                     jo.add(entry.getKey(), entry.getValue());

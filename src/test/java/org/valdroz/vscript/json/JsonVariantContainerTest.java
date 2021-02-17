@@ -40,7 +40,7 @@ public class JsonVariantContainerTest {
     public void jsonToVariantContainers() throws Exception {
         Configuration.setDecimalScale(3);
 
-        String json = IOUtils.toString(JsonDataSetMaker.class.getResource("/test-data-set.json"), Charset.defaultCharset());
+        String json = IOUtils.resourceToString("/test-data-set.json", Charset.defaultCharset());
         JsonElement je = new JsonParser().parse(json);
 
         List<JsonVariantContainer> variantContainers = JsonVariantContainer.jsonToVariantContainers(je.getAsJsonObject());
@@ -97,5 +97,21 @@ public class JsonVariantContainerTest {
                 "objects.data == 5 && test.a == 3.226 && test.a == \"test\"").eval(vc);
 
         assertThat(v, booleanOf(true));
+    }
+
+
+    @Test
+    public void testLeafArrayInterpretation() throws Exception {
+
+        String json =  IOUtils.resourceToString("/test-data-array-interpretation.json", Charset.defaultCharset());
+        JsonElement je = new JsonParser().parse(json);
+
+        List<JsonVariantContainer> containers = JsonVariantContainer.jsonToVariantContainers(je.getAsJsonObject());
+
+        assertThat(containers, hasSize(1));
+
+        assertThat(new EquationEval("is_array(one) && size(one) == 1").eval(containers.get(0)), booleanOf(true));
+        assertThat(new EquationEval("is_array(two) && size(two) == 2").eval(containers.get(0)), booleanOf(true));
+        assertThat(new EquationEval("!is_array(single) && size(single) == 7").eval(containers.get(0)), booleanOf(true));
     }
 }
