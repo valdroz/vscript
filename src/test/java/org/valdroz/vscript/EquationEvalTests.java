@@ -556,5 +556,37 @@ public class EquationEvalTests {
         assertThat(var.asBoolean(), is(true));
     }
 
+    @Test
+    public void testNotOprOnNull() {
+        Variant var = new EquationEval("a=null; !a", System.out::println).eval();
+        assertThat(var.isNull(), is(true));
+    }
 
+    @Test
+    public void testNotOprOnNumbers() {
+        Variant var = new EquationEval("a=24; !a", System.out::println).eval();
+        assertThat(var.isBoolean(), is(true));
+        assertThat(var.asBoolean(), is(false));
+    }
+
+    @Test
+    public void testNotOprOnZeroNumbers() {
+        Variant var = new EquationEval("a=0; !a", System.out::println).eval();
+        assertThat(var.isBoolean(), is(true));
+        assertThat(var.asBoolean(), is(true));
+    }
+
+    @Test
+    public void testNotOprOnStringTRUE() {
+        Variant var = new EquationEval("a=\"true\"; !a", System.out::println).eval();
+        assertThat(var.isBoolean(), is(true));
+        assertThat(var.asBoolean(), is(false));
+    }
+
+    @Test
+    public void testNotOprOnStringAny() {
+        Variant var = new EquationEval("a=\"any\"; !a", System.out::println).eval();
+        assertThat(var.isBoolean(), is(true));
+        assertThat(var.asBoolean(), is(true));
+    }
 }

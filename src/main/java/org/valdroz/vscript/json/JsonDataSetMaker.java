@@ -39,17 +39,28 @@ public class JsonDataSetMaker {
 
     public enum Mode {
         KEEP_ARRAYS_FOR_PRIMITIVES,
+        KEEP_COMPLEX_ARRAYS,
         ALL_FLATTENED
     }
 
-    private final Mode mode;
+    private boolean keepArrayForPrimitives = false;
+    private boolean keepComplexArray = false;
 
-    public JsonDataSetMaker(JsonObject je, Mode mode) {
-        this(je, StringUtils.EMPTY, mode);
+    public JsonDataSetMaker(JsonObject je, Mode... modes) {
+        this(je, StringUtils.EMPTY, modes);
     }
 
-    public JsonDataSetMaker(JsonObject je, String prefix, Mode mode) {
-        this.mode = mode;
+    public JsonDataSetMaker(JsonObject je, String prefix, Mode... modes) {
+        for (Mode mode : modes) {
+            switch (mode) {
+                case KEEP_ARRAYS_FOR_PRIMITIVES:
+                    this.keepArrayForPrimitives = true;
+                    break;
+                case KEEP_COMPLEX_ARRAYS:
+                    this.keepComplexArray = true;
+                    break;
+            }
+        }
         flatten(root, prefix, je);
     }
 
@@ -72,7 +83,7 @@ public class JsonDataSetMaker {
             for (int i = 0; i < ja.size(); ++i) {
                 JsonElement item = ja.get(i);
                 if (item.isJsonPrimitive()) {
-                    if (mode == Mode.KEEP_ARRAYS_FOR_PRIMITIVES) {
+                    if (keepArrayForPrimitives) {
                         parent.addNodeAsArray(pref, item.getAsJsonPrimitive());
                     } else {
                         parent.addNode(pref, item.getAsJsonPrimitive());
@@ -80,6 +91,9 @@ public class JsonDataSetMaker {
                 } else {
                     flatten(parent, pref, ja.get(i));
                 }
+            }
+            if (keepComplexArray) {
+                parent.addArray(pref, ja);
             }
         }
     }
@@ -120,6 +134,23 @@ public class JsonDataSetMaker {
             flats.clear();
             flats.addAll(additions);
         }
+
+        public void addArray(String key, JsonArray array) {
+            Set<JsonObject> additions = Sets.newHashSet();
+            additions.addAll(flats);
+            for (JsonObject jo : flats) {
+                if (jo.has(key)) {
+                    JsonObject addition = jo.deepCopy();
+                    addition.add(key, array);
+                    additions.add(addition);
+                } else {
+                    jo.add(key, array);
+                }
+            }
+            flats.clear();
+            flats.addAll(additions);
+        }
+
 
         public void addNodeAsArray(String key, JsonPrimitive value) {
             Set<JsonObject> additions = Sets.newHashSet();

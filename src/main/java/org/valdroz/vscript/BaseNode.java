@@ -149,7 +149,12 @@ class BaseNode implements Node, Constants {
                 break;
 
             case '!':
-                result = Variant.fromBoolean(!leftNode.execute(variantContainer).asBoolean());
+                leftNodeResult = leftNode.execute(variantContainer);
+                if (leftNodeResult.isNull()) {
+                    result = Variant.nullVariant();
+                } else {
+                    result = Variant.fromBoolean(!leftNodeResult.asBoolean());
+                }
                 break;
 
             case '&':

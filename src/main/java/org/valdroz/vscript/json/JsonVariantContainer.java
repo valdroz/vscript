@@ -21,6 +21,7 @@ import org.valdroz.vscript.Variant;
 import org.valdroz.vscript.VariantContainer;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Valerijus Drozdovas
@@ -38,6 +39,13 @@ public class JsonVariantContainer implements VariantContainer {
     public static List<JsonVariantContainer> jsonToVariantContainers(JsonObject je) {
         List<JsonVariantContainer> variantContainers = Lists.newLinkedList();
         JsonDataSetMaker jsonDataSetMaker = new JsonDataSetMaker(je, JsonDataSetMaker.Mode.KEEP_ARRAYS_FOR_PRIMITIVES);
+        jsonDataSetMaker.getDataSets().forEach(jsonObject -> variantContainers.add(new JsonVariantContainer(jsonObject)));
+        return variantContainers;
+    }
+
+    public static List<JsonVariantContainer> jsonToVariantContainers(JsonObject je, JsonDataSetMaker.Mode... modes) {
+        List<JsonVariantContainer> variantContainers = Lists.newLinkedList();
+        JsonDataSetMaker jsonDataSetMaker = new JsonDataSetMaker(je, modes);
         jsonDataSetMaker.getDataSets().forEach(jsonObject -> variantContainers.add(new JsonVariantContainer(jsonObject)));
         return variantContainers;
     }
@@ -77,6 +85,31 @@ public class JsonVariantContainer implements VariantContainer {
         return Variant.nullVariant();
     }
 
+    public JsonElement getJsonElement(String name) {
+        JsonElement je = jo.get(name);
+        if (je == null) {
+            String pathPref = name + ".";
+            JsonObject jods = getJsonObject();
+            JsonObject joAssembly = new JsonObject();
+            for (Map.Entry<String, JsonElement> entry : jods.entrySet()) {
+                if (name.equals(entry.getKey()) ||
+                        entry.getKey().startsWith(pathPref)) {
+                    if (je == null) {
+                        je = new JsonObject();
+                    }
+                    JsonUtils.set(joAssembly,
+                            entry.getKey().substring(name.length() + 1),
+                            entry.getValue()
+                    );
+                }
+            }
+            if (joAssembly.size() > 0) {
+                je = joAssembly;
+            }
+        }
+        return je;
+    }
+
     @Override
     public void setVariant(String name, int index, Variant value) {
         JsonElement je = jo.get(name);
@@ -84,7 +117,7 @@ public class JsonVariantContainer implements VariantContainer {
         if (je.isJsonPrimitive()) {
             JsonArray _ja = new JsonArray(index + 1);
             _ja.add(je);
-            for (int i=0; i<index; ++i) {
+            for (int i = 0; i < index; ++i) {
                 _ja.add(JsonNull.INSTANCE);
             }
             je = _ja;
@@ -93,7 +126,7 @@ public class JsonVariantContainer implements VariantContainer {
         if (ja.size() <= index) {
             JsonArray _ja = new JsonArray(index + 1);
             _ja.addAll(ja);
-            for (int i=_ja.size(); i<=index; ++i) {
+            for (int i = _ja.size(); i <= index; ++i) {
                 _ja.add(JsonNull.INSTANCE);
             }
             ja = _ja;

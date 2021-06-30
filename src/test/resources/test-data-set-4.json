@@ -1,0 +1,86 @@
+{
+  "obj1": {
+    "id": "123",
+    "name": "someName"
+  },
+  "data": {
+    "src1": {
+      "array": [
+        {
+          "id": "1",
+          "name": "name1",
+          "list": [
+            {
+              "subId": "11",
+              "subName": "subName11"
+            },
+            {
+              "subId": "12",
+              "subName": "subName12"
+            }
+          ]
+        },
+        {
+          "id": "2",
+          "name": "name2",
+          "list": [
+            {
+              "subId": "21",
+              "subName": "subName21"
+            },
+            {
+              "subId": "22",
+              "subName": "subName22"
+            }
+          ]
+        },
+        {
+          "name": "name3",
+          "list": [
+            {
+              "subId": "31",
+              "subName": "subName11"
+            },
+            {
+              "subId": "32",
+              "subName": "subName12"
+            }
+          ]
+        },
+        {
+          "id":  "4",
+          "list": [
+            {
+              "subId": "41",
+              "subName": "subName11"
+            },
+            {
+              "subId": "42",
+              "subName": "subName12"
+            }
+          ]
+        }
+      ]
+    },
+    "src2": {
+      "score": 81,
+      "items1": [
+        {
+          "name": "item11",
+          "id": 1,
+          "value": false
+        },
+        {
+          "name": "item12",
+          "id": 2,
+          "value": true
+        },
+        {
+          "name": "item13",
+          "id": 1,
+          "value": true
+        }
+      ]
+    }
+  }
+}

@@ -44,8 +44,6 @@ public class JsonDataSetMakerTest {
 
         List<JsonObject> dataSets = Lists.newLinkedList(dm.getDataSets());
 
-        dataSets.forEach(System.out::println);
-
         assertThat(dataSets.size(), is(2));
         assertThat(dataSets.get(0).get("pref.objects.type").getAsJsonPrimitive().getAsString(), is("obj1"));
         assertThat(dataSets.get(1).get("pref.objects.type").getAsJsonPrimitive().getAsString(), is("obj2"));
@@ -96,6 +94,44 @@ public class JsonDataSetMakerTest {
 
         assertThat(dataSets, containsInAnyOrder(Lists.newArrayList(ja.iterator()).toArray()));
 
+    }
+
+
+    @Test
+    public void getDataSets4a() throws Exception {
+        String json = IOUtils.toString(JsonDataSetMaker.class.getResource("/test-data-set-4.json"), Charset.defaultCharset());
+        JsonElement je = new JsonParser().parse(json);
+
+        JsonDataSetMaker dm = new JsonDataSetMaker(je.getAsJsonObject(),
+                JsonDataSetMaker.Mode.KEEP_ARRAYS_FOR_PRIMITIVES);
+
+        List<JsonObject> dataSets = Lists.newLinkedList(dm.getDataSets());
+
+        assertThat(dataSets.size(), is(24));
+
+        json = IOUtils.toString(JsonDataSetMaker.class.getResource("/test-data-set-4a-result.json"), Charset.defaultCharset());
+        JsonArray ja = new JsonParser().parse(json).getAsJsonArray();
+
+        assertThat(dataSets, containsInAnyOrder(Lists.newArrayList(ja.iterator()).toArray()));
+    }
+
+    @Test
+    public void getDataSets4b() throws Exception {
+        String json = IOUtils.toString(JsonDataSetMaker.class.getResource("/test-data-set-4.json"), Charset.defaultCharset());
+        JsonElement je = new JsonParser().parse(json);
+
+        JsonDataSetMaker dm = new JsonDataSetMaker(je.getAsJsonObject(),
+                JsonDataSetMaker.Mode.KEEP_ARRAYS_FOR_PRIMITIVES,
+                JsonDataSetMaker.Mode.KEEP_COMPLEX_ARRAYS);
+
+        List<JsonObject> dataSets = Lists.newLinkedList(dm.getDataSets());
+
+        assertThat(dataSets.size(), is(24));
+
+        json = IOUtils.toString(JsonDataSetMaker.class.getResource("/test-data-set-4b-result.json"), Charset.defaultCharset());
+        JsonArray ja = new JsonParser().parse(json).getAsJsonArray();
+
+        assertThat(dataSets, containsInAnyOrder(Lists.newArrayList(ja.iterator()).toArray()));
     }
 
 }
