@@ -51,7 +51,7 @@ public class Example {
 ## Syntax
 
 Supported numeric operators `+ -  * /`, binary operators
- `&, |, ^`, logical operators ` ==, >, <, >=, <=, !=, ! ` and `=` assignment;
+ `&, |, ^`, logical operators ` ==, >, <, >=, <=, !=, ! ` and `=` assignment; `?` null substitutions.
 
 
 ### Reserved Keywords
@@ -106,6 +106,27 @@ Misc. functions:
 - is_string(x)		- Returns `true` if value is string, `false` otherwise.
 - is_array(x)		- Returns `true` if value is array, `false` otherwise.
 - to_array(x1,x2,...,xN) - Makes an array populated with provided values.
+
+## null Substitutions
+
+Default value for missing (`null`) variables can be defined as follows:
+
+```java
+
+var1?"default"
+
+```
+
+Chaining is allowed. e.g:
+
+
+```java
+
+var1?var2?var3?year()
+
+```
+
+... yes, function call can be used for value substitutions.
 
 ## Extending to meet your needs
 
