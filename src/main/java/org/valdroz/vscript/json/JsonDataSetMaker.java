@@ -211,11 +211,20 @@ public class JsonDataSetMaker {
         List<JsonObject> res = Lists.newLinkedList();
         for (JsonObject jo1 : base) {
             for (JsonObject jo2 : source) {
-                JsonObject jo = jo1.deepCopy();
-                for (Map.Entry<String, JsonElement> entry : jo2.entrySet()) {
-                    jo.add(entry.getKey(), entry.getValue());
+                if (jo1.size() == 0) {
+                    res.add(jo2);
+                } else if (jo2.size() == 0) {
+                    res.add(jo1);
+                } else {
+                    JsonObject jo = new JsonObject();
+                    for (Map.Entry<String, JsonElement> entry : jo1.entrySet()) {
+                        jo.add(entry.getKey(), entry.getValue());
+                    }
+                    for (Map.Entry<String, JsonElement> entry : jo2.entrySet()) {
+                        jo.add(entry.getKey(), entry.getValue());
+                    }
+                    res.add(jo);
                 }
-                res.add(jo);
             }
         }
         return res;

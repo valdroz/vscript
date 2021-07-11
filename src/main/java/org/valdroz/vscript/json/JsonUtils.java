@@ -2,6 +2,7 @@ package org.valdroz.vscript.json;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import org.valdroz.vscript.Variant;
 
 import java.lang.reflect.Type;
 import java.util.Map;
@@ -80,6 +81,28 @@ public class JsonUtils {
         }
     }
 
+    public static void set(JsonObject jo, String path, Variant value) {
+        set(jo, path, toJsonElement(value));
+    }
+
+    public static JsonElement toJsonElement(Variant value) {
+        if (value == null || value.isNull()) {
+            return JsonNull.INSTANCE;
+        } else if (value.isString()) {
+            return new JsonPrimitive(value.asString());
+        } else if (value.isNumeric()) {
+            return new JsonPrimitive(value.asNumeric());
+        } else if (value.isBoolean()) {
+            return new JsonPrimitive(value.asBoolean());
+        } else if (value.isArray()) {
+            JsonArray ja = new JsonArray();
+            for (Variant v : value.asArray()) {
+                ja.add(toJsonElement(v));
+            }
+            return ja;
+        }
+        return JsonNull.INSTANCE;
+    }
 
     public static void setJsonObjectPathElement(JsonObject jo, String path, JsonElement value) {
         String[] _path = path.split("\\.", 2);

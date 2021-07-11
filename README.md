@@ -59,12 +59,12 @@ Supported numeric operators `+ -  * /`, binary operators
 - `true`        - Boolean true.
 - `false`       - Boolean false.
 - `PI`			- Mathematical PI constant of `3.1415926535897932384626433832795`.
-- `null`		- Uninitialized value.
+- `null`		- Uninitialized variantValue.
 
 
 ### Variable types
 
-Supported variant value types:
+Supported variant variantValue types:
 
 - string - E.g. `"Hello world!"`.
 - numeric - E.g. `2.65` backed by `java.math.BigDecimal`
@@ -80,8 +80,8 @@ Math functions:
 - acos(n)				- Calculates the arccosine of `n`.
 - tan(n)				- Calculate the tangent of `n`.
 - atan(n)				- Calculates the arctangent of `n`.
-- abs(n)				- Calculates the absolute value of `n`.
-- neg(n)				- Calculates the negative value of `n`.
+- abs(n)				- Calculates the absolute variantValue of `n`.
+- neg(n)				- Calculates the negative variantValue of `n`.
 - sqrt(n)				- Calculates the square root of `n`.
 - log(n)				- Returns the natural logarithm (base e) of `n`.
 - exp(n)				- Returns the exponential number `e` raised to the power of a `n`.
@@ -100,16 +100,16 @@ Date functions:
 - minutes_before_now(x) - (`x` is string or numeric) Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of minutes passed until now.
 
 Misc. functions:
-- size(x)			- Length of string variable value or count of elements in array.
-- is_null(x)		- Returns `true` if value not set, `false` otherwise.
-- is_numeric(x)		- Returns `true` if value is number, `false` otherwise.
-- is_string(x)		- Returns `true` if value is string, `false` otherwise.
-- is_array(x)		- Returns `true` if value is array, `false` otherwise.
+- size(x)			- Length of string variable variantValue or count of elements in array.
+- is_null(x)		- Returns `true` if variantValue not set, `false` otherwise.
+- is_numeric(x)		- Returns `true` if variantValue is number, `false` otherwise.
+- is_string(x)		- Returns `true` if variantValue is string, `false` otherwise.
+- is_array(x)		- Returns `true` if variantValue is array, `false` otherwise.
 - to_array(x1,x2,...,xN) - Makes an array populated with provided values.
 
 ## null Substitutions
 
-Default value for missing (`null`) variables can be defined as follows:
+Default variantValue for missing (`null`) variables can be defined as follows:
 
 ```java
 
@@ -126,7 +126,7 @@ var1?var2?var3?year()
 
 ```
 
-... yes, function call can be used for value substitutions.
+... yes, function call can be used for variantValue substitutions.
 
 ## Extending to meet your needs
 
