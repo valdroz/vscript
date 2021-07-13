@@ -119,14 +119,11 @@ public final class DataSetIndex {
             int inc = dsi.numberOfPermutations();
             for (Map.Entry<String, VariantValue> v : dsi.valueMap.entrySet()) {
                 for (int j = 0; j < inc; ++j) {
-                    //System.out.println("## " + level + j + ") " + v.getKey() + "=" + v.getValue().getValue(j));
-                    //setIndexValue(this, v.getKey(), level + j, v.getValue().getValueOrLast(j));
                     setIndexValue(this, v.getKey(), level + j, v.getValue().getValue(j));
                 }
             }
             for (Map.Entry<String, JsonElements> jvalues : dsi.jsonElementMap.entrySet()) {
                 for (int j = 0; j < inc; ++j) {
-                    //System.out.println("## " + (level + j) + ") " + jvalues.getKey() + "=" + jvalues.getValue().getOrLast(j));
                     setIndexJsonValue(this, jvalues.getKey(), level + j, jvalues.getValue().getOrLast(j));
                 }
             }
@@ -279,13 +276,15 @@ public final class DataSetIndex {
 
     private interface VariantValue {
         void setValue(int index, Variant value);
-        //Variant getValueOrLast(int index);
+
         Variant getValue(int index);
+
         int size();
     }
 
     private static class BaseVariantValue implements VariantValue {
         private Variant value = Variant.nullVariant();
+
         @Override
         public void setValue(int index, Variant value) {
             this.value = value;
@@ -302,7 +301,7 @@ public final class DataSetIndex {
         }
     }
 
-        private static class IndexedVariantValue implements VariantValue {
+    private static class IndexedVariantValue implements VariantValue {
         private final ArrayList<Variant> valueIndex = new ArrayList<>();
 
         @Override
@@ -312,15 +311,6 @@ public final class DataSetIndex {
             }
             valueIndex.set(index, value);
         }
-//
-//        Variant getValueOrLast(int index) {
-//            if (index >= 0 && index < valueIndex.size()) {
-//                return valueIndex.get(index);
-//            } else if (valueIndex.size() == 1) {
-//                return valueIndex.get(0);
-//            }
-//            return Variant.nullVariant();
-//        }
 
         @Override
         public Variant getValue(int index) {
