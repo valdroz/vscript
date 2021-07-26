@@ -1,10 +1,16 @@
 # Changes
 
+### \[v3.6.0\] 2021-07-26
+
+Added:
+
+- `DataSetIndex` now can let consumer to know if given variable path has multiple data permutations.
+  
 ### \[v3.5.0\] 2021-07-10
 
 Added:
 
-- Implemented a new JSON Data Set indexer `DataSetIndex.index(jsonObject)`. It is substantially 
+- Implemented a new JSON Data Set indexer `DataSetIndex.index(jsonObject)`. It is a substantially 
   faster alternative to `JsonDataSetMaker`.  
 
 ### \[v3.4.0\] 2021-04-16

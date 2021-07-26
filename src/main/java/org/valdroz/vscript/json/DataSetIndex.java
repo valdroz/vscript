@@ -69,10 +69,21 @@ public final class DataSetIndex {
     public Variant getValue(String name, int permutationIndex) {
         VariantValue v = valueMap.get(name);
         if (v != null) {
-            //return v.getValueOrLast(permutationIndex);
             return v.getValue(permutationIndex);
         }
         return Variant.nullVariant();
+    }
+
+    /**
+     * @param name  Variable path name
+     * @return `true` if value has more that one permutation.
+     */
+    public boolean hasPermutations(String name) {
+        VariantValue v = valueMap.get(name);
+        if (v != null) {
+            return v.size() > 1;
+        }
+        return false;
     }
 
     /**
@@ -99,6 +110,14 @@ public final class DataSetIndex {
      */
     public Iterable<String> getNames() {
         return this.valueMap.keySet();
+    }
+
+
+    /**
+     * @return Iterable of json element names.
+     */
+    public Iterable<String> getObjectArrayNames() {
+        return this.jsonElementMap.keySet();
     }
 
     /**
