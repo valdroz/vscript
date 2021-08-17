@@ -83,4 +83,6 @@ public interface Constants {
     ConstantNode C_PI = new ConstantNode("PI", Variant.fromDouble(Math.PI));
     ConstantNode C_E = new ConstantNode("E", Variant.fromDouble(Math.E));
 
+    String NT_FUNCTION_IF = "if";
+
 }

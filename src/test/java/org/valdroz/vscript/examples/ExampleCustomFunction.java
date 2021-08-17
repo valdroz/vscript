@@ -17,5 +17,15 @@ public class ExampleCustomFunction {
                 .eval(variantContainer);
 
         assertThat(result.asNumeric().doubleValue(), is(14.0));
+
+        masterRunBlock.registerFunction("if(condition, first, second)",
+                (lvc) -> lvc.getVariant("condition"));
+
+        Variant result1 = new EquationEval("if(40 > 5 , truestatement, falsestatement)").withMasterBlock(masterRunBlock)
+                .eval(variantContainer);
+
+        assertThat(result1.asString(), is("truestatement"));
+
+        
     }
 }

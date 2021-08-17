@@ -341,17 +341,32 @@ class BaseNode implements Node, Constants {
                 }
                 LocalVariantContainer lvc = new LocalVariantContainer(variantContainer);
                 List<String> parameterNames = function.getParameterNames();
-                for (int pidx = 0;
-                     pidx < Math.min(params.size(), parameterNames.size());
-                     ++pidx) {
-                    String fpn = parameterNames.get(pidx);
-                    if (fpn.length() > 0) {
-                        lvc.setVariant(fpn, params.get(pidx).execute(variantContainer));
+                if(getName().equalsIgnoreCase(NT_FUNCTION_IF)) {
+                    if (parameterNames.size() != 3) {
+                        throw new EvaluationException("Illegal Number of Paramters.");
+                    }
+                    lvc.setVariant(parameterNames.get(0), params.get(0).execute(variantContainer));
+
+                    result = function.execute(lvc);
+                    if ((result.asBoolean() && result.isBoolean() == true)) {
+                        result = Variant.fromString(params.get(1).name);
+                    } else {
+                        result = Variant.fromString(params.get(2).name);
                     }
                 }
-                result = function.execute(lvc);
-                if ((result == null || result.isNull()) && (valueSubstitution != null)) {
-                    result = valueSubstitution.execute(variantContainer);
+                else{
+                    for (int pidx = 0;
+                         pidx < Math.min(params.size(), parameterNames.size());
+                         ++pidx) {
+                        String fpn = parameterNames.get(pidx);
+                        if (fpn.length() > 0) {
+                            lvc.setVariant(fpn, params.get(pidx).execute(variantContainer));
+                        }
+                    }
+                    result = function.execute(lvc);
+                    if ((result == null || result.isNull()) && (valueSubstitution != null)) {
+                        result = valueSubstitution.execute(variantContainer);
+                    }
                 }
                 result = Variant.sanitize(result);
             }

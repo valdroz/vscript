@@ -1,5 +1,11 @@
 # Changes
 
+### \[v3.7.0\] 2021-08-16
+
+Added:
+
+- `if` function is added. Sample `if(condition , truestatement , falsestatement)`
+
 ### \[v3.6.0\] 2021-07-26
 
 Added:
