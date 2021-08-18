@@ -65,6 +65,7 @@ class EquationParser implements Constants {
             .put("is_string", NT_MF_IS_STRING)
             .put("is_array", NT_MF_IS_ARRAY)
             .put("to_array", NT_MF_TO_ARRAY)
+            .put("if", NT_MF_IF)
             .build();
 
 
@@ -454,13 +455,18 @@ class EquationParser implements Constants {
             int mathFuncOpCode = determineBuildinFuncCode(word);
 
             if (isFunction) {
-                if (mathFuncOpCode > 0) {
+                if (mathFuncOpCode > 0 &&  mathFuncOpCode != 170){
                     node = newNode()
                             .withNodeOperation(mathFuncOpCode);
                     if (parseParamsFor(node, '(', ')', ',') == 0) {
                         node.addParameterNode(Constants.C_NULL);
                     }
-                } else {
+                } else if (mathFuncOpCode == 170) {
+                    node = newNode()
+                            .withNodeOperation(NT_MF_IF)
+                            .withName(word);
+                    parseParamsFor(node, '(', ')', ',');
+                } else{
                     node = newNode()
                             .withNodeOperation(NT_FUNCTION)
                             .withName(word);

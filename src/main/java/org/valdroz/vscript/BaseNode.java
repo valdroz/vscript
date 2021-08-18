@@ -341,34 +341,50 @@ class BaseNode implements Node, Constants {
                 }
                 LocalVariantContainer lvc = new LocalVariantContainer(variantContainer);
                 List<String> parameterNames = function.getParameterNames();
-                if(getName().equalsIgnoreCase(NT_FUNCTION_IF)) {
-                    if (parameterNames.size() != 3) {
-                        throw new EvaluationException("Illegal Number of Paramters.");
+                for (int pidx = 0;
+                     pidx < Math.min(params.size(), parameterNames.size());
+                     ++pidx) {
+                    String fpn = parameterNames.get(pidx);
+                    if (fpn.length() > 0) {
+                        lvc.setVariant(fpn, params.get(pidx).execute(variantContainer));
                     }
-                    lvc.setVariant(parameterNames.get(0), params.get(0).execute(variantContainer));
+                }
+                result = function.execute(lvc);
+                if ((result == null || result.isNull()) && (valueSubstitution != null)) {
+                    result = valueSubstitution.execute(variantContainer);
+                }
 
-                    result = function.execute(lvc);
-                    if ((result.asBoolean() && result.isBoolean() == true)) {
-                        result = Variant.fromString(params.get(1).name);
-                    } else {
-                        result = Variant.fromString(params.get(2).name);
-                    }
-                }
-                else{
-                    for (int pidx = 0;
-                         pidx < Math.min(params.size(), parameterNames.size());
-                         ++pidx) {
-                        String fpn = parameterNames.get(pidx);
-                        if (fpn.length() > 0) {
-                            lvc.setVariant(fpn, params.get(pidx).execute(variantContainer));
-                        }
-                    }
-                    result = function.execute(lvc);
-                    if ((result == null || result.isNull()) && (valueSubstitution != null)) {
-                        result = valueSubstitution.execute(variantContainer);
-                    }
-                }
                 result = Variant.sanitize(result);
+            }
+            break;
+            case NT_MF_IF: {
+                if (parentRunBlock == null) {
+                    throw new UndefinedFunction(getName());
+                }
+                AbstractFunction function = parentRunBlock.resolveFunction(getName());
+                if (function == null) {
+                    throw new UndefinedFunction(getName());
+                }
+                LocalVariantContainer lvc = new LocalVariantContainer(variantContainer);
+                List<String> parameterNames = function.getParameterNames();
+                if (parameterNames.size() != 3) {
+                    throw new EvaluationException("Illegal Number of Paramters.");
+                }
+                for (int pidx = 0;
+                     pidx < Math.min(params.size(), parameterNames.size());
+                     ++pidx) {
+                    String fpn = parameterNames.get(pidx);
+                    if (fpn.length() > 0) {
+                        lvc.setVariant(fpn, params.get(pidx).execute(variantContainer));
+                    }
+                }
+                result = function.execute(lvc);
+
+                if ((result.asBoolean() && result.isBoolean() == true)) {
+                    result = lvc.getVariant(params.get(1).name);
+                } else {
+                    result = lvc.getVariant(params.get(2).name);
+                }
             }
             break;
             default:

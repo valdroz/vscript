@@ -8,7 +8,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class ExampleCustomFunction {
     public static void main(String[] args) {
         VariantContainer variantContainer = new DefaultVariantContainer();
-
         DefaultRunBlock masterRunBlock = new DefaultRunBlock();
         masterRunBlock.registerFunction("custom_multiply(first, second)",
                 (lvc) -> lvc.getVariant("first").multiply(lvc.getVariant("second")));
@@ -21,11 +20,23 @@ public class ExampleCustomFunction {
         masterRunBlock.registerFunction("if(condition, first, second)",
                 (lvc) -> lvc.getVariant("condition"));
 
-        Variant result1 = new EquationEval("if(40 > 5 , truestatement, falsestatement)").withMasterBlock(masterRunBlock)
+        int a = 10;
+        int b = a * 2;
+
+        variantContainer.setVariant("a", Variant.fromInt(a));
+        variantContainer.setVariant("b", Variant.fromInt(b));
+
+        Variant result1 = new EquationEval("if(a < b , a, b)").withMasterBlock(masterRunBlock)
                 .eval(variantContainer);
 
-        assertThat(result1.asString(), is("truestatement"));
+        assertThat(result1.asNumeric().intValue(), is(10));
 
-        
+        variantContainer.setVariant("c", Variant.fromString("truestatement"));
+        variantContainer.setVariant("d", Variant.fromString("falsestatement"));
+
+        Variant result2 = new EquationEval("if(a < b , c, d)").withMasterBlock(masterRunBlock)
+                .eval(variantContainer);
+
+        assertThat(result2.asString(), is("truestatement"));
     }
 }
