@@ -16,27 +16,5 @@ public class ExampleCustomFunction {
                 .eval(variantContainer);
 
         assertThat(result.asNumeric().doubleValue(), is(14.0));
-
-        masterRunBlock.registerFunction("if(condition, first, second)",
-                (lvc) -> lvc.getVariant("condition"));
-
-        int a = 10;
-        int b = a * 2;
-
-        variantContainer.setVariant("a", Variant.fromInt(a));
-        variantContainer.setVariant("b", Variant.fromInt(b));
-
-        Variant result1 = new EquationEval("if(a < b , a, b)").withMasterBlock(masterRunBlock)
-                .eval(variantContainer);
-
-        assertThat(result1.asNumeric().intValue(), is(10));
-
-        variantContainer.setVariant("c", Variant.fromString("truestatement"));
-        variantContainer.setVariant("d", Variant.fromString("falsestatement"));
-
-        Variant result2 = new EquationEval("if(a < b , c, d)").withMasterBlock(masterRunBlock)
-                .eval(variantContainer);
-
-        assertThat(result2.asString(), is("truestatement"));
     }
 }

@@ -330,7 +330,17 @@ class BaseNode implements Node, Constants {
                 result = Variant.fromArray(arrItems);
             }
             break;
-
+            case NT_MF_IF: {
+                List<Variant> parameterItems = Lists.newArrayList();
+                if (params != null) {
+                    params.forEach(itemNode -> parameterItems.add(itemNode.execute(variantContainer)));
+                }
+                if (parameterItems.size() != 3) {
+                    throw new EvaluationException("Number of Parameters must be 3. Sample if(true, a, b)");
+                }
+                result = Variant.fromIf(parameterItems);
+            }
+            break;
             case NT_FUNCTION: {
                 if (parentRunBlock == null) {
                     throw new UndefinedFunction(getName());
@@ -357,36 +367,7 @@ class BaseNode implements Node, Constants {
                 result = Variant.sanitize(result);
             }
             break;
-            case NT_MF_IF: {
-                if (parentRunBlock == null) {
-                    throw new UndefinedFunction(getName());
-                }
-                AbstractFunction function = parentRunBlock.resolveFunction(getName());
-                if (function == null) {
-                    throw new UndefinedFunction(getName());
-                }
-                LocalVariantContainer lvc = new LocalVariantContainer(variantContainer);
-                List<String> parameterNames = function.getParameterNames();
-                if (parameterNames.size() != 3) {
-                    throw new EvaluationException("Illegal Number of Paramters.");
-                }
-                for (int pidx = 0;
-                     pidx < Math.min(params.size(), parameterNames.size());
-                     ++pidx) {
-                    String fpn = parameterNames.get(pidx);
-                    if (fpn.length() > 0) {
-                        lvc.setVariant(fpn, params.get(pidx).execute(variantContainer));
-                    }
-                }
-                result = function.execute(lvc);
 
-                if ((result.asBoolean() && result.isBoolean() == true)) {
-                    result = lvc.getVariant(params.get(1).name);
-                } else {
-                    result = lvc.getVariant(params.get(2).name);
-                }
-            }
-            break;
             default:
                 throw new RuntimeException("Unexpected node: " + operation);
 

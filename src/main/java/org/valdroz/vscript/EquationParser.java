@@ -144,17 +144,17 @@ class EquationParser implements Constants {
                 new BaseNode(newNodeId());
     }
 
-    private BaseNode newConstantNode(){
+    private BaseNode newConstantNode() {
         return (tracer != null) ?
                 new TracingConstantNode(newNodeId(), tracer) :
                 new ConstantNode(newNodeId());
     }
 
-    private String newNodeId(){
+    private String newNodeId() {
         return "n" + idgen.getAndIncrement();
     }
 
-    private BaseNode newConstantNode(Variant variant){
+    private BaseNode newConstantNode(Variant variant) {
         return (tracer != null) ?
                 new TracingConstantNode(newNodeId(), variant, tracer) :
                 new ConstantNode(newNodeId(), variant);
@@ -455,18 +455,13 @@ class EquationParser implements Constants {
             int mathFuncOpCode = determineBuildinFuncCode(word);
 
             if (isFunction) {
-                if (mathFuncOpCode > 0 &&  mathFuncOpCode != 170){
+                if (mathFuncOpCode > 0) {
                     node = newNode()
                             .withNodeOperation(mathFuncOpCode);
                     if (parseParamsFor(node, '(', ')', ',') == 0) {
                         node.addParameterNode(Constants.C_NULL);
                     }
-                } else if (mathFuncOpCode == 170) {
-                    node = newNode()
-                            .withNodeOperation(NT_MF_IF)
-                            .withName(word);
-                    parseParamsFor(node, '(', ')', ',');
-                } else{
+                } else {
                     node = newNode()
                             .withNodeOperation(NT_FUNCTION)
                             .withName(word);

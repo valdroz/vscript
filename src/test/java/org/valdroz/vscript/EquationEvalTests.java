@@ -589,4 +589,26 @@ public class EquationEvalTests {
         assertThat(var.isBoolean(), is(true));
         assertThat(var.asBoolean(), is(true));
     }
+    @Test
+    public void testIfOperation(){
+
+        VariantContainer variantContainer = new DefaultVariantContainer();
+        int a = 10;
+        int b = a * 2;
+
+        variantContainer.setVariant("a", Variant.fromInt(a));
+        variantContainer.setVariant("b", Variant.fromInt(b));
+
+        Variant result1 = new EquationEval("if(a < b , a, b)").eval(variantContainer);
+
+        assertThat(result1.asNumeric().intValue(), is(10));
+
+        variantContainer.setVariant("c", Variant.fromString("truestatement"));
+        variantContainer.setVariant("d", Variant.fromString("falsestatement"));
+
+        Variant result2 = new EquationEval("if(a < b , c, d , e)").eval(variantContainer);
+
+        assertThat(result2.asString(), is("truestatement"));
+    }
+
 }
