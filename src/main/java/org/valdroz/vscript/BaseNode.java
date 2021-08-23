@@ -330,7 +330,15 @@ class BaseNode implements Node, Constants {
                 result = Variant.fromArray(arrItems);
             }
             break;
-
+            case NT_MF_IF: {
+                if (params == null || params.size() < 3) {
+                    throw new EvaluationException("Function `if` takes 3 parameters. E.g. if(true, \"it is true\", \"it is false\")");
+                }
+                result = (params.get(0).execute(variantContainer).asBoolean()) ?
+                        params.get(1).execute(variantContainer) :
+                        params.get(2).execute(variantContainer);
+            }
+            break;
             case NT_FUNCTION: {
                 if (parentRunBlock == null) {
                     throw new UndefinedFunction(getName());
@@ -353,9 +361,11 @@ class BaseNode implements Node, Constants {
                 if ((result == null || result.isNull()) && (valueSubstitution != null)) {
                     result = valueSubstitution.execute(variantContainer);
                 }
+
                 result = Variant.sanitize(result);
             }
             break;
+
             default:
                 throw new RuntimeException("Unexpected node: " + operation);
 

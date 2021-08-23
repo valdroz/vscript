@@ -65,6 +65,7 @@ class EquationParser implements Constants {
             .put("is_string", NT_MF_IS_STRING)
             .put("is_array", NT_MF_IS_ARRAY)
             .put("to_array", NT_MF_TO_ARRAY)
+            .put("if", NT_MF_IF)
             .build();
 
 
@@ -143,17 +144,17 @@ class EquationParser implements Constants {
                 new BaseNode(newNodeId());
     }
 
-    private BaseNode newConstantNode(){
+    private BaseNode newConstantNode() {
         return (tracer != null) ?
                 new TracingConstantNode(newNodeId(), tracer) :
                 new ConstantNode(newNodeId());
     }
 
-    private String newNodeId(){
+    private String newNodeId() {
         return "n" + idgen.getAndIncrement();
     }
 
-    private BaseNode newConstantNode(Variant variant){
+    private BaseNode newConstantNode(Variant variant) {
         return (tracer != null) ?
                 new TracingConstantNode(newNodeId(), variant, tracer) :
                 new ConstantNode(newNodeId(), variant);

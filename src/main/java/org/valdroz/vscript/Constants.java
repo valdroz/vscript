@@ -68,6 +68,7 @@ public interface Constants {
     int NT_MF_TO_ARRAY = 167;
     int NT_MF_MINUTES_BEFORE_NOW = 168;
     int NT_MF_POWER = 169;
+    int NT_MF_IF = 170;
 
 
     int NT_LOP_AND = 128;

@@ -8,7 +8,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class ExampleCustomFunction {
     public static void main(String[] args) {
         VariantContainer variantContainer = new DefaultVariantContainer();
-
         DefaultRunBlock masterRunBlock = new DefaultRunBlock();
         masterRunBlock.registerFunction("custom_multiply(first, second)",
                 (lvc) -> lvc.getVariant("first").multiply(lvc.getVariant("second")));
