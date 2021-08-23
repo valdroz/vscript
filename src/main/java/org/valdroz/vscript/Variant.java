@@ -120,10 +120,6 @@ public abstract class Variant implements Comparable<Variant> {
         return new ArrayVariant(value);
     }
 
-    public static Variant fromIf(List<Variant> value) {
-        return value.get(0).asBoolean() == true ? value.get(1) : value.get(2);
-    }
-
     public static Variant emptyArray() {
         return new ArrayVariant();
     }

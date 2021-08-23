@@ -331,14 +331,12 @@ class BaseNode implements Node, Constants {
             }
             break;
             case NT_MF_IF: {
-                List<Variant> parameterItems = Lists.newArrayList();
-                if (params != null) {
-                    params.forEach(itemNode -> parameterItems.add(itemNode.execute(variantContainer)));
+                if (params == null || params.size() < 3) {
+                    throw new EvaluationException("Function `if` takes 3 parameters. E.g. if(true, \"it is true\", \"it is false\")");
                 }
-                if (parameterItems.size() != 3) {
-                    throw new EvaluationException("Number of Parameters must be 3. Sample if(true, a, b)");
-                }
-                result = Variant.fromIf(parameterItems);
+                result = (params.get(0).execute(variantContainer).asBoolean()) ?
+                        params.get(1).execute(variantContainer) :
+                        params.get(2).execute(variantContainer);
             }
             break;
             case NT_FUNCTION: {
