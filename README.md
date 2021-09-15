@@ -74,38 +74,42 @@ Supported variant variantValue types:
 ## Predefined functions:
 
 Math functions:
-- sin(n)				- Calculate sine of `n`.
-- cos(n)				- Calculate the cosine of `n`.
-- asin(n)				- Calculates the arcsine of `n`.
-- acos(n)				- Calculates the arccosine of `n`.
-- tan(n)				- Calculate the tangent of `n`.
-- atan(n)				- Calculates the arctangent of `n`.
-- abs(n)				- Calculates the absolute variantValue of `n`.
-- neg(n)				- Calculates the negative variantValue of `n`.
-- sqrt(n)				- Calculates the square root of `n`.
-- log(n)				- Returns the natural logarithm (base e) of `n`.
-- exp(n)				- Returns the exponential number `e` raised to the power of a `n`.
+- sin(n)				: Calculates sine of `n`.
+- cos(n)				: Calculates the cosine of `n`.
+- asin(n)				: Calculates the arcsine of `n`.
+- acos(n)				: Calculates the arccosine of `n`.
+- tan(n)				: Calculates the tangent of `n`.
+- atan(n)				: Calculates the arctangent of `n`.
+- abs(n)				: Calculates the absolute variantValue of `n`.
+- neg(n)				: Calculates the negative variantValue of `n`.
+- sqrt(n)				: Calculates the square root of `n`.
+- log(n)				: Returns the natural logarithm (base e) of `n`.
+- exp(n)				: Returns the exponential number `e` raised to the power of a `n`.
+- max(n1,....,nN)       : Returns largest value digit from provided numeric value list. 
+- min(n1,....,nN)       : Returns smalled value digit from provided numeric value list.
+- avg(n1,....,nN)       : Finds average value from provided numeric numeric value list.  
+- median(n1,....,nN)    : Finds median value from provided numeric numeric value list.
 
 Date functions:
-- day()				- Returns current day of month (1-31).
-- month()			- Returns current month (1-12).
-- year()			- Returns current year.
-- day_of_year()		- Return current day of year.
-- days_in_month(n)	- Return maximum days in the month, where `n` is disposition from current month.
-					E.g. to get maximum days in the previous month, the `n` values must be -1.
-- iso(str)          - Parses input ISO8601 date or date with time and returns millis.
-- now()             - Current time in millis.
-- days_before_now(x) - (`x` is string or numeric) Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of days passed until now. 					
-- hours_before_now(x) - (`x` is string or numeric) Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of hours passed until now.
-- minutes_before_now(x) - (`x` is string or numeric) Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of minutes passed until now.
+- day()				: Returns current day of month (1-31).
+- month()			: Returns current month (1-12).
+- year()			: Returns current year.
+- day_of_year()		: Returns current day of year.
+- days_in_month(n)	: Returns maximum days in the month, where `n` is disposition from current month.
+                    E.g. to get maximum days in the previous month, the `n` values must be -1.
+- iso(str)          : Parses input ISO8601 date or date with time and returns millis.
+- now()             : Current time in millis.
+- days_before_now(x) : (`x` is string or numeric) Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of days passed until now. 					
+- hours_before_now(x) : (`x` is string or numeric) Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of hours passed until now.
+- minutes_before_now(x) : (`x` is string or numeric) Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of minutes passed until now.
 
 Misc. functions:
-- size(x)			- Length of string variable variantValue or count of elements in array.
-- is_null(x)		- Returns `true` if variantValue not set, `false` otherwise.
-- is_numeric(x)		- Returns `true` if variantValue is number, `false` otherwise.
-- is_string(x)		- Returns `true` if variantValue is string, `false` otherwise.
-- is_array(x)		- Returns `true` if variantValue is array, `false` otherwise.
-- to_array(x1,x2,...,xN) - Makes an array populated with provided values.
+- size(x)			: Length of string variable variantValue or count of elements in array.
+- is_null(x)		: Returns `true` if variantValue not set, `false` otherwise.
+- is_numeric(x)		: Returns `true` if variantValue is number, `false` otherwise.
+- is_string(x)		: Returns `true` if variantValue is string, `false` otherwise.
+- is_array(x)		: Returns `true` if variantValue is array, `false` otherwise.
+- to_array(x1,x2,...,xN) : Makes an array populated with provided values.
 
 ## null Substitutions
 

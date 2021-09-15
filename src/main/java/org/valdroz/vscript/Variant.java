@@ -38,6 +38,7 @@ public abstract class Variant implements Comparable<Variant> {
 
     private static final Variant NULL_VARIANT = new NullVariant();
 
+    private static final Variant EMPTY_STRING_VARIANT = Variant.fromString(EMPTY_STRING);
 
     @Deprecated
     public static void setDecimalScale(int decimalScale) {
@@ -134,6 +135,10 @@ public abstract class Variant implements Comparable<Variant> {
 
     public static Variant nullVariant() {
         return NULL_VARIANT;
+    }
+
+    public static Variant emptyStringVariant() {
+        return EMPTY_STRING_VARIANT;
     }
 
     public static Variant setArrayItem(Variant variant, int index, Variant value) {

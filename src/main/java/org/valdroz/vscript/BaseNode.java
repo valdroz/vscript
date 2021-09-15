@@ -20,6 +20,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.format.ISODateTimeFormat;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -280,7 +281,7 @@ class BaseNode implements Node, Constants {
             case NT_MF_ISO: {
                 Variant isoDate = getParameterOrNullNode().execute(variantContainer);
                 if (!isoDate.isString()) {
-                    throw new EvaluationException("ISO-8601 formated string expected. Got: " + isoDate);
+                    throw new EvaluationException("ISO-8601 formatted string expected. Got: " + isoDate);
                 }
                 result = Variant.fromLong(ISODateTimeFormat.dateOptionalTimeParser().parseDateTime(isoDate.asString()).getMillis());
             }
@@ -330,6 +331,7 @@ class BaseNode implements Node, Constants {
                 result = Variant.fromArray(arrItems);
             }
             break;
+
             case NT_MF_IF: {
                 if (params == null || params.size() < 3) {
                     throw new EvaluationException("Function `if` takes 3 parameters. E.g. if(true, \"it is true\", \"it is false\")");
@@ -339,6 +341,147 @@ class BaseNode implements Node, Constants {
                         params.get(2).execute(variantContainer);
             }
             break;
+
+            case NT_MF_FIRST: {
+                if (params == null || params.size() != 2) {
+                    throw new EvaluationException(String.format("Function `%s` takes 2 parameters. " +
+                                    "E.g. %s(\"Hello\", 2) will result in \"He\"",
+                            EquationParser.functionNameFromCode(operation)));
+                }
+                String _str = getParameterOrNullNode(0)
+                        .execute(variantContainer).asString();
+                int _p1 = getParameterOrNullNode(1)
+                        .execute(variantContainer).asNumeric().intValue();
+                if (_p1 < 0) {
+                    result = Variant.emptyStringVariant();
+                } else {
+                    result = (_p1 >= _str.length()) ?
+                            Variant.fromString(_str) :
+                            Variant.fromString(_str.substring(0, _p1));
+                }
+            }
+            break;
+
+            case NT_MF_LAST: {
+                if (params == null || params.size() != 2) {
+                    throw new EvaluationException(String.format("Function `%s` takes 2 parameters. " +
+                                    "E.g. %s(\"Hello\", 2) will result in \"lo\"",
+                            EquationParser.functionNameFromCode(operation)));
+                }
+                String _str = getParameterOrNullNode(0)
+                        .execute(variantContainer).asString();
+                int _p1 = getParameterOrNullNode(1)
+                        .execute(variantContainer).asNumeric().intValue();
+                int _l = _str.length();
+                if (_p1 > _l) {
+                    result = Variant.fromString(_str);
+                } else if (_p1 < 0) {
+                    result = Variant.emptyStringVariant();
+                } else {
+                    result = Variant.fromString(_str.substring(_l - _p1, _l));
+                }
+            }
+            break;
+
+            case NT_MF_SKIP: {
+                if (params == null || params.size() != 2) {
+                    throw new EvaluationException(String.format("Function `%s` takes 2 parameters. " +
+                                    "E.g. %s(\"Hello\", 2) will result in \"llo\"",
+                            EquationParser.functionNameFromCode(operation)));
+                }
+                String _str = getParameterOrNullNode(0)
+                        .execute(variantContainer).asString();
+                int _p1 = getParameterOrNullNode(1)
+                        .execute(variantContainer).asNumeric().intValue();
+                int _l = _str.length();
+                if (_p1 > _l) {
+                    result = Variant.emptyStringVariant();
+                } else if (_p1 < 0) {
+                    result = Variant.fromString(_str);
+                } else {
+                    result = Variant.fromString(_str.substring(_p1));
+                }
+            }
+            break;
+
+            case NT_MF_MAX:
+                if (params != null) {
+                    BigDecimal max = new BigDecimal(Double.MIN_VALUE);
+                    for (int i = 0; i < params.size(); ++i) {
+                        Variant _v = params.get(0).execute(variantContainer);
+                        if (_v.isNumeric()) {
+                            max = max.max(_v.asNumeric());
+                        }
+                    }
+                    result = Variant.fromBigDecimal(max);
+                } else {
+                    result = Variant.nullVariant();
+                }
+                break;
+
+            case NT_MF_MIN:
+                if (params != null) {
+                    BigDecimal max = new BigDecimal(Double.MAX_VALUE);
+                    for (int i = 0; i < params.size(); ++i) {
+                        Variant _v = params.get(0).execute(variantContainer);
+                        if (_v.isNumeric()) {
+                            max = max.min(_v.asNumeric());
+                        }
+                    }
+                    result = Variant.fromBigDecimal(max);
+                } else {
+                    result = Variant.nullVariant();
+                }
+                break;
+
+            case NT_MF_AVERAGE:
+                if (params != null) {
+                    BigDecimal sum = BigDecimal.ZERO;
+                    int _c = 0;
+                    for (int i = 0; i < params.size(); ++i) {
+                        Variant _v = params.get(i).execute(variantContainer);
+                        if (_v.isNumeric()) {
+                            _c += 1;
+                            sum = sum.add(_v.asNumeric());
+                        }
+                    }
+                    if (_c > 0) {
+                        result = Variant.fromBigDecimal(sum).divide(Variant.fromInt(_c));
+                    } else {
+                        result = Variant.nullVariant();
+                    }
+                } else {
+                    result = Variant.nullVariant();
+                }
+                break;
+
+            case NT_MF_MEDIAN:
+                if (params != null) {
+                    List<BigDecimal> _values = Lists.newArrayList();
+                    for (int i = 0; i < params.size(); ++i) {
+                        Variant _v = params.get(i).execute(variantContainer);
+                        if (_v.isNumeric()) {
+                            _values.add(_v.asNumeric());
+                        }
+                    }
+                    _values.sort(BigDecimal::compareTo);
+                    if (!_values.isEmpty()) {
+                        if ( Math.floorMod(_values.size(), 2) == 1) {
+                            result = Variant.fromBigDecimal(_values.get(_values.size() / 2));
+                        } else {
+                            result = Variant.fromBigDecimal(
+                                    _values.get(_values.size() / 2)
+                                            .add(_values.get(_values.size() / 2 - 1)))
+                                    .divide(Variant.fromInt(2));
+                        }
+                    } else {
+                        result = Variant.nullVariant();
+                    }
+                } else {
+                    result = Variant.nullVariant();
+                }
+                break;
+
             case NT_FUNCTION: {
                 if (parentRunBlock == null) {
                     throw new UndefinedFunction(getName());

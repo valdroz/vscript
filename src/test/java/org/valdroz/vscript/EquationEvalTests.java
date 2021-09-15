@@ -589,6 +589,7 @@ public class EquationEvalTests {
         assertThat(var.isBoolean(), is(true));
         assertThat(var.asBoolean(), is(true));
     }
+
     @Test
     public void testIfOperation(){
 
@@ -611,4 +612,84 @@ public class EquationEvalTests {
         assertThat(result2.asString(), is("truestatement"));
     }
 
+    @Test
+    public void testFunctionFirst() {
+
+        Variant result = new EquationEval("first(\"Hello\", 2)").eval();
+
+        assertThat(result, VariantMatchers.stringOf("He"));
+
+        result = new EquationEval("first(\"Hello\", 10)").eval();
+
+        assertThat(result, VariantMatchers.stringOf("Hello"));
+
+        result = new EquationEval("first(\"Hello\", 0)").eval();
+
+        assertThat(result, VariantMatchers.stringOf(""));
+
+        result = new EquationEval("first(\"Hello\", -2)").eval();
+
+        assertThat(result, VariantMatchers.stringOf(""));
+    }
+
+
+    @Test
+    public void testFunctionLast() {
+
+        Variant result = new EquationEval("last(\"Hello\", 2)").eval();
+
+        assertThat(result, VariantMatchers.stringOf("lo"));
+
+        result = new EquationEval("last(\"Hello\", 10)").eval();
+
+        assertThat(result, VariantMatchers.stringOf("Hello"));
+
+        result = new EquationEval("last(\"Hello\", 0)").eval();
+
+        assertThat(result, VariantMatchers.stringOf(""));
+
+        result = new EquationEval("last(\"Hello\", -2)").eval();
+
+        assertThat(result, VariantMatchers.stringOf(""));
+    }
+
+    @Test
+    public void testFunctionSkip() {
+
+        Variant result = new EquationEval("skip(\"Hello\", 2)").eval();
+
+        assertThat(result, VariantMatchers.stringOf("llo"));
+
+        result = new EquationEval("skip(\"Hello\", 10)").eval();
+
+        assertThat(result, VariantMatchers.stringOf(""));
+
+        result = new EquationEval("skip(\"Hello\", 0)").eval();
+
+        assertThat(result, VariantMatchers.stringOf("Hello"));
+
+        result = new EquationEval("skip(\"Hello\", -2)").eval();
+
+        assertThat(result, VariantMatchers.stringOf("Hello"));
+    }
+
+
+    @Test
+    public void testFunctionAvg() {
+
+        assertThat(new EquationEval("avg(1,2,3,4,5)").eval(), VariantMatchers.numericOf(3));
+        assertThat(new EquationEval("avg(1.1,2.1,3.1,4.1,5.1)").eval(), VariantMatchers.numericOf(3.1));
+        assertThat(new EquationEval("avg()").eval(), VariantMatchers.nullVariant());
+    }
+
+    @Test
+    public void testFunctionMedian() {
+
+        assertThat(new EquationEval("median(1, 3, 3, 6, 7, 8, 9)").eval(), VariantMatchers.numericOf(6));
+        assertThat(new EquationEval("median(1, 2, 3, 4, 5, 6, 8, 9)").eval(), VariantMatchers.numericOf(4.5));
+        assertThat(new EquationEval("median(7, 8, 9)").eval(), VariantMatchers.numericOf(8));
+        assertThat(new EquationEval("median(1, 3)").eval(), VariantMatchers.numericOf(2));
+        assertThat(new EquationEval("median(3)").eval(), VariantMatchers.numericOf(3));
+        assertThat(new EquationEval("median()").eval(), VariantMatchers.nullVariant());
+    }
 }

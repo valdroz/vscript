@@ -1,5 +1,15 @@
 # Changes
 
+### \[v3.8.0\] 2021-09-15
+
+Added:
+
+- Added `first`, `skip` and `last` new functions for string manipulation. E.g.:
+  - `first("text", 2)` takes first two characters and yields `"te"`;
+  - `skip("text", 1)` skips one character and return remaining of string as `"ext"`;  
+  - and `last("text", 2)` takes last two characters and yields `"xt"`.    
+- Added `min`, `max`,`avg` and `median` math functions.
+
 ### \[v3.7.0\] 2021-08-16
 
 Added:

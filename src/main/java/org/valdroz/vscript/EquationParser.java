@@ -66,6 +66,13 @@ class EquationParser implements Constants {
             .put("is_array", NT_MF_IS_ARRAY)
             .put("to_array", NT_MF_TO_ARRAY)
             .put("if", NT_MF_IF)
+            .put("first", NT_MF_FIRST)
+            .put("skip", NT_MF_SKIP)
+            .put("last", NT_MF_LAST)
+            .put("max", NT_MF_MAX)
+            .put("min", NT_MF_MIN)
+            .put("avg", NT_MF_AVERAGE)
+            .put("median", NT_MF_MEDIAN)
             .build();
 
 

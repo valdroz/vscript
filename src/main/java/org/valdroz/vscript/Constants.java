@@ -69,6 +69,13 @@ public interface Constants {
     int NT_MF_MINUTES_BEFORE_NOW = 168;
     int NT_MF_POWER = 169;
     int NT_MF_IF = 170;
+    int NT_MF_FIRST = 171;
+    int NT_MF_SKIP = 172;
+    int NT_MF_LAST = 173;
+    int NT_MF_MAX = 174;
+    int NT_MF_MIN = 175;
+    int NT_MF_MEDIAN = 176;
+    int NT_MF_AVERAGE = 177;
 
 
     int NT_LOP_AND = 128;
