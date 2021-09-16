@@ -1,9 +1,7 @@
-# Vscript - Equation Interpreter 
+# vscript - Equation Interpreter 
 
-Vscript is an extendable and runtime safe equation interpreter capable to evaluate arithmetic 
+vscript is an extendable and runtime safe equation interpreter capable to evaluate arithmetic 
 and logical expression.
-
-
 
 ## Example
 
