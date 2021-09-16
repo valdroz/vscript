@@ -113,7 +113,7 @@ Misc. functions:
 
 ## null Substitutions
 
-Default variantValue for missing (`null`) variables can be defined as follows:
+Default value for missing (`null`) variables can be defined as follows:
 
 ```java
 
@@ -121,7 +121,7 @@ var1?"default"
 
 ```
 
-Chaining is allowed. e.g:
+... `null` variable substitution can also be chained like so:
 
 
 ```java
@@ -130,7 +130,7 @@ var1?var2?var3?year()
 
 ```
 
-... yes, function call can be used for variantValue substitutions.
+... yes, function call can be used for variantValue substitutions aswell.
 
 ## Extending to meet your needs
 
