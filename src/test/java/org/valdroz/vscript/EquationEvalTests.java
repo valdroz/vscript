@@ -550,7 +550,7 @@ public class EquationEvalTests {
 
     @Test
     public void testBinOperators() {
-        
+
         Variant var = new EquationEval("1|2 == 3 && 1&2 == 0 && 1^3==2", System.out::println).eval();
         assertThat(var.isBoolean(), is(true));
         assertThat(var.asBoolean(), is(true));
@@ -591,7 +591,7 @@ public class EquationEvalTests {
     }
 
     @Test
-    public void testIfOperation(){
+    public void testIfOperation() {
 
         VariantContainer variantContainer = new DefaultVariantContainer();
         int a = 10;
@@ -632,6 +632,15 @@ public class EquationEvalTests {
         assertThat(result, VariantMatchers.stringOf(""));
     }
 
+    @Test
+    public void testFunctionFirstError() {
+        EvaluationException ex = assertThrows(
+                EvaluationException.class,
+                () -> new EquationEval("first(\"Hello\")").eval()
+        );
+        assertThat(ex.getMessage(), is("Function `first` takes 2 parameters. E.g. first(\"Hello\", 2) will result in \"He\""));
+    }
+
 
     @Test
     public void testFunctionLast() {
@@ -654,6 +663,16 @@ public class EquationEvalTests {
     }
 
     @Test
+    public void testFunctionLastError() {
+        EvaluationException ex = assertThrows(
+                EvaluationException.class,
+                () -> new EquationEval("last(\"Hello\")").eval()
+        );
+        assertThat(ex.getMessage(), is("Function `last` takes 2 parameters. E.g. last(\"Hello\", 2) will result in \"lo\""));
+    }
+
+
+    @Test
     public void testFunctionSkip() {
 
         Variant result = new EquationEval("skip(\"Hello\", 2)").eval();
@@ -673,6 +692,14 @@ public class EquationEvalTests {
         assertThat(result, VariantMatchers.stringOf("Hello"));
     }
 
+    @Test
+    public void testFunctionSkipError() {
+        EvaluationException ex = assertThrows(
+                EvaluationException.class,
+                () -> new EquationEval("skip(\"Hello\")").eval()
+        );
+        assertThat(ex.getMessage(), is("Function skip` takes 2 parameters. E.g. skip(\"Hello\", 2) will result in \"llo\""));
+    }
 
     @Test
     public void testFunctionAvg() {
@@ -691,5 +718,30 @@ public class EquationEvalTests {
         assertThat(new EquationEval("median(1, 3)").eval(), VariantMatchers.numericOf(2));
         assertThat(new EquationEval("median(3)").eval(), VariantMatchers.numericOf(3));
         assertThat(new EquationEval("median()").eval(), VariantMatchers.nullVariant());
+    }
+
+    @Test
+    public void testFunctionMax() {
+
+        assertThat(new EquationEval("max(3, -100, 234, 234.1, null, 7, 8, 9)").eval(), VariantMatchers.numericOf(234.1));
+        assertThat(new EquationEval("max(3, -100, 234, \"234.1\", null, 7, 8, 9)").eval(), VariantMatchers.numericOf(234.1));
+        assertThat(new EquationEval("max(3, to_array(-100, 234, 234.1, null), 7, 8, 9)").eval(), VariantMatchers.numericOf(234.1));
+        assertThat(new EquationEval("max(3, to_array(-100, 234, \"234.1\", null, \"x\"), 7, 8, 9)").eval(), VariantMatchers.numericOf(234.1));
+        assertThat(new EquationEval("max(to_array(-100, null, 234, 234.1))").eval(), VariantMatchers.numericOf(234.1));
+        assertThat(new EquationEval("max(\"a\",\"x\",\"c\")").eval(), VariantMatchers.nullVariant());
+
+
+    }
+
+    @Test
+    public void testFunctionMin() {
+
+        assertThat(new EquationEval("min(null, 3, -100, 234, 234.1, 7, null, 8, 9)").eval(), VariantMatchers.numericOf(-100));
+        assertThat(new EquationEval("min(null, 3, \"-100\", 234, 234.1, 7, null, 8, 9)").eval(), VariantMatchers.numericOf(-100));
+        assertThat(new EquationEval("min(3, to_array(-100, 234, 234.1, null), 7, null, 8, 9)").eval(), VariantMatchers.numericOf(-100));
+        assertThat(new EquationEval("min(3, to_array(\"-100\", 234, 234.1, null), 7, null, 8, 9)").eval(), VariantMatchers.numericOf(-100));
+        assertThat(new EquationEval("min(to_array(-100, null, 234, 234.1))").eval(), VariantMatchers.numericOf(-100));
+        assertThat(new EquationEval("min(to_array(\"-100\", null, \"-100.1\", 234, 234.1))").eval(), VariantMatchers.numericOf(-100.1));
+        assertThat(new EquationEval("max(\"a\",\"x\",\"c\")").eval(), VariantMatchers.nullVariant());
     }
 }

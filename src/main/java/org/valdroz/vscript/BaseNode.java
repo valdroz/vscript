@@ -23,6 +23,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -344,8 +345,8 @@ class BaseNode implements Node, Constants {
 
             case NT_MF_FIRST: {
                 if (params == null || params.size() != 2) {
-                    throw new EvaluationException(String.format("Function `%s` takes 2 parameters. " +
-                                    "E.g. %s(\"Hello\", 2) will result in \"He\"",
+                    throw new EvaluationException(String.format("Function `%1$s` takes 2 parameters. " +
+                                    "E.g. %1$s(\"Hello\", 2) will result in \"He\"",
                             EquationParser.functionNameFromCode(operation)));
                 }
                 String _str = getParameterOrNullNode(0)
@@ -364,8 +365,8 @@ class BaseNode implements Node, Constants {
 
             case NT_MF_LAST: {
                 if (params == null || params.size() != 2) {
-                    throw new EvaluationException(String.format("Function `%s` takes 2 parameters. " +
-                                    "E.g. %s(\"Hello\", 2) will result in \"lo\"",
+                    throw new EvaluationException(String.format("Function `%1$s` takes 2 parameters. " +
+                                    "E.g. %1$s(\"Hello\", 2) will result in \"lo\"",
                             EquationParser.functionNameFromCode(operation)));
                 }
                 String _str = getParameterOrNullNode(0)
@@ -385,8 +386,8 @@ class BaseNode implements Node, Constants {
 
             case NT_MF_SKIP: {
                 if (params == null || params.size() != 2) {
-                    throw new EvaluationException(String.format("Function `%s` takes 2 parameters. " +
-                                    "E.g. %s(\"Hello\", 2) will result in \"llo\"",
+                    throw new EvaluationException(String.format("Function %1$s` takes 2 parameters. " +
+                                    "E.g. %1$s(\"Hello\", 2) will result in \"llo\"",
                             EquationParser.functionNameFromCode(operation)));
                 }
                 String _str = getParameterOrNullNode(0)
@@ -405,32 +406,33 @@ class BaseNode implements Node, Constants {
             break;
 
             case NT_MF_MAX:
-                if (params != null) {
-                    BigDecimal max = new BigDecimal(Double.MIN_VALUE);
-                    for (int i = 0; i < params.size(); ++i) {
-                        Variant _v = params.get(0).execute(variantContainer);
-                        if (_v.isNumeric()) {
-                            max = max.max(_v.asNumeric());
+                int _paramCount = getParameterCount();
+                if (_paramCount > 0) {
+                    Variant _v = params.get(0).execute(variantContainer);
+                    result = (_v.isArray()) ? max(_v.asArray()) : toNumeric(_v);
+                    for (int i = 1; i < _paramCount; ++i) {
+                        _v = params.get(i).execute(variantContainer);
+                        _v = (_v.isArray()) ? max(_v.asArray()) : toNumeric(_v);
+                        if (_v.compareTo(result) > 0) {
+                            result = _v;
                         }
                     }
-                    result = Variant.fromBigDecimal(max);
-                } else {
-                    result = Variant.nullVariant();
                 }
+
                 break;
 
             case NT_MF_MIN:
-                if (params != null) {
-                    BigDecimal max = new BigDecimal(Double.MAX_VALUE);
-                    for (int i = 0; i < params.size(); ++i) {
-                        Variant _v = params.get(0).execute(variantContainer);
-                        if (_v.isNumeric()) {
-                            max = max.min(_v.asNumeric());
+                _paramCount = getParameterCount();
+                if (_paramCount > 0) {
+                    Variant _v = params.get(0).execute(variantContainer);
+                    result = (_v.isArray()) ? min(_v.asArray()) : _v;
+                    for (int i = 1; i < _paramCount; ++i) {
+                        _v = params.get(i).execute(variantContainer);
+                        _v = (_v.isArray()) ? min(_v.asArray()) : toNumeric(_v);
+                        if (!_v.isNull() && _v.compareTo(result) < 0) {
+                            result = _v;
                         }
                     }
-                    result = Variant.fromBigDecimal(max);
-                } else {
-                    result = Variant.nullVariant();
                 }
                 break;
 
@@ -466,12 +468,12 @@ class BaseNode implements Node, Constants {
                     }
                     _values.sort(BigDecimal::compareTo);
                     if (!_values.isEmpty()) {
-                        if ( Math.floorMod(_values.size(), 2) == 1) {
+                        if (Math.floorMod(_values.size(), 2) == 1) {
                             result = Variant.fromBigDecimal(_values.get(_values.size() / 2));
                         } else {
                             result = Variant.fromBigDecimal(
-                                    _values.get(_values.size() / 2)
-                                            .add(_values.get(_values.size() / 2 - 1)))
+                                            _values.get(_values.size() / 2)
+                                                    .add(_values.get(_values.size() / 2 - 1)))
                                     .divide(Variant.fromInt(2));
                         }
                     } else {
@@ -517,27 +519,25 @@ class BaseNode implements Node, Constants {
     }
 
     /**
-     * Returns parameter node for build-in functions like "sin", "cos" and etc, or array index.
+     * Returns parameter node for build-in functions like "sin", "cos" etc., or array index.
      */
     private BaseNode getParameterNode() {
-        if (params != null && params.size() > 0) {
+        if (getParameterCount() > 0) {
             return params.get(0);
         }
         return null;
     }
 
     private BaseNode getParameterOrNullNode() {
-        if (params != null && params.size() > 0) {
-            return params.get(0);
-        }
-        return C_NULL;
+        return Optional.ofNullable(getParameterNode()).orElse(C_NULL);
     }
 
     private BaseNode getParameterOrNullNode(int index) {
-        if (params != null && params.size() > index) {
-            return params.get(index);
-        }
-        return C_NULL;
+        return (getParameterCount() > index) ? params.get(index) : C_NULL;
+    }
+
+    private int getParameterCount() {
+        return (params != null) ? params.size() : 0;
     }
 
     /**
@@ -631,6 +631,34 @@ class BaseNode implements Node, Constants {
 
     static DateTime now() {
         return new DateTime(currentTime.get());
+    }
+
+
+    static Variant max(List<Variant> va) {
+        Variant max = Variant.nullVariant();
+        for (Variant vi : va) {
+            Variant _vn = toNumeric(vi);
+            if (!_vn.isNull() && _vn.compareTo(max) > 0) {
+                max = _vn;
+            }
+        }
+        return max;
+    }
+
+    static Variant min(List<Variant> va) {
+        Variant min = Variant.nullVariant();
+        for (Variant vi : va) {
+            Variant _vn = toNumeric(vi);
+            if (!_vn.isNull() && _vn.compareTo(min) < 0) {
+                min = _vn;
+            }
+        }
+        return min;
+    }
+
+    static Variant toNumeric(Variant v) {
+        return v.isNumeric() ? v :
+                v.isNull() ? v : Variant.fromBigDecimal(v.asNumeric());
     }
 
 }

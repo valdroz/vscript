@@ -23,6 +23,8 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.logging.Logger;
 
 import static org.valdroz.vscript.Configuration.*;
 import static org.valdroz.vscript.Constants.*;
@@ -34,6 +36,7 @@ import static org.valdroz.vscript.EquationParser.functionNameFromCode;
  * @author Valerijus Drozdovas
  */
 public abstract class Variant implements Comparable<Variant> {
+    private static final Logger LOG = Logger.getLogger("vscript");
     static final String EMPTY_STRING = "";
 
     private static final Variant NULL_VARIANT = new NullVariant();
@@ -102,7 +105,10 @@ public abstract class Variant implements Comparable<Variant> {
     }
 
     public static Variant fromBigDecimal(BigDecimal value) {
-        return new NumericVariant(value);
+        if (value != null) {
+            return new NumericVariant(value);
+        }
+        return nullVariant();
     }
 
     public static Variant fromBigDecimal(String value) {
@@ -264,13 +270,17 @@ public abstract class Variant implements Comparable<Variant> {
 
         @Override
         public Variant minus(Variant variant) {
-            return Variant.fromBigDecimal(value.subtract(sanitize(variant).asNumeric()));
+            return Variant.fromBigDecimal(
+                    value.subtract(
+                            Optional.ofNullable(sanitize(variant).asNumeric()).orElse(BigDecimal.ZERO)
+                    )
+            );
         }
 
         @Override
         public Variant divide(Variant variant) {
             BigDecimal divisor = sanitize(variant).asNumeric();
-            if (divisor.compareTo(BigDecimal.ZERO) == 0) {
+            if (divisor == null || divisor.compareTo(BigDecimal.ZERO) == 0) {
                 throw new EvaluationException("Division by zero");
             }
             return Variant.fromBigDecimal(
@@ -286,7 +296,7 @@ public abstract class Variant implements Comparable<Variant> {
 
         @Override
         public Variant pow(Variant variant) {
-            return Variant.fromBigDecimal(value.pow(sanitize(variant).asNumeric().intValue()));
+            return Variant.fromBigDecimal(value.pow(Optional.ofNullable(sanitize(variant).asNumeric()).orElse(BigDecimal.ZERO).intValue()));
         }
 
         @Override
@@ -301,7 +311,7 @@ public abstract class Variant implements Comparable<Variant> {
             Variant that = (Variant) o;
             if (that.isNull() || that.isArray()) return false;
 
-            return value.compareTo(that.asNumeric()) == 0;
+            return value.compareTo(Optional.ofNullable(that.asNumeric()).orElse(BigDecimal.ZERO)) == 0;
         }
 
         @Override
@@ -328,7 +338,8 @@ public abstract class Variant implements Comparable<Variant> {
             try {
                 return new BigDecimal(value).setScale(getDecimalScale(), getRoundingMode());
             } catch (Exception ex) {
-                return BigDecimal.ZERO;
+                LOG.warning("Text cannot be converted to numeric value. Detail: " + ex.getMessage());
+                return null;
             }
         }
 

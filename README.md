@@ -1,9 +1,17 @@
-# Vscript - Equation Interpreter 
+# vscript - Equation Interpreter 
 
-Vscript is an extendable and runtime safe equation interpreter capable to evaluate arithmetic 
+`vscript` is an extendable and runtime safe equation interpreter capable to evaluate arithmetic 
 and logical expression.
 
+## Available in maven central
 
+```xml
+<dependency>
+  <groupId>org.valdroz.vscript</groupId>
+  <artifactId>vscript</artifactId>
+  <version>[3,)</version>
+</dependency>
+```
 
 ## Example
 
@@ -46,25 +54,21 @@ public class Example {
 }
 ```
 
-
-
 ## Syntax
 
 Supported numeric operators `+ -  * /`, binary operators
  `&, |, ^`, logical operators ` ==, >, <, >=, <=, !=, ! ` and `=` assignment; `?` null substitutions.
-
 
 ### Reserved Keywords
 
 - `true`        - Boolean true.
 - `false`       - Boolean false.
 - `PI`			- Mathematical PI constant of `3.1415926535897932384626433832795`.
-- `null`		- Uninitialized variantValue.
-
+- `null`		- Uninitialized variant value.
 
 ### Variable types
 
-Supported variant variantValue types:
+Supported variant variant value types:
 
 - string - E.g. `"Hello world!"`.
 - numeric - E.g. `2.65` backed by `java.math.BigDecimal`
@@ -80,15 +84,20 @@ Math functions:
 - acos(n)				: Calculates the arccosine of `n`.
 - tan(n)				: Calculates the tangent of `n`.
 - atan(n)				: Calculates the arctangent of `n`.
-- abs(n)				: Calculates the absolute variantValue of `n`.
-- neg(n)				: Calculates the negative variantValue of `n`.
+- abs(n)				: Calculates the absolute variant value of `n`.
+- neg(n)				: Calculates the negative variant value of `n`.
 - sqrt(n)				: Calculates the square root of `n`.
 - log(n)				: Returns the natural logarithm (base e) of `n`.
 - exp(n)				: Returns the exponential number `e` raised to the power of a `n`.
-- max(n1,....,nN)       : Returns largest value digit from provided numeric value list. 
-- min(n1,....,nN)       : Returns smalled value digit from provided numeric value list.
+- max(n1,....,nN)       : Returns largest numeric value from provided numeric value list. 
+- min(n1,....,nN)       : Returns smalled numeric digit from provided numeric value list.
 - avg(n1,....,nN)       : Finds average value from provided numeric numeric value list.  
 - median(n1,....,nN)    : Finds median value from provided numeric numeric value list.
+
+String functions:
+- first(s, n) : Takes first `n` characters from string `s`.
+- skip(s, n) : Skips first `n` characters and takes remaining characters from string `s`.
+- last(s, n) : Takes last `n` characters from string `s`.
 
 Date functions:
 - day()				: Returns current day of month (1-31).
@@ -104,16 +113,17 @@ Date functions:
 - minutes_before_now(x) : (`x` is string or numeric) Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of minutes passed until now.
 
 Misc. functions:
-- size(x)			: Length of string variable variantValue or count of elements in array.
-- is_null(x)		: Returns `true` if variantValue not set, `false` otherwise.
-- is_numeric(x)		: Returns `true` if variantValue is number, `false` otherwise.
-- is_string(x)		: Returns `true` if variantValue is string, `false` otherwise.
-- is_array(x)		: Returns `true` if variantValue is array, `false` otherwise.
+- size(x)			: If variant is a string, the length of string is returned. If variant is 
+                      array, the size of array is returned. Otherwise, function results in `-1`. 
+- is_null(x)		: Returns `true` if variant value not set, `false` otherwise.
+- is_numeric(x)		: Returns `true` if variant value is number, `false` otherwise.
+- is_string(x)		: Returns `true` if variant value is string, `false` otherwise.
+- is_array(x)		: Returns `true` if variant value is array, `false` otherwise.
 - to_array(x1,x2,...,xN) : Makes an array populated with provided values.
 
 ## null Substitutions
 
-Default variantValue for missing (`null`) variables can be defined as follows:
+Default variant value for missing (`null`) variables can be defined as follows:
 
 ```java
 
@@ -130,7 +140,7 @@ var1?var2?var3?year()
 
 ```
 
-... yes, function call can be used for variantValue substitutions.
+... yes, function call can be used for `null` value substitutions.
 
 ## Extending to meet your needs
 

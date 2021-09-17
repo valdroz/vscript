@@ -1,5 +1,12 @@
 # Changes
 
+### \[v3.8.1\] 2021-09-17
+
+Updated:
+
+- Updated `min`, `max` to support other than numeric types.
+- Corrected defect with error text formatting.  
+
 ### \[v3.8.0\] 2021-09-15
 
 Added:
