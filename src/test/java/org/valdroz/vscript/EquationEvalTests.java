@@ -22,7 +22,6 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.junit.Test;
-
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -340,6 +339,71 @@ public class EquationEvalTests {
         EquationEval.setCurrentTimeSupplier(prevNow);
     }
 
+    @Test
+    public void testDaysSinceWeekdayFunc() {
+        VariantContainer container = new DefaultVariantContainer();
+        container.setVariant("testDate1", Variant.fromInt(1));
+        container.setVariant("testDate2", Variant.fromInt(7));
+        container.setVariant("testDate3", Variant.fromInt(4));
+
+        Variant var1 = new EquationEval("days_since_weekday(testDate1)").eval(container);
+        Variant var2 = new EquationEval("days_since_weekday(testDate2)").eval(container);
+        Variant var3 = new EquationEval("days_since_weekday(testDate3)").eval(container);
+
+        int dayOfWeek = DateTime.now().getDayOfWeek();
+
+        switch (dayOfWeek) {
+            case 1:
+                assertThat(var1.asNumeric().intValue(), is(0));
+                assertThat(var2.asNumeric().intValue(), is(1));
+                assertThat(var3.asNumeric().intValue(), is(4));
+                break;
+            case 2:
+                assertThat(var1.asNumeric().intValue(), is(1));
+                assertThat(var2.asNumeric().intValue(), is(2));
+                assertThat(var3.asNumeric().intValue(), is(5));
+                break;
+            case 3:
+                assertThat(var1.asNumeric().intValue(), is(2));
+                assertThat(var2.asNumeric().intValue(), is(3));
+                assertThat(var3.asNumeric().intValue(), is(6));
+                break;
+            case 4:
+                assertThat(var1.asNumeric().intValue(), is(3));
+                assertThat(var2.asNumeric().intValue(), is(4));
+                assertThat(var3.asNumeric().intValue(), is(0));
+                break;
+            case 5:
+                assertThat(var1.asNumeric().intValue(), is(4));
+                assertThat(var2.asNumeric().intValue(), is(5));
+                assertThat(var3.asNumeric().intValue(), is(1));
+                break;
+            case 6:
+                assertThat(var1.asNumeric().intValue(), is(5));
+                assertThat(var2.asNumeric().intValue(), is(6));
+                assertThat(var3.asNumeric().intValue(), is(2));
+                break;
+            case 7:
+                assertThat(var1.asNumeric().intValue(), is(6));
+                assertThat(var2.asNumeric().intValue(), is(0));
+                assertThat(var3.asNumeric().intValue(), is(3));
+                break;
+        }
+    }
+
+    @Test
+    public void testFloorMod() {
+        VariantContainer variantContainer = new DefaultVariantContainer();
+        variantContainer.setVariant("x", Variant.fromInt(15));
+        variantContainer.setVariant("y", Variant.fromInt(10));
+        int eq = new EquationEval("floor_mod(x,y)").eval(variantContainer).asNumeric().intValue();
+        assertThat(eq, is(5));
+
+        variantContainer.setVariant("a", Variant.fromInt(27));
+        variantContainer.setVariant("b", Variant.fromInt(9));
+        int eq2 = new EquationEval("floor_mod(a,b)").eval(variantContainer).asNumeric().intValue();
+        assertThat(eq2, is(0));
+    }
 
     @Test
     public void testSubstitutions() {
@@ -386,7 +450,6 @@ public class EquationEvalTests {
         assertThat(res.isNumeric(), is(true));
         assertThat(res.asNumeric().intValue(), is(1));
     }
-
 
     @Test
     public void testLeadingNegativeDigit1() {

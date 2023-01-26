@@ -93,6 +93,7 @@ Math functions:
 - min(n1,....,nN)       : Returns smalled numeric digit from provided numeric value list.
 - avg(n1,....,nN)       : Finds average value from provided numeric numeric value list.  
 - median(n1,....,nN)    : Finds median value from provided numeric numeric value list.
+- floor_mod(x, y)       : Returns the floor modulus of `x` and `y`.
 
 String functions:
 - first(s, n) : Takes first `n` characters from string `s`.
@@ -106,6 +107,8 @@ Date functions:
 - day_of_year()		: Returns current day of year.
 - days_in_month(n)	: Returns maximum days in the month, where `n` is disposition from current month.
                     E.g. to get maximum days in the previous month, the `n` values must be -1.
+- days_since_weekday(x) : (`x` is numeric) Returns numerical difference in days between current day of the week and specified day parameter.
+                    E.g. Days are represented numerically(Monday = 1, Tuesday = 2, etc.), If today is Friday, days_since_weekday(1) would return 4.
 - iso(str)          : Parses input ISO8601 date or date with time and returns millis.
 - now()             : Current time in millis.
 - days_before_now(x) : (`x` is string or numeric) Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of days passed until now. 					

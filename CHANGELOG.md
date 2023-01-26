@@ -1,5 +1,14 @@
 # Changes
 
+### \[v3.9.0\] 2023-01-26
+
+Added:
+
+- Added `days_since_weekday` function for calculating how many days have passed since a provided day.
+  - This function recognizes days of the week numerically, ex: Monday = 1, Tuesday = 2. E.g.:
+  - `days_since_weekday(1)` will return `0` if it is called on Monday, and will return `1` if it is called on Tuesday.
+- Added `floor_mod` Math function.
+
 ### \[v3.8.1\] 2021-09-17
 
 Updated:
