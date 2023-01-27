@@ -51,6 +51,7 @@ public interface Constants {
     int NT_MF_LN = 149;
     int NT_MF_LOG = 150;
     int NT_MF_EXP = 151;
+    int NT_MF_FLOOR_MOD = 179;
     int NT_MF_DAY = 153;
     int NT_MF_MONTH = 154;
     int NT_MF_YEAR = 155;
@@ -76,6 +77,7 @@ public interface Constants {
     int NT_MF_MIN = 175;
     int NT_MF_MEDIAN = 176;
     int NT_MF_AVERAGE = 177;
+    int NT_MF_DAYS_SINCE_WEEKDAY = 178;
 
 
     int NT_LOP_AND = 128;

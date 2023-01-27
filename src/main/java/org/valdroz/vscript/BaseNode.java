@@ -251,6 +251,16 @@ class BaseNode implements Node, Constants {
                 result = getParameterOrNullNode().execute(variantContainer).mfunc(operation);
                 break;
 
+            case NT_MF_FLOOR_MOD:
+                if (params != null && params.size() == 2) {
+                    int x = params.get(0).execute(variantContainer).asNumeric().intValue();
+                    int y = params.get(1).execute(variantContainer).asNumeric().intValue();
+                    result = Variant.fromInt(Math.floorMod(x, y));
+                } else {
+                    throw new EvaluationException("Function floor_mod takes two int parameters.");
+                }
+                break;
+
             case NT_MF_NEG:
                 result = getParameterOrNullNode().execute(variantContainer).negate();
                 break;
@@ -302,6 +312,22 @@ class BaseNode implements Node, Constants {
 
             case NT_MF_MINUTES_BEFORE_NOW:
                 result = Variant.fromLong(durationTillNow(getParameterOrNullNode().execute(variantContainer)).getStandardMinutes());
+                break;
+
+            case NT_MF_DAYS_SINCE_WEEKDAY:
+                if (params == null || params.size() != 1) {
+                    throw new EvaluationException("Function `days_since_weekday` takes one parameter, the day of the week in numeric form");
+                }
+                int providedDay = params.get(0).execute(variantContainer).asNumeric().intValue();
+
+                if (providedDay >= 1 && providedDay <= 7) {
+                    int today = DateTime.now().getDayOfWeek();
+                    int providedDayLastWeek = 7 - Math.abs(today - providedDay);
+                    result = (providedDay > today) ? Variant.fromInt(providedDayLastWeek) : Variant.fromInt(today - providedDay);
+
+                } else {
+                    throw new EvaluationException("Provided day of week was invalid, needs to be between 1 and 7.");
+                }
                 break;
 
             case NT_MF_SIZE:
