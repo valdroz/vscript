@@ -78,6 +78,7 @@ public interface Constants {
     int NT_MF_MEDIAN = 176;
     int NT_MF_AVERAGE = 177;
     int NT_MF_DAYS_SINCE_WEEKDAY = 178;
+    int NT_MF_FORMAT_TS = 180;
 
 
     int NT_LOP_AND = 128;

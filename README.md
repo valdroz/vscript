@@ -114,6 +114,9 @@ Date functions:
 - days_before_now(x) : (`x` is string or numeric) Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of days passed until now. 					
 - hours_before_now(x) : (`x` is string or numeric) Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of hours passed until now.
 - minutes_before_now(x) : (`x` is string or numeric) Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of minutes passed until now.
+- format_ts(x, y[, z]) : (`x` is string or numeric, `y` is string, optional `z` is string) Parses `x` input ISO8601
+  date/timestamp or time in milliseconds since January 1, 1970 UTC and applies format
+  specified in `y`, using optional timezone specified in `z`.
 
 Misc. functions:
 - size(x)			: If variant is a string, the length of string is returned. If variant is 

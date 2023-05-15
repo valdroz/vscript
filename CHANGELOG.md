@@ -1,5 +1,11 @@
 # Changes
 
+### \[v3.10.0\] 2023-05-12
+
+Added:
+
+- `format_ts` function is added. Sample `format_ts(timestampToBeFormatted, formatToApply, optionalTimeZone)`
+
 ### \[v3.9.0\] 2023-01-26
 
 Added:

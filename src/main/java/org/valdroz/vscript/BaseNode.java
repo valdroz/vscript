@@ -17,7 +17,10 @@ package org.valdroz.vscript;
 
 import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import java.math.BigDecimal;
@@ -508,6 +511,60 @@ class BaseNode implements Node, Constants {
                 } else {
                     result = Variant.nullVariant();
                 }
+                break;
+
+            case NT_MF_FORMAT_TS:
+                if (params == null || params.size() < 2 || params.size() > 3) {
+                    throw new EvaluationException(String.format("Function %1$s` takes 2 or 3 parameters. " +
+                                    "E.g. %1$s(\"2023-02-28T05:16:55.835697363Z\", \"mm/dd/yy\") will result in \"02/28/23\"",
+                            EquationParser.functionNameFromCode(operation)));
+                }
+
+                Variant tsToBeFormatted = getParameterOrNullNode(0).execute(variantContainer);
+
+                if (tsToBeFormatted.isNull()) {
+                    return Variant.nullVariant();
+                }
+
+                DateTime ts;
+                try {
+                    if (tsToBeFormatted.isNumeric()) {
+                        ts = new DateTime(tsToBeFormatted.asNumeric().longValue());
+                    } else {
+                        ts = new DateTime(tsToBeFormatted.asString());
+                    }
+                } catch(IllegalArgumentException iae) {
+                    throw new EvaluationException(
+                            "Invalid timestamp. Function format_ts(ts, fmt, tz) takes timestamp parameter " +
+                                    "in String ISO format or numeric milliseconds from 1/1/1970. Provided ts: " +
+                            tsToBeFormatted.asString());
+                }
+
+                String fmt = getParameterOrNullNode(1).execute(variantContainer).asString();
+
+                DateTimeFormatter dtf;
+
+                try {
+                    dtf = DateTimeFormat.forPattern(fmt);
+                } catch(IllegalArgumentException iae) {
+                    throw new EvaluationException("Invalid format specification.  Function format_ts(ts, fmt, tz)" +
+                            " takes fmt as valid timestamp format pattern.  Provided format was: " + fmt);
+                }
+
+                if (params.size() == 3) {
+                    String zoneId = getParameterOrNullNode(2).execute(variantContainer).asString();
+
+                    try {
+                        DateTimeZone dtz = DateTimeZone.forID(zoneId);
+                        ts = ts.withZone(dtz);
+                    } catch (IllegalArgumentException iae) {
+                        throw new EvaluationException("Invalid time zone ID. Function format_ts(ts, fmt, tz)" +
+                                " takes tz as TimeZone ID. Provided time zone ID was: " + zoneId);
+                    }
+                }
+
+                result = Variant.fromString(ts.toString(dtf));
+
                 break;
 
             case NT_FUNCTION: {
