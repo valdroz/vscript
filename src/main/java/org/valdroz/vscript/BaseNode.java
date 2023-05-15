@@ -16,7 +16,6 @@
 package org.valdroz.vscript;
 
 import com.google.common.collect.Lists;
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
@@ -521,21 +520,24 @@ class BaseNode implements Node, Constants {
                             EquationParser.functionNameFromCode(operation)));
                 }
 
-                String tsToBeFormatted = getParameterOrNullNode(0).execute(variantContainer).asString();
+                Variant tsToBeFormatted = getParameterOrNullNode(0).execute(variantContainer);
 
-                if (StringUtils.isBlank(tsToBeFormatted)) {
+                if (tsToBeFormatted.isNull()) {
                     return Variant.nullVariant();
                 }
 
                 DateTime ts;
                 try {
-                    if (StringUtils.isNumeric(tsToBeFormatted)) {
-                        ts = new DateTime(Long.valueOf(tsToBeFormatted));
+                    if (tsToBeFormatted.isNumeric()) {
+                        ts = new DateTime(tsToBeFormatted.asNumeric().longValue());
                     } else {
-                        ts = new DateTime(tsToBeFormatted);
+                        ts = new DateTime(tsToBeFormatted.asString());
                     }
                 } catch(IllegalArgumentException iae) {
-                    throw new EvaluationException("Invalid timestamp.");
+                    throw new EvaluationException(
+                            "Invalid timestamp. Function format_ts(ts, fmt, tz) takes timestamp parameter " +
+                                    "in String ISO format or numeric milliseconds from 1/1/1970. Provided ts: " +
+                            tsToBeFormatted.asString());
                 }
 
                 String fmt = getParameterOrNullNode(1).execute(variantContainer).asString();
@@ -545,7 +547,8 @@ class BaseNode implements Node, Constants {
                 try {
                     dtf = DateTimeFormat.forPattern(fmt);
                 } catch(IllegalArgumentException iae) {
-                    throw new EvaluationException("Invalid format specification.");
+                    throw new EvaluationException("Invalid format specification.  Function format_ts(ts, fmt, tz)" +
+                            " takes fmt as valid timestamp format pattern.  Provided format was: " + fmt);
                 }
 
                 if (params.size() == 3) {
@@ -555,7 +558,8 @@ class BaseNode implements Node, Constants {
                         DateTimeZone dtz = DateTimeZone.forID(zoneId);
                         ts = ts.withZone(dtz);
                     } catch (IllegalArgumentException iae) {
-                        throw new EvaluationException("Invalid time zone.");
+                        throw new EvaluationException("Invalid time zone ID. Function format_ts(ts, fmt, tz)" +
+                                " takes tz as TimeZone ID. Provided time zone ID was: " + zoneId);
                     }
                 }
 

@@ -420,19 +420,19 @@ public class EquationEvalTests {
                 "format_ts(\"test\", \"test\", \"test\")").eval(container)); // invalid ts
 
         assertThrows(EvaluationException.class, () -> new EquationEval(
-                "format_ts(\"1683900000000\", \"test\")").eval(container)); // invalid format
+                "format_ts(1683900000000, \"test\")").eval(container)); // invalid format
 
         assertThrows(EvaluationException.class, () -> new EquationEval(
-                "format_ts(\"1683900000000\", \"mm/dd/yyyy\", \"test\")").eval(container)); // invalid timezone
+                "format_ts(1683900000000, \"mm/dd/yyyy\", \"test\")").eval(container)); // invalid timezone
 
-        assertThat(new EquationEval("format_ts(\"1683900000000\", \"MM/dd/yyyy\")").eval(container).asString(),
+        assertThat(new EquationEval("format_ts(1683900000000, \"MM/dd/yyyy\")").eval(container).asString(),
                 is("05/12/2023")); // success with ms
 
         assertThat(new EquationEval("format_ts(\"2023-02-28T05:16:55.835697363Z\", \"dd/MM/yyyy\")").eval(container).asString(),
                 is("28/02/2023")); // success with iso
 
         assertThat(new EquationEval(
-                        "format_ts(\"1683900000000\", \"MM/dd/yyyy\", \"America/New_York\")").eval(container).asString(),
+                        "format_ts(1683900000000, \"MM/dd/yyyy\", \"America/New_York\")").eval(container).asString(),
                 is("05/12/2023")); // success with ms and tz
 
         assertThat(new EquationEval("format_ts(\"2023-02-28T05:16:55.835697363Z\", \"dd/MM/yyyy\", \"Europe/Paris\")").eval(container).asString(),
