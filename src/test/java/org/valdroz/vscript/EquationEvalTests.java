@@ -22,11 +22,16 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.junit.Test;
+
 import java.util.List;
 import java.util.function.Supplier;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertThrows;
 
 public class EquationEvalTests {
@@ -389,6 +394,49 @@ public class EquationEvalTests {
                 assertThat(var3.asNumeric().intValue(), is(3));
                 break;
         }
+    }
+
+    @Test
+    public void testFormatTsFunc() {
+        VariantContainer container = new DefaultVariantContainer();
+        container.setVariant("testDate", Variant.fromString("1683900000000"));
+        container.setVariant("testFormat", Variant.fromString("MM/dd/yyyy"));
+
+        assertThrows(EvaluationException.class, () -> new EquationEval("format_ts()").eval(container)); // null params
+
+        assertThrows(EvaluationException.class, () -> new EquationEval(
+                "format_ts(\"test\")").eval(container)); // < 2 params
+
+        assertThrows(EvaluationException.class, () -> new EquationEval(
+                "format_ts(\"test\", \"test\", \"test\" \"test\")").eval(container)); // > 3 params
+
+        assertThat(new EquationEval(
+                "format_ts(null, \"test\", \"test\")").eval(container).isNull(), is(true)); // Blank ts
+
+        assertThrows(EvaluationException.class, () -> new EquationEval(
+                "format_ts(\"-450\", \"test\", \"test\")").eval(container)); // invalid epoch ts
+
+        assertThrows(EvaluationException.class, () -> new EquationEval(
+                "format_ts(\"test\", \"test\", \"test\")").eval(container)); // invalid ts
+
+        assertThrows(EvaluationException.class, () -> new EquationEval(
+                "format_ts(\"1683900000000\", \"test\")").eval(container)); // invalid format
+
+        assertThrows(EvaluationException.class, () -> new EquationEval(
+                "format_ts(\"1683900000000\", \"mm/dd/yyyy\", \"test\")").eval(container)); // invalid timezone
+
+        assertThat(new EquationEval("format_ts(\"1683900000000\", \"MM/dd/yyyy\")").eval(container).asString(),
+                is("05/12/2023")); // success with ms
+
+        assertThat(new EquationEval("format_ts(\"2023-02-28T05:16:55.835697363Z\", \"dd/MM/yyyy\")").eval(container).asString(),
+                is("28/02/2023")); // success with iso
+
+        assertThat(new EquationEval(
+                        "format_ts(\"1683900000000\", \"MM/dd/yyyy\", \"America/New_York\")").eval(container).asString(),
+                is("05/12/2023")); // success with ms and tz
+
+        assertThat(new EquationEval("format_ts(\"2023-02-28T05:16:55.835697363Z\", \"dd/MM/yyyy\", \"Europe/Paris\")").eval(container).asString(),
+                is("28/02/2023")); // success with iso and tz
     }
 
     @Test

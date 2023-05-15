@@ -16,8 +16,12 @@
 package org.valdroz.vscript;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import java.math.BigDecimal;
@@ -508,6 +512,55 @@ class BaseNode implements Node, Constants {
                 } else {
                     result = Variant.nullVariant();
                 }
+                break;
+
+            case NT_MF_FORMAT_TS:
+                if (params == null || params.size() < 2 || params.size() > 3) {
+                    throw new EvaluationException(String.format("Function %1$s` takes 2 or 3 parameters. " +
+                                    "E.g. %1$s(\"2023-02-28T05:16:55.835697363Z\", \"mm/dd/yy\") will result in \"02/28/23\"",
+                            EquationParser.functionNameFromCode(operation)));
+                }
+
+                String tsToBeFormatted = getParameterOrNullNode(0).execute(variantContainer).asString();
+
+                if (StringUtils.isBlank(tsToBeFormatted)) {
+                    return Variant.nullVariant();
+                }
+
+                DateTime ts;
+                try {
+                    if (StringUtils.isNumeric(tsToBeFormatted)) {
+                        ts = new DateTime(Long.valueOf(tsToBeFormatted));
+                    } else {
+                        ts = new DateTime(tsToBeFormatted);
+                    }
+                } catch(IllegalArgumentException iae) {
+                    throw new EvaluationException("Invalid timestamp.");
+                }
+
+                String fmt = getParameterOrNullNode(1).execute(variantContainer).asString();
+
+                DateTimeFormatter dtf;
+
+                try {
+                    dtf = DateTimeFormat.forPattern(fmt);
+                } catch(IllegalArgumentException iae) {
+                    throw new EvaluationException("Invalid format specification.");
+                }
+
+                if (params.size() == 3) {
+                    String zoneId = getParameterOrNullNode(2).execute(variantContainer).asString();
+
+                    try {
+                        DateTimeZone dtz = DateTimeZone.forID(zoneId);
+                        ts = ts.withZone(dtz);
+                    } catch (IllegalArgumentException iae) {
+                        throw new EvaluationException("Invalid time zone.");
+                    }
+                }
+
+                result = Variant.fromString(ts.toString(dtf));
+
                 break;
 
             case NT_FUNCTION: {

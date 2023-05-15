@@ -1,15 +1,15 @@
-# vscript - Equation Interpreter 
+# vscript - Equation Interpreter
 
-`vscript` is an extendable and runtime safe equation interpreter capable to evaluate arithmetic 
+`vscript` is an extendable and runtime safe equation interpreter capable to evaluate arithmetic
 and logical expression.
 
 ## Available in maven central
 
 ```xml
 <dependency>
-  <groupId>org.valdroz.vscript</groupId>
-  <artifactId>vscript</artifactId>
-  <version>[3,)</version>
+    <groupId>org.valdroz.vscript</groupId>
+    <artifactId>vscript</artifactId>
+    <version>[3,)</version>
 </dependency>
 ```
 
@@ -19,11 +19,11 @@ and logical expression.
 import org.valdroz.vscript.*;
 
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.MatcherAssert.assertThat; 
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class Example {
     public static void main(String[] args) {
-         // Configure decimal scale for numeric operations to 2
+        // Configure decimal scale for numeric operations to 2
         Configuration.setDecimalScale(2);
 
         // Initialize variant container with one variable as
@@ -41,7 +41,7 @@ public class Example {
 
         // Expecting res to be of numeric type since it is a result of algebraic expression
         assertThat(res.isNumeric(), is(true));
-        
+
         // `res` must be equal to 13.4
         assertThat(res.asNumeric().doubleValue(), is(13.4));
 
@@ -57,7 +57,7 @@ public class Example {
 ## Syntax
 
 Supported numeric operators `+ -  * /`, binary operators
- `&, |, ^`, logical operators ` ==, >, <, >=, <=, !=, ! ` and `=` assignment; `?` null substitutions.
+`&, |, ^`, logical operators ` ==, >, <, >=, <=, !=, ! ` and `=` assignment; `?` null substitutions.
 
 ### Reserved Keywords
 
@@ -89,9 +89,9 @@ Math functions:
 - sqrt(n)				: Calculates the square root of `n`.
 - log(n)				: Returns the natural logarithm (base e) of `n`.
 - exp(n)				: Returns the exponential number `e` raised to the power of a `n`.
-- max(n1,....,nN)       : Returns largest numeric value from provided numeric value list. 
+- max(n1,....,nN)       : Returns largest numeric value from provided numeric value list.
 - min(n1,....,nN)       : Returns smalled numeric digit from provided numeric value list.
-- avg(n1,....,nN)       : Finds average value from provided numeric numeric value list.  
+- avg(n1,....,nN)       : Finds average value from provided numeric numeric value list.
 - median(n1,....,nN)    : Finds median value from provided numeric numeric value list.
 - floor_mod(x, y)       : Returns the floor modulus of `x` and `y`.
 
@@ -106,18 +106,21 @@ Date functions:
 - year()			: Returns current year.
 - day_of_year()		: Returns current day of year.
 - days_in_month(n)	: Returns maximum days in the month, where `n` is disposition from current month.
-                    E.g. to get maximum days in the previous month, the `n` values must be -1.
+  E.g. to get maximum days in the previous month, the `n` values must be -1.
 - days_since_weekday(x) : (`x` is numeric) Returns numerical difference in days between current day of the week and specified day parameter.
-                    E.g. Days are represented numerically(Monday = 1, Tuesday = 2, etc.), If today is Friday, days_since_weekday(1) would return 4.
+  E.g. Days are represented numerically(Monday = 1, Tuesday = 2, etc.), If today is Friday, days_since_weekday(1) would return 4.
 - iso(str)          : Parses input ISO8601 date or date with time and returns millis.
 - now()             : Current time in millis.
-- days_before_now(x) : (`x` is string or numeric) Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of days passed until now. 					
+- days_before_now(x) : (`x` is string or numeric) Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of days passed until now.
 - hours_before_now(x) : (`x` is string or numeric) Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of hours passed until now.
 - minutes_before_now(x) : (`x` is string or numeric) Parses input ISO8601 date/timestamp or takes time in milliseconds since January 1, 1970 UTC and returns number of minutes passed until now.
+- format_ts(x, y[, z]) : (`x` is string or numeric, `y` is string, optional `z` is string) Parses `x` input ISO8601
+  date/timestamp or time in milliseconds since January 1, 1970 UTC and applies format
+  specified in `y`, using optional timezone specified in `z`.
 
 Misc. functions:
-- size(x)			: If variant is a string, the length of string is returned. If variant is 
-                      array, the size of array is returned. Otherwise, function results in `-1`. 
+- size(x)			: If variant is a string, the length of string is returned. If variant is
+  array, the size of array is returned. Otherwise, function results in `-1`.
 - is_null(x)		: Returns `true` if variant value not set, `false` otherwise.
 - is_numeric(x)		: Returns `true` if variant value is number, `false` otherwise.
 - is_string(x)		: Returns `true` if variant value is string, `false` otherwise.
@@ -148,7 +151,7 @@ var1?var2?var3?year()
 ## Extending to meet your needs
 
 Vscript allows defining custom functions to meet your needs.
-Simplified example of adding one custom function is shown here:    
+Simplified example of adding one custom function is shown here:
 
 ```java
 import org.valdroz.vscript.*;
