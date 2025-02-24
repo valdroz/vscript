@@ -594,6 +594,27 @@ class BaseNode implements Node, Constants {
             }
             break;
 
+            case NT_MF_SWITCH:
+                if (params == null || params.size() < 5) {
+                    throw new EvaluationException("Function `switch` takes 4 parameters.");
+                }
+
+                result = (params.get(0).execute(variantContainer));
+
+                Variant result2 = Variant.nullVariant();
+                for (int i = 0; i < params.size(); i++) {
+                    if (params.get(i).name.equals("case " + result.asString())) {
+                        result2 = params.get(i + 1).execute(variantContainer);
+                        break;
+                    }
+                }
+                if (result2.isNull())
+                    result = params.get(params.size() - 1).execute(variantContainer);
+                else
+                    result = result2;
+
+                break;
+
             default:
                 throw new RuntimeException("Unexpected node: " + operation);
 

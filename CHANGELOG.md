@@ -1,5 +1,11 @@
 # Changes
 
+### \[v3.11.0\] 2025-02-24
+
+Added:
+
+- `switch` function is added. Sample `switch(expression , case 1, value/expression, case 2, value/expression , default , value/expression)`
+
 ### \[v3.10.0\] 2023-05-12
 
 Added:

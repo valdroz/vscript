@@ -76,6 +76,7 @@ class EquationParser implements Constants {
             .put("min", NT_MF_MIN)
             .put("avg", NT_MF_AVERAGE)
             .put("median", NT_MF_MEDIAN)
+            .put("switch", NT_MF_SWITCH)
             .build();
 
 
@@ -506,6 +507,12 @@ class EquationParser implements Constants {
                         }
                     } else {
                         throw new EvaluationException(CE_ILLEGAL_VAR_NAME, currentLineNumber(), currentPosition());
+                    }
+                } else if (word.equals("case")) {
+                    skipSpaces();
+                    if (isLiteralChar() || isDigit()) {
+                        word = readWord();
+                        node.withNodeOperation(NT_LOCAL_VARIABLE).withName("case " + word);
                     }
                 } else {
                     BaseNode constNode = checkConstants(word);
