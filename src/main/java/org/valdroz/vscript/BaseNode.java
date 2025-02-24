@@ -595,8 +595,8 @@ class BaseNode implements Node, Constants {
             break;
 
             case NT_MF_SWITCH:
-                if (params == null || params.size() < 5) {
-                    throw new EvaluationException("Function `switch` takes 4 parameters.");
+                if (params == null || params.size() < 3) {
+                    throw new EvaluationException("Function `switch` takes 3 parameters.");
                 }
 
                 result = (params.get(0).execute(variantContainer));
