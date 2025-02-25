@@ -703,7 +703,7 @@ class BaseNode implements Node, Constants {
             return new Duration(
                     ISODateTimeFormat.dateOptionalTimeParser().parseDateTime(from.asString()),
                     now());
-        } else if (from.asNumeric().longValue() > 1) {
+        } else if (from.asNumeric().longValue() >= 0) {
             return new Duration(
                     new DateTime(from.asNumeric().longValue()),
                     now());
