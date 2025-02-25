@@ -4,7 +4,7 @@
 
 Added:
 
-- `switch` function is added. Sample `switch(expression , case 1, value/expression, case 2, value/expression , default , value/expression)`
+- `switch` function is added. Sample `switch(expression , case 1, value/expression, case 2, value/expression , default_value/expression)`
 
 ### \[v3.10.0\] 2023-05-12
 
