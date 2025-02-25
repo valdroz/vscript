@@ -608,7 +608,7 @@ class BaseNode implements Node, Constants {
                         break;
                     }
                 }
-                if (result2.isNull())
+                if (result2.isNull() && params.get(params.size() - 2).getName().equalsIgnoreCase("default"))
                     result = params.get(params.size() - 1).execute(variantContainer);
                 else
                     result = result2;
