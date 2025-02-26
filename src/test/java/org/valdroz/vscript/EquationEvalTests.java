@@ -923,7 +923,7 @@ public class EquationEvalTests {
 
         // Integer
         VariantContainer variantContainer6 = new DefaultVariantContainer();
-        int num=1;
+        int num = 1;
 
         variantContainer6.setVariant("num", Variant.fromInt(num));
 
@@ -933,7 +933,7 @@ public class EquationEvalTests {
 
         //DEFAULT IS NOT PRESENT
         VariantContainer variantContainer7 = new DefaultVariantContainer();
-        num=4;
+        num = 4;
 
         variantContainer7.setVariant("num", Variant.fromInt(num));
 
@@ -943,7 +943,7 @@ public class EquationEvalTests {
 
         //String Literal
         VariantContainer variantContainer8 = new DefaultVariantContainer();
-        String colour="red";
+        String colour = "red";
 
         variantContainer8.setVariant("colour", Variant.fromString(colour));
 

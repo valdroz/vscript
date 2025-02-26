@@ -602,20 +602,18 @@ class BaseNode implements Node, Constants {
                 result = (params.get(0).execute(variantContainer));
 
                 Variant result2 = Variant.nullVariant();
-                for (int i = 1; i < params.size(); i+=2) {
+                for (int i = 1; i < params.size(); i += 2) {
                     if (params.get(i).execute(variantContainer).equals(result)) {
-                        if(i == params.size()-1 ) {
+                        if (i == params.size() - 1) {
                             result2 = params.get(i).execute(variantContainer);
-                        }else{
-                            result2 = params.get(i+1).execute(variantContainer);
+                        } else {
+                            result2 = params.get(i + 1).execute(variantContainer);
                         }
                         break;
                     }
                 }
-
-                    result = result2;
-
-                break;
+                result = result2;
+            break;
 
             default:
                 throw new RuntimeException("Unexpected node: " + operation);
