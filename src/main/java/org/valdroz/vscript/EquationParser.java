@@ -508,13 +508,7 @@ class EquationParser implements Constants {
                     } else {
                         throw new EvaluationException(CE_ILLEGAL_VAR_NAME, currentLineNumber(), currentPosition());
                     }
-                } else if (word.equals("case")) {
-                    skipSpaces();
-                    if (isLiteralChar() || isDigit()) {
-                        word = readWord();
-                        node.withNodeOperation(NT_LOCAL_VARIABLE).withName("case " + word);
-                    }
-                } else {
+                }else {
                     BaseNode constNode = checkConstants(word);
                     if (constNode != null) {
                         node = constNode;

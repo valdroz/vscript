@@ -868,7 +868,7 @@ public class EquationEvalTests {
         variantContainer.setVariant("a", Variant.fromInt(a));
         variantContainer.setVariant("b", Variant.fromInt(b));
         variantContainer.setVariant("c", Variant.fromInt(c));
-        Variant result1 = new EquationEval("SWITCH( a > b , case true, a > c, case false, false, default, -1)").eval(variantContainer);
+        Variant result1 = new EquationEval("switch( a > b , true, a > c, false, false)").eval(variantContainer);
 
         assertThat(result1.asBoolean(), is(true));
 
@@ -880,7 +880,7 @@ public class EquationEvalTests {
         variantContainer2.setVariant("b", Variant.fromInt(b));
         variantContainer2.setVariant("c", Variant.fromInt(c));
 
-        Variant result2 = new EquationEval("SWITCH( a > b , case true, a > c, case false, false, default, -1)").eval(variantContainer2);
+        Variant result2 = new EquationEval("switch( a > b , true, a > c, false, false)").eval(variantContainer2);
 
         assertThat(result2.asBoolean(), is(false));
 
@@ -891,7 +891,7 @@ public class EquationEvalTests {
         variantContainer3.setVariant("a", Variant.fromInt(a));
         variantContainer3.setVariant("b", Variant.fromInt(b));
 
-        Variant result3 = new EquationEval("SWITCH( a * b , case 10, 10, case 20, 20, default, 40)").eval(variantContainer3);
+        Variant result3 = new EquationEval("switch( a * b , 10, 10, 20, 20, 40)").eval(variantContainer3);
 
         assertThat(result3.asNumeric().intValue(), is(40));
 
@@ -904,7 +904,7 @@ public class EquationEvalTests {
         variantContainer4.setVariant("b", Variant.fromInt(b));
         variantContainer4.setVariant("c", Variant.fromInt(c));
 
-        Variant result4 = new EquationEval("SWITCH( a > b , case true, if(a < c , c, a), case false, b, default, -1)").eval(variantContainer4);
+        Variant result4 = new EquationEval("switch( a > b , true, if(a < c , c, a), false, b)").eval(variantContainer4);
 
         assertThat(result4.asNumeric().intValue(), is(35));
 
@@ -917,8 +917,38 @@ public class EquationEvalTests {
         variantContainer5.setVariant("b", Variant.fromInt(b));
         variantContainer5.setVariant("c", Variant.fromInt(c));
 
-        Variant result5 = new EquationEval("SWITCH( a > b , case true, if(a < c , c, a), case false, if( b > c, b, c), default, -1)").eval(variantContainer5);
+        Variant result5 = new EquationEval("switch( a > b , true, if(a < c , c, a), false, if( b > c, b, c))").eval(variantContainer5);
 
         assertThat(result5.asNumeric().intValue(), is(45));
+
+        // Integer
+        VariantContainer variantContainer6 = new DefaultVariantContainer();
+        int num=1;
+
+        variantContainer6.setVariant("num", Variant.fromInt(num));
+
+        Variant result6 = new EquationEval("switch( num, 1, \"Small\", 2, \"Medium\", 3, \"Large\")").eval(variantContainer6);
+
+        assertThat(result6.asString(), is("Small"));
+
+        //DEFAULT IS NOT PRESENT
+        VariantContainer variantContainer7 = new DefaultVariantContainer();
+        num=4;
+
+        variantContainer7.setVariant("num", Variant.fromInt(num));
+
+        Variant result7 = new EquationEval("switch( num, 1, \"Small\", 2, \"Medium\", 3, \"Large\")").eval(variantContainer7);
+
+        assertThat(result7, is(Variant.nullVariant()));
+
+        //String Literal
+        VariantContainer variantContainer8 = new DefaultVariantContainer();
+        String colour="red";
+
+        variantContainer8.setVariant("colour", Variant.fromString(colour));
+
+        Variant result8 = new EquationEval("switch(colour, \"red\", \"RED\", \"blue\", \"BLUE\")").eval(variantContainer8);
+
+        assertThat(result8.asString(), is("RED"));
     }
 }

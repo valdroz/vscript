@@ -602,15 +602,17 @@ class BaseNode implements Node, Constants {
                 result = (params.get(0).execute(variantContainer));
 
                 Variant result2 = Variant.nullVariant();
-                for (int i = 0; i < params.size(); i++) {
-                    if (params.get(i).name.equals("case " + result.asString())) {
-                        result2 = params.get(i + 1).execute(variantContainer);
+                for (int i = 1; i < params.size(); i+=2) {
+                    if (params.get(i).execute(variantContainer).equals(result)) {
+                        if(i == params.size()-1 ) {
+                            result2 = params.get(i).execute(variantContainer);
+                        }else{
+                            result2 = params.get(i+1).execute(variantContainer);
+                        }
                         break;
                     }
                 }
-                if (result2.isNull() && params.get(params.size() - 2).getName().equalsIgnoreCase("default"))
-                    result = params.get(params.size() - 1).execute(variantContainer);
-                else
+
                     result = result2;
 
                 break;
