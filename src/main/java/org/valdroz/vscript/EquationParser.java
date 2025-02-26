@@ -508,7 +508,7 @@ class EquationParser implements Constants {
                     } else {
                         throw new EvaluationException(CE_ILLEGAL_VAR_NAME, currentLineNumber(), currentPosition());
                     }
-                }else {
+                } else {
                     BaseNode constNode = checkConstants(word);
                     if (constNode != null) {
                         node = constNode;
