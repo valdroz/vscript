@@ -699,7 +699,9 @@ class BaseNode implements Node, Constants {
     }
 
     static Duration durationTillNow(Variant from) {
-        if (from.isString()) {
+        if (from.isNull()) {
+            throw new RuntimeException("ISO string date or millis cannot be null.");
+        } else if (from.isString()) {
             return new Duration(
                     ISODateTimeFormat.dateOptionalTimeParser().parseDateTime(from.asString()),
                     now());
