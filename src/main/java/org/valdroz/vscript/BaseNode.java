@@ -719,19 +719,19 @@ class BaseNode implements Node, Constants {
     }
 
     static Duration durationTillNow(Variant from) {
-        if (from.isNull()) {
-            throw new RuntimeException("ISO string date or millis is expected as input.");
-        } else if (from.isString()) {
+        if (from.isString()) {
             return new Duration(
                     ISODateTimeFormat.dateOptionalTimeParser().parseDateTime(from.asString()),
                     now());
-        } else if (from.asNumeric().longValue() >= 0) {
+        } else if (from.isNumeric() && from.asNumeric().longValue() >= 0) {
             return new Duration(
                     new DateTime(from.asNumeric().longValue()),
                     now());
+        } else if (from.isNull()) {
+            throw new RuntimeException("ISO string date or millis cannot not be null.");
         }
 
-        throw new RuntimeException("ISO string date or millis should follow the desired DateTime format and cannot be negative.");
+        throw new RuntimeException("ISO string date or millis is expected as input."); 
     }
 
     static DateTime now() {
