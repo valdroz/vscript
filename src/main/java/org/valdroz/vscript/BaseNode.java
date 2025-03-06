@@ -723,13 +723,15 @@ class BaseNode implements Node, Constants {
             return new Duration(
                     ISODateTimeFormat.dateOptionalTimeParser().parseDateTime(from.asString()),
                     now());
-        } else if (from.asNumeric().longValue() > 1) {
+        } else if (from.isNumeric() && from.asNumeric().longValue() >= 0) {
             return new Duration(
                     new DateTime(from.asNumeric().longValue()),
                     now());
+        } else if (from.isNull()) {
+            throw new RuntimeException("ISO string date or millis cannot not be null.");
         }
 
-        throw new RuntimeException("ISO string date or millis is expected as input.");
+        throw new RuntimeException("ISO string date or millis is expected as input."); 
     }
 
     static DateTime now() {
