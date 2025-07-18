@@ -350,13 +350,7 @@ public abstract class Variant implements Comparable<Variant> {
             num = BigDecimal.ZERO;
         }
 
-        BigDecimal rounded = num.setScale(decimalPlaces, RoundingMode.HALF_UP);
-            try {
-                long l = rounded.longValueExact();
-                return fromLong(l);
-            } catch (ArithmeticException ex) {
-                return fromBigDecimal(rounded);
-            }
+        return fromBigDecimal(num.setScale(decimalPlaces, RoundingMode.HALF_UP));
     }
 
     private static class StringVariant extends Variant {
