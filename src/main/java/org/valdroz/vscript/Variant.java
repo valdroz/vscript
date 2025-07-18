@@ -348,7 +348,7 @@ public abstract class Variant implements Comparable<Variant> {
 
         BigDecimal num = value.asNumeric();
         if (num == null) {
-            num = Variant.nullVariant().asNumeric();
+            return Variant.nullVariant();
         }
 
         return fromBigDecimal(num.setScale(decimalPlaces, RoundingMode.HALF_UP));

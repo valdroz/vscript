@@ -969,7 +969,7 @@ public class EquationEvalTests {
         assertThat(res.asNumeric().doubleValue(), is(12.6));
 
         // Non-numeric input
-        assertThat(new EquationEval("round(\"abc\", 2)").eval(), VariantMatchers.numericOf(0.00));
+        assertThat(new EquationEval("round(\"abc\", 2)").eval(), VariantMatchers.nullVariant());
 
         // as double
         assertThat(new EquationEval("round(10.0, 0)").eval().asNumeric().doubleValue(), is(10.0));
