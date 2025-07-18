@@ -333,29 +333,28 @@ public abstract class Variant implements Comparable<Variant> {
      * @param decimalPlaces number of decimal places to round to
      * @return Variant containing rounded value (int if decimalPlaces==0, else float)
      */
-    public static Variant round(Object value, int decimalPlaces) {
+    public static Variant round(Variant value, int decimalPlaces) {
+
+        if (decimalPlaces < 0) {
+            throw new EvaluationException("Invalid decimal places, must be a positive number: " + decimalPlaces);
+        }
+
         if (value == null) {
             return nullVariant();
         }
-        BigDecimal num;
-        if (value instanceof Variant) {
-            num = ((Variant) value).asNumeric();
-        } else if (value instanceof Number) {
-            num = BigDecimal.valueOf(((Number) value).doubleValue());
-        } else {
+
+        BigDecimal num = value.asNumeric();
+
+        if (num == null) {
             try {
                 num = new BigDecimal(value.toString());
             } catch (Exception e) {
                 return nullVariant();
             }
         }
-        if (num == null) {
-            return nullVariant();
-        }
 
         BigDecimal rounded = num.setScale(decimalPlaces, RoundingMode.HALF_UP);
         if (decimalPlaces == 0) {
-
             try {
                 long l = rounded.longValueExact();
                 return fromLong(l);
