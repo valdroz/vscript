@@ -94,6 +94,7 @@ Math functions:
 - avg(n1,....,nN)       : Finds average value from provided numeric numeric value list.  
 - median(n1,....,nN)    : Finds median value from provided numeric numeric value list.
 - floor_mod(x, y)       : Returns the floor modulus of `x` and `y`.
+- round(x, y)       : Rounds `x` to `y` decimal places.
 
 String functions:
 - first(s, n) : Takes first `n` characters from string `s`.

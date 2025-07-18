@@ -932,4 +932,56 @@ public class EquationEvalTests {
         );
         assertThat(ex.getMessage(), is("Function `switch` requires at least 3 parameters"));
     }
+
+    @Test
+    public void testMathFunctionRound() {
+
+        // Standard rounding
+        assertThat(new EquationEval("round(10.1, 0)").eval(), VariantMatchers.numericOf(10));
+        assertThat(new EquationEval("round(10.9, 0)").eval(), VariantMatchers.numericOf(11));
+        assertThat(new EquationEval("round(10.5, 0)").eval(), VariantMatchers.numericOf(11));
+        assertThat(new EquationEval("round(10.49, 0)").eval(), VariantMatchers.numericOf(10));
+        assertThat(new EquationEval("round(10.555, 2)").eval(), VariantMatchers.numericOf(10.56));
+
+        // Expressions as value
+        assertThat(new EquationEval("round(11/3, 0)").eval(), VariantMatchers.numericOf(4));
+        assertThat(new EquationEval("round(11/3, 2)").eval(), VariantMatchers.numericOf(3.67));
+
+        // Variable/expression support
+        VariantContainer vc = new DefaultVariantContainer();
+        vc.setVariant("fact", Variant.fromDouble(7.2));
+        assertThat(new EquationEval("round(fact/2, 1)").eval(vc), VariantMatchers.numericOf(3.6));
+
+        // Negatives
+        assertThat(new EquationEval("round(-10.5, 0)").eval(), VariantMatchers.numericOf(-11));
+        assertThat(new EquationEval("round(-10.49, 0)").eval(), VariantMatchers.numericOf(-10));
+
+        // Very large numbers
+        assertThat(new EquationEval("round(123456789012345.6789, 0)").eval(), VariantMatchers.numericOf(123456789012346L));
+        assertThat(new EquationEval("round(-8765768453826.981, 2)").eval(), VariantMatchers.numericOf(-8765768453826.98));
+
+        // Null values and substitutions
+        vc.setVariant("a", Variant.nullVariant());
+        Variant res = EquationEval.parse("round(a?12.55, 0)").execute(vc);
+        assertThat(res.asNumeric().intValue(), is(13));
+        assertThat(res.asNumeric().doubleValue(), is(13.0));
+        res = EquationEval.parse("round(a?12.55, 1)").execute(vc);
+        assertThat(res.asNumeric().doubleValue(), is(12.6));
+
+        // Non-numeric input
+        assertThat(new EquationEval("round(\"abc\", 2)").eval(), VariantMatchers.nullVariant());
+
+        // as double
+        assertThat(new EquationEval("round(10.0, 0)").eval().asNumeric().doubleValue(), is(10.0));
+
+        //  as long
+        assertThat(new EquationEval("round(10.0, 0)").eval().asNumeric().longValue(), is(10L));
+
+        // negative decimal places
+        assertThrows(EvaluationException.class,
+                () -> new EquationEval("round(1, -1)").eval());
+
+    }
+
+
 }

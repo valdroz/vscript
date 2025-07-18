@@ -17,6 +17,7 @@ package org.valdroz.vscript;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.google.errorprone.annotations.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -325,6 +326,33 @@ public abstract class Variant implements Comparable<Variant> {
         }
     }
 
+    /**
+     * Rounds the given value to the specified number of decimal places, following standard rounding rules.
+     * Handles nulls, non-numeric, negatives, and very large numbers gracefully.
+     *
+     * @param value Variant or numeric value to round (expressions supported)
+     * @param decimalPlaces number of decimal places to round to
+     * @return Variant containing rounded value (int if decimalPlaces==0, else float)
+     */
+    public static Variant round(Variant value, int decimalPlaces) {
+
+        if (decimalPlaces < 0) {
+            throw new EvaluationException("Invalid decimal places, must be a positive number: " + decimalPlaces);
+        }
+
+      if (value == null) {
+          value = (decimalPlaces == 0)
+                  ? Variant.fromInt(0)
+                  : Variant.fromBigDecimal(BigDecimal.ZERO);
+      }
+
+        BigDecimal num = value.asNumeric();
+        if (num == null) {
+            return Variant.nullVariant();
+        }
+
+        return fromBigDecimal(num.setScale(decimalPlaces, RoundingMode.HALF_UP));
+    }
 
     private static class StringVariant extends Variant {
         private final String value;

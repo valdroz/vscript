@@ -614,6 +614,18 @@ class BaseNode implements Node, Constants {
                     result = result2;
                 break;
 
+            case NT_MF_ROUND: {
+                if (params == null || params.size() != 2) {
+                    throw new EvaluationException("Function `round` takes 2 parameters: value and decimal places.");
+                }
+
+                Variant value = getParameterOrNullNode(0).execute(variantContainer);
+                int decimalPlaces = getParameterOrNullNode(1).execute(variantContainer).asNumeric().intValue();
+                result = Variant.round(value, decimalPlaces);
+
+            }
+            break;
+
             default:
                 throw new RuntimeException("Unexpected node: " + operation);
 
