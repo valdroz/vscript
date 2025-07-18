@@ -325,6 +325,46 @@ public abstract class Variant implements Comparable<Variant> {
         }
     }
 
+    /**
+     * Rounds the given value to the specified number of decimal places, following standard rounding rules.
+     * Handles nulls, non-numeric, negatives, and very large numbers gracefully.
+     *
+     * @param value Variant or numeric value to round (expressions supported)
+     * @param decimalPlaces number of decimal places to round to
+     * @return Variant containing rounded value (int if decimalPlaces==0, else float)
+     */
+    public static Variant round(Object value, int decimalPlaces) {
+        if (value == null) {
+            return nullVariant();
+        }
+        BigDecimal num;
+        if (value instanceof Variant) {
+            num = ((Variant) value).asNumeric();
+        } else if (value instanceof Number) {
+            num = BigDecimal.valueOf(((Number) value).doubleValue());
+        } else {
+            try {
+                num = new BigDecimal(value.toString());
+            } catch (Exception e) {
+                return nullVariant();
+            }
+        }
+        if (num == null) {
+            return nullVariant();
+        }
+
+        BigDecimal rounded = num.setScale(decimalPlaces, RoundingMode.HALF_UP);
+        if (decimalPlaces == 0) {
+
+            try {
+                long l = rounded.longValueExact();
+                return fromLong(l);
+            } catch (ArithmeticException ex) {
+                return fromBigDecimal(rounded);
+            }
+        }
+        return fromBigDecimal(rounded);
+    }
 
     private static class StringVariant extends Variant {
         private final String value;

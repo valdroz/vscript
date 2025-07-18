@@ -77,6 +77,7 @@ class EquationParser implements Constants {
             .put("avg", NT_MF_AVERAGE)
             .put("median", NT_MF_MEDIAN)
             .put("switch", NT_MF_SWITCH)
+            .put("round", NT_MF_ROUND)
             .build();
 
 
