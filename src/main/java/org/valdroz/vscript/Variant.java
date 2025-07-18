@@ -339,30 +339,24 @@ public abstract class Variant implements Comparable<Variant> {
             throw new EvaluationException("Invalid decimal places, must be a positive number: " + decimalPlaces);
         }
 
-        if (value == null) {
-            return nullVariant();
-        }
+      if (value == null) {
+          value = (decimalPlaces == 0)
+                  ? Variant.fromInt(0)
+                  : Variant.fromBigDecimal(BigDecimal.ZERO);
+      }
 
         BigDecimal num = value.asNumeric();
-
         if (num == null) {
-            try {
-                num = new BigDecimal(value.toString());
-            } catch (Exception e) {
-                return nullVariant();
-            }
+            num = BigDecimal.ZERO;
         }
 
         BigDecimal rounded = num.setScale(decimalPlaces, RoundingMode.HALF_UP);
-        if (decimalPlaces == 0) {
             try {
                 long l = rounded.longValueExact();
                 return fromLong(l);
             } catch (ArithmeticException ex) {
                 return fromBigDecimal(rounded);
             }
-        }
-        return fromBigDecimal(rounded);
     }
 
     private static class StringVariant extends Variant {

@@ -969,13 +969,17 @@ public class EquationEvalTests {
         assertThat(res.asNumeric().doubleValue(), is(12.6));
 
         // Non-numeric input
-        assertThat(new EquationEval("round(\"abc\", 2)").eval().isNull(), is(true));
+        assertThat(new EquationEval("round(\"abc\", 2)").eval(), VariantMatchers.numericOf(0.00));
 
         // as double
         assertThat(new EquationEval("round(10.0, 0)").eval().asNumeric().doubleValue(), is(10.0));
 
         //  as long
         assertThat(new EquationEval("round(10.0, 0)").eval().asNumeric().longValue(), is(10L));
+
+        // negative decimal places
+        assertThrows(EvaluationException.class,
+                () -> new EquationEval("round(1, -1)").eval());
 
     }
 
