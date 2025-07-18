@@ -17,6 +17,7 @@ package org.valdroz.vscript;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.google.errorprone.annotations.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -347,7 +348,7 @@ public abstract class Variant implements Comparable<Variant> {
 
         BigDecimal num = value.asNumeric();
         if (num == null) {
-            num = BigDecimal.ZERO;
+            num = Variant.nullVariant().asNumeric();
         }
 
         return fromBigDecimal(num.setScale(decimalPlaces, RoundingMode.HALF_UP));
