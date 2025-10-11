@@ -79,14 +79,13 @@ public class DefaultRunBlock implements RunBlock {
      * @param body function body.
      */
     public void registerFunction(String signature, Function<VariantContainer, Variant> body) {
-        AbstractFunction func = new AbstractFunction(signature){
+        registerFunction(new AbstractFunction(signature){
 
             @Override
             public Variant execute(VariantContainer variantContainer) {
                 return body.apply(variantContainer);
-            }            
-        };
-        functions.put(func.getName(), func);
+            }
+        });
     }
 
 }

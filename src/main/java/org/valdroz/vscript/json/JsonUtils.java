@@ -8,6 +8,10 @@ import java.lang.reflect.Type;
 import java.util.Map;
 
 /**
+ * The JsonUtils class provides utility methods for manipulating JSON objects.
+ * It includes functions to set values in a JSON object based on paths, convert between
+ * different types of values, and more.
+ *
  * @author Valerijus Drozdovas
  * Created on 4/16/21
  */
@@ -17,6 +21,14 @@ public class JsonUtils {
     }.getType();
 
 
+    /**
+     * Sets a JSON object based on the provided path and value.
+     * If the value is null, it sets the specified path to null in the JSON object.
+     *
+     * @param jo    The JSON object to modify.
+     * @param path  The JSON object path as a concatenated string of keys separated by dots (e.g., "key.subKey").
+     * @param value The value to set at the specified path. If the value is null, it sets the path to null in the JSON object.
+     */
     public static void set(JsonObject jo, String path, JsonElement value) {
         if (value == null) {
             setJsonObjectPathElement(jo, path, JsonNull.INSTANCE);
@@ -25,6 +37,14 @@ public class JsonUtils {
         }
     }
 
+    /**
+     * Sets the value at the specified path in the JSON object. If the value is null,
+     * it sets a JsonNull instance; otherwise, it sets a JsonPrimitive with the provided value.
+     *
+     * @param jo    The JSON object to modify.
+     * @param path  The path in the JSON object where the value will be set.
+     * @param value The value to set at the specified path. If null, it will be replaced by JsonNull.
+     */
     public static void set(JsonObject jo, String path, String value) {
         if (value == null) {
             setJsonObjectPathElement(jo, path, JsonNull.INSTANCE);
@@ -33,6 +53,14 @@ public class JsonUtils {
         }
     }
 
+    /**
+     * Sets the value at the specified path in the JSON object. If the value is null,
+     * it sets a JsonNull instance; otherwise, it sets a JsonPrimitive with the provided value.
+     *
+     * @param jo    The JSON object to modify.
+     * @param path  The path in the JSON object where the value will be set.
+     * @param value The value to set at the specified path. If null, it will be replaced by JsonNull.
+     */
     public static void set(JsonObject jo, String path, Number value) {
         if (value == null) {
             setJsonObjectPathElement(jo, path, JsonNull.INSTANCE);
@@ -41,6 +69,14 @@ public class JsonUtils {
         }
     }
 
+    /**
+     * Sets the value at the specified path in the JSON object. If the value is null,
+     * it sets a JsonNull instance; otherwise, it sets a JsonPrimitive with the provided value.
+     *
+     * @param jo    The JSON object to modify.
+     * @param path  The path in the JSON object where the value will be set.
+     * @param value The value to set at the specified path. If null, it will be replaced by JsonNull.
+     */
     public static void set(JsonObject jo, String path, Boolean value) {
         if (value == null) {
             setJsonObjectPathElement(jo, path, JsonNull.INSTANCE);
@@ -49,6 +85,14 @@ public class JsonUtils {
         }
     }
 
+    /**
+     * Sets the value at the specified path in the JSON object. If the value is null,
+     * it sets a JsonNull instance; otherwise, it sets a JsonPrimitive with the provided value.
+     *
+     * @param jo    The JSON object to modify.
+     * @param path  The path in the JSON object where the value will be set.
+     * @param value The value to set at the specified path. If null, it will be replaced by JsonNull.
+     */
     public static void set(JsonObject jo, String path, Character value) {
         if (value == null) {
             setJsonObjectPathElement(jo, path, JsonNull.INSTANCE);
@@ -57,6 +101,13 @@ public class JsonUtils {
         }
     }
 
+    /**
+     * Sets an array of values at the specified path in a given JSON object.
+     *
+     * @param jo     The parent JSON object.
+     * @param path   The path where the array will be set in the JSON object.
+     * @param values The Iterable of values to be added to the array.
+     */
     public static <T> void setArray(JsonObject jo, String path, Iterable<T> values) {
         if (values == null) {
             setJsonObjectPathElement(jo, path, JsonNull.INSTANCE);
@@ -85,6 +136,12 @@ public class JsonUtils {
         set(jo, path, toJsonElement(value));
     }
 
+    /**
+     * Converts a Variant object into a corresponding JsonElement.
+     *
+     * @param value The Variant object to convert.
+     * @return A JsonElement representing the Variant, or {@code JsonNull} if the input is null.
+     */
     public static JsonElement toJsonElement(Variant value) {
         if (value == null || value.isNull()) {
             return JsonNull.INSTANCE;

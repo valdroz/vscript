@@ -44,15 +44,15 @@ public interface VariantContainer
 	void setVariant(String varName, int index, Variant varValue);
 
 	/**
-	 * Must return current value of an array item.
+	 * Must return the current value of an array item.
 	 * @param varName variant variable name.
 	 * @param index array index.
-	 * @return Variant instance must be never null.
+	 * @return Variant instance must never be null.
 	 */
 	Variant getVariant(String varName, int index);
 
 	/**
-	 * Must return true if container owns variable.
+	 * Must return true if container owns a variable.
 	 * @param varName variant variable name.
 	 * @return true if container owns variable.
 	 */

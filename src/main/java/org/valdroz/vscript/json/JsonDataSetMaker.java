@@ -187,7 +187,7 @@ public class JsonDataSetMaker {
             List<JsonObject> dataSet = Lists.newLinkedList();
             dataSet.addAll(flats);
 
-            if (children.size() > 0) {
+            if (!children.isEmpty()) {
                 List<JsonObject> augmentedChildDataSet = Lists.newLinkedList();
                 for (Map.Entry<String, Collection<JfObject>> entry : children.asMap().entrySet()) {
                     List<JsonObject> list = Lists.newLinkedList();
@@ -205,7 +205,7 @@ public class JsonDataSetMaker {
     }
 
     private static List<JsonObject> replicate(List<JsonObject> base, List<JsonObject> source) {
-        if (base.size() == 0) {
+        if (base.isEmpty()) {
             return source;
         }
         List<JsonObject> res = Lists.newLinkedList();

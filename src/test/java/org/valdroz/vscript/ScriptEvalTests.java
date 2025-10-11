@@ -30,22 +30,17 @@ public class ScriptEvalTests {
 
         VariantContainer variantContainer = new DefaultVariantContainer();
 
+        DefaultRunBlock runBlock = new DefaultRunBlock();
 
-        DefaultRunBlock masterRunBlock = new DefaultRunBlock();
-
-        masterRunBlock.registerFunction(
-                new AbstractFunction("multiply(first, second)") {
-                    @Override
-                    public Variant execute(VariantContainer variantContainer) {
-                        Variant first = variantContainer.getVariant("first");
-                        Variant second = variantContainer.getVariant("second");
-                        return first.multiply(second);
-                    }
-                }
-        );
+        runBlock.registerFunction("multiply(first, second)",
+                (lvc) -> {
+                    Variant first = lvc.getVariant("first");
+                    Variant second = lvc.getVariant("second");
+                    return first.multiply(second);
+                });
 
         Variant result = new EquationEval("2 + multiply(3, 4)")
-                .withMasterBlock(masterRunBlock)
+                .withMasterBlock(runBlock)
                 .eval(variantContainer);
 
         assertThat(result.asNumeric().doubleValue(), is(14.0));

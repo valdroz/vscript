@@ -32,7 +32,10 @@ import static org.valdroz.vscript.Constants.*;
 import static org.valdroz.vscript.EquationParser.functionNameFromCode;
 
 /**
- * Variant object.
+ * The Variant class is a data structure that can hold different types of values, including numbers, strings,
+ * arrays, etc. It is used in the evaluation of expressions in the Expression Evaluator. The Variant class has
+ * methods to convert between different types of values, such as converting from a string to an integer or vice versa.
+ * It also has methods for performing arithmetic operations on numeric values, such as adding two numbers together.
  *
  * @author Valerijus Drozdovas
  */
