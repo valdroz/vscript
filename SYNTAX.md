@@ -147,11 +147,11 @@ is_null(value)               // Check if null
 
 ### Logical Operators
 
-| Operator | Description | Example | Result |
-|----------|-------------|--------|--------|
-| `&&`     | Logical AND | `true && false` | `false` |
-| `\|\|`    | `Logical OR | `true` | `false` | `true` |
-| `!`      | Logical NOT | `!true` | `false` |
+| Operator | Description | Example           | Result |
+|----------|------------|-------------------|--------|
+| `&&`     | Logical AND | `true && false`   | `false` |
+| `\|\|`    | Logical OR | `true \|\| false` | `true` |
+| `!`      | Logical NOT | `!true`           | `false` |
 
 **Short-circuit Evaluation:**
 ```vscript
@@ -302,7 +302,7 @@ price = 100; tax = price * 0.1; price + tax  // Returns 110
 
 From highest to lowest:
 
-1. **Function calls, Parentheses** `()`, `function()`
+1. **Function calls, Parentheses** `()`, `function_name()`
 2. **Array indexing** `[]`
 3. **Unary NOT** `!`
 4. **Binary operators** `&`, `|`, `^`
@@ -407,10 +407,6 @@ if(x > 0, if(x > 10, "large", "small"), "negative")
 
 // Complex calculations
 result = ((a + b) * c) / (d - e)
-
-// Nested arrays
-matrix = {{1, 2}, {3, 4}}
-matrix[0][1]         // 2
 ```
 
 ---
