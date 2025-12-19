@@ -259,6 +259,10 @@ public class EquationEvalTests {
 
         assertThat(var.asNumeric().intValue(), is(369));
 
+        var = new EquationEval("days_before_now(now() - 86400000)").eval(container);
+
+        assertThat(var.asNumeric().intValue(), is(1));
+
         EquationEval.setCurrentTimeSupplier(prevNow);
     }
 
@@ -455,7 +459,6 @@ public class EquationEvalTests {
 
     @Test
     public void testSubstitutions() {
-
         VariantContainer variantContainer = new DefaultVariantContainer();
         variantContainer.setVariant("a", Variant.nullVariant());
         variantContainer.setVariant("b", Variant.fromInt(1));
@@ -562,7 +565,6 @@ public class EquationEvalTests {
 
     @Test
     public void testStats() {
-
         EquationEval eq = new EquationEval("c[0] = a + b; d = extf1(c[0] + e + 1); d = sin(a * 0); c[f] = extf2() ");
 
         NodeStats stats = eq.getStats();
@@ -601,7 +603,6 @@ public class EquationEvalTests {
                 "multiply(var1,3/2)", System.out::println)
                 .withMasterBlock(masterRunBlock)
                 .eval(variantContainer);
-
     }
 
     @Test
@@ -655,13 +656,11 @@ public class EquationEvalTests {
         var = new EquationEval("a=cos(to_array(0,0,PI)); a[0]==1 && a[1]==1 && a[2]==-1").eval();
         assertThat(var.isBoolean(), is(true));
         assertThat(var.asBoolean(), is(true));
-
     }
 
 
     @Test
     public void testBinOperators() {
-
         Variant var = new EquationEval("1|2 == 3 && 1&2 == 0 && 1^3==2", System.out::println).eval();
         assertThat(var.isBoolean(), is(true));
         assertThat(var.asBoolean(), is(true));
@@ -703,7 +702,6 @@ public class EquationEvalTests {
 
     @Test
     public void testIfOperation() {
-
         VariantContainer variantContainer = new DefaultVariantContainer();
         int a = 10;
         int b = a * 2;
@@ -725,21 +723,16 @@ public class EquationEvalTests {
 
     @Test
     public void testFunctionFirst() {
-
         Variant result = new EquationEval("first(\"Hello\", 2)").eval();
-
         assertThat(result, VariantMatchers.stringOf("He"));
 
         result = new EquationEval("first(\"Hello\", 10)").eval();
-
         assertThat(result, VariantMatchers.stringOf("Hello"));
 
         result = new EquationEval("first(\"Hello\", 0)").eval();
-
         assertThat(result, VariantMatchers.stringOf(""));
 
         result = new EquationEval("first(\"Hello\", -2)").eval();
-
         assertThat(result, VariantMatchers.stringOf(""));
     }
 
@@ -755,21 +748,16 @@ public class EquationEvalTests {
 
     @Test
     public void testFunctionLast() {
-
         Variant result = new EquationEval("last(\"Hello\", 2)").eval();
-
         assertThat(result, VariantMatchers.stringOf("lo"));
 
         result = new EquationEval("last(\"Hello\", 10)").eval();
-
         assertThat(result, VariantMatchers.stringOf("Hello"));
 
         result = new EquationEval("last(\"Hello\", 0)").eval();
-
         assertThat(result, VariantMatchers.stringOf(""));
 
         result = new EquationEval("last(\"Hello\", -2)").eval();
-
         assertThat(result, VariantMatchers.stringOf(""));
     }
 
@@ -785,21 +773,16 @@ public class EquationEvalTests {
 
     @Test
     public void testFunctionSkip() {
-
         Variant result = new EquationEval("skip(\"Hello\", 2)").eval();
-
         assertThat(result, VariantMatchers.stringOf("llo"));
 
         result = new EquationEval("skip(\"Hello\", 10)").eval();
-
         assertThat(result, VariantMatchers.stringOf(""));
 
         result = new EquationEval("skip(\"Hello\", 0)").eval();
-
         assertThat(result, VariantMatchers.stringOf("Hello"));
 
         result = new EquationEval("skip(\"Hello\", -2)").eval();
-
         assertThat(result, VariantMatchers.stringOf("Hello"));
     }
 
@@ -814,7 +797,6 @@ public class EquationEvalTests {
 
     @Test
     public void testFunctionAvg() {
-
         assertThat(new EquationEval("avg(1,2,3,4,5)").eval(), VariantMatchers.numericOf(3));
         assertThat(new EquationEval("avg(1.1,2.1,3.1,4.1,5.1)").eval(), VariantMatchers.numericOf(3.1));
         assertThat(new EquationEval("avg()").eval(), VariantMatchers.nullVariant());
@@ -822,7 +804,6 @@ public class EquationEvalTests {
 
     @Test
     public void testFunctionMedian() {
-
         assertThat(new EquationEval("median(1, 3, 3, 6, 7, 8, 9)").eval(), VariantMatchers.numericOf(6));
         assertThat(new EquationEval("median(1, 2, 3, 4, 5, 6, 8, 9)").eval(), VariantMatchers.numericOf(4.5));
         assertThat(new EquationEval("median(7, 8, 9)").eval(), VariantMatchers.numericOf(8));
@@ -833,20 +814,17 @@ public class EquationEvalTests {
 
     @Test
     public void testFunctionMax() {
-
         assertThat(new EquationEval("max(3, -100, 234, 234.1, null, 7, 8, 9)").eval(), VariantMatchers.numericOf(234.1));
         assertThat(new EquationEval("max(3, -100, 234, \"234.1\", null, 7, 8, 9)").eval(), VariantMatchers.numericOf(234.1));
         assertThat(new EquationEval("max(3, to_array(-100, 234, 234.1, null), 7, 8, 9)").eval(), VariantMatchers.numericOf(234.1));
         assertThat(new EquationEval("max(3, to_array(-100, 234, \"234.1\", null, \"x\"), 7, 8, 9)").eval(), VariantMatchers.numericOf(234.1));
         assertThat(new EquationEval("max(to_array(-100, null, 234, 234.1))").eval(), VariantMatchers.numericOf(234.1));
         assertThat(new EquationEval("max(\"a\",\"x\",\"c\")").eval(), VariantMatchers.nullVariant());
-
-
+        assertThat(new EquationEval("max(5, {10, 11}, 3)").eval(), VariantMatchers.numericOf(11));
     }
 
     @Test
     public void testFunctionMin() {
-
         assertThat(new EquationEval("min(null, 3, -100, 234, 234.1, 7, null, 8, 9)").eval(), VariantMatchers.numericOf(-100));
         assertThat(new EquationEval("min(null, 3, \"-100\", 234, 234.1, 7, null, 8, 9)").eval(), VariantMatchers.numericOf(-100));
         assertThat(new EquationEval("min(3, to_array(-100, 234, 234.1, null), 7, null, 8, 9)").eval(), VariantMatchers.numericOf(-100));
@@ -854,74 +832,64 @@ public class EquationEvalTests {
         assertThat(new EquationEval("min(to_array(-100, null, 234, 234.1))").eval(), VariantMatchers.numericOf(-100));
         assertThat(new EquationEval("min(to_array(\"-100\", null, \"-100.1\", 234, 234.1))").eval(), VariantMatchers.numericOf(-100.1));
         assertThat(new EquationEval("min(\"a\",\"x\",\"c\")").eval(), VariantMatchers.nullVariant());
+        assertThat(new EquationEval("min(5, {10, 2}, 3)").eval(), VariantMatchers.numericOf(2));
+        assertThat(new EquationEval("min(5, {10, 15}, 3)").eval(), VariantMatchers.numericOf(3));
     }
 
     @Test
     public void testSwitchOperation() {
-
         //case 1
         VariantContainer variantContainer = new DefaultVariantContainer();
-        int switch_on = 1;
-        variantContainer.setVariant("switch_on", Variant.fromInt(switch_on));
+        variantContainer.setVariant("switch_on", Variant.fromInt(1));
         Variant result1 = new EquationEval("switch(switch_on, 1, switch_on * 2, 2, switch_on * 3)").eval(variantContainer);
         assertThat(result1.asNumeric().intValue(), is(2));
 
         //case 2
         VariantContainer variantContainer2 = new DefaultVariantContainer();
-        switch_on = 2;
-        variantContainer2.setVariant("switch_on", Variant.fromInt(switch_on));
+        variantContainer2.setVariant("switch_on", Variant.fromInt(2));
         Variant result2 = new EquationEval("switch(switch_on, 1, switch_on * 2, 2, switch_on * 3)").eval(variantContainer2);
         assertThat(result2.asNumeric().intValue(), is(6));
 
         //Default
         VariantContainer variantContainer3 = new DefaultVariantContainer();
-        int a = 20;
-        int b = 2;
-        variantContainer3.setVariant("a", Variant.fromInt(a));
-        variantContainer3.setVariant("b", Variant.fromInt(b));
+        variantContainer3.setVariant("a", Variant.fromInt(20));
+        variantContainer3.setVariant("b", Variant.fromInt(2));
         Variant result3 = new EquationEval("switch( a * b , 10, 10, 20, 20, 40)").eval(variantContainer3);
         assertThat(result3.asNumeric().intValue(), is(40));
 
         // Null Scenario
         VariantContainer variantContainer4 = new DefaultVariantContainer();
-        switch_on = 3;
-        variantContainer4.setVariant("switch_on", Variant.fromInt(switch_on));
+        variantContainer4.setVariant("switch_on", Variant.fromInt(3));
         Variant result4 = new EquationEval("switch(switch_on, 1, switch_on * 2, 2, switch_on * 3)").eval(variantContainer4);
-
         assertThat(result4, is(Variant.nullVariant()));
 
         // case 3
         VariantContainer variantContainer5 = new DefaultVariantContainer();
-        switch_on = 3;
-        variantContainer5.setVariant("switch_on", Variant.fromInt(switch_on));
+        variantContainer5.setVariant("switch_on", Variant.fromInt(3));
         Variant result5 = new EquationEval("switch(switch_on, 1, switch_on * 2, 2, switch_on * 3, 3, switch_on * 4)").eval(variantContainer5);
         assertThat(result5.asNumeric().intValue(), is(12));
 
         // String Output
         VariantContainer variantContainer6 = new DefaultVariantContainer();
-        int num = 1;
-        variantContainer6.setVariant("num", Variant.fromInt(num));
+        variantContainer6.setVariant("num", Variant.fromInt(1));
         Variant result6 = new EquationEval("switch( num, 1, \"Small\", 2, \"Medium\", 3, \"Large\")").eval(variantContainer6);
         assertThat(result6.asString(), is("Small"));
 
         //Expecting Null
         VariantContainer variantContainer7 = new DefaultVariantContainer();
-        num = 4;
-        variantContainer7.setVariant("num", Variant.fromInt(num));
+        variantContainer7.setVariant("num", Variant.fromInt(4));
         Variant result7 = new EquationEval("switch( num, 1, \"Small\", 2, \"Medium\", 3, \"Large\")").eval(variantContainer7);
         assertThat(result7, is(Variant.nullVariant()));
 
         //String Literal
         VariantContainer variantContainer8 = new DefaultVariantContainer();
-        String colour = "red";
-        variantContainer8.setVariant("colour", Variant.fromString(colour));
+        variantContainer8.setVariant("colour", Variant.fromString("red"));
         Variant result8 = new EquationEval("switch(colour, \"red\", \"RED\", \"blue\", \"BLUE\")").eval(variantContainer8);
         assertThat(result8.asString(), is("RED"));
 
         //String Literal
         VariantContainer variantContainer9 = new DefaultVariantContainer();
-        String switch_on1 = "s1";
-        variantContainer9.setVariant("switch_on1", Variant.fromString(switch_on1));
+        variantContainer9.setVariant("switch_on1", Variant.fromString("s1"));
         Variant result9 = new EquationEval("switch(switch_on1, \"s0\", \"SZero\", \"s1\", \"SOne\")").eval(variantContainer9);
         assertThat(result9.asString(), is("SOne"));
 
@@ -935,7 +903,6 @@ public class EquationEvalTests {
 
     @Test
     public void testMathFunctionRound() {
-
         // Standard rounding
         assertThat(new EquationEval("round(10.1, 0)").eval(), VariantMatchers.numericOf(10));
         assertThat(new EquationEval("round(10.9, 0)").eval(), VariantMatchers.numericOf(11));
@@ -980,7 +947,6 @@ public class EquationEvalTests {
         // negative decimal places
         assertThrows(EvaluationException.class,
                 () -> new EquationEval("round(1, -1)").eval());
-
     }
 
 

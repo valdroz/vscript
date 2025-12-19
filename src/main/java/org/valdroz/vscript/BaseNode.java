@@ -745,7 +745,7 @@ class BaseNode implements Node, Constants {
         Variant max = Variant.nullVariant();
         for (Variant vi : va) {
             Variant _vn = toNumeric(vi);
-            if (!_vn.isNull() && _vn.compareTo(max) > 0) {
+            if (!_vn.isNull() && _vn.compareTo(max) > 0 || max.isNull()) {
                 max = _vn;
             }
         }
@@ -756,7 +756,7 @@ class BaseNode implements Node, Constants {
         Variant min = Variant.nullVariant();
         for (Variant vi : va) {
             Variant _vn = toNumeric(vi);
-            if (!_vn.isNull() && _vn.compareTo(min) < 0) {
+            if (!_vn.isNull() && _vn.compareTo(min) < 0 || min.isNull()) {
                 min = _vn;
             }
         }

@@ -49,10 +49,7 @@ public class TracingBaseNode extends BaseNode {
             }
             String buildInFuncName = EquationParser.functionNameFromCode(getNodeOperation());
             String message = "";
-            String paramsMsg = "";
-            if (params != null) {
-                paramsMsg += Joiner.on(", ").join(params);
-            }
+            String paramsMsg = Joiner.on(", ").join(params);
             if (StringUtils.isNotBlank(buildInFuncName)) {
                 message += "FUN: " + buildInFuncName + "(" + paramsMsg + ") YIELDS " + result;
             } else {
