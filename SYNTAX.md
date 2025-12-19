@@ -71,7 +71,6 @@ Mixed-type collections with zero-based indexing.
 {1, 2, 3}                    // Numeric array
 {"one", "two", "three"}      // String array
 {10, "mixed", true, null}    // Mixed types
-{1, 2, {3, 4}}              // Nested arrays
 ```
 
 **Array Operations:**
@@ -149,10 +148,10 @@ is_null(value)               // Check if null
 ### Logical Operators
 
 | Operator | Description | Example | Result |
-|----------|-------------|---------|--------|
-| `&&` | Logical AND | `true && false` | `false` |
-| `||` | Logical OR | `true || false` | `true` |
-| `!` | Logical NOT | `!true` | `false` |
+|----------|-------------|--------|--------|
+| `&&`     | Logical AND | `true && false` | `false` |
+| `\|\|`    | `Logical OR | `true` | `false` | `true` |
+| `!`      | Logical NOT | `!true` | `false` |
 
 **Short-circuit Evaluation:**
 ```vscript
@@ -169,11 +168,11 @@ true || expensive_operation()     // expensive_operation() not called
 
 ### Bitwise/Binary Operators
 
-| Operator | Description | Example | Result |
-|----------|-------------|---------|--------|
-| `&` | Bitwise AND | `5 & 3` | `1` |
-| `|` | Bitwise OR | `5 | 3` | `7` |
-| `^` | Bitwise XOR | `5 ^ 3` | `6` |
+| Operator | Description | Example  | Result |
+|----------|-------------|----------|-------|
+| `&`      | Bitwise AND | `5 & 3`  | `1` |
+| `\|`     | Bitwise OR | `5 \| 3` | `7` |
+| `^`      | Bitwise XOR | `5 ^ 3`  | `6` |
 
 **Examples:**
 ```vscript
@@ -414,16 +413,6 @@ matrix = {{1, 2}, {3, 4}}
 matrix[0][1]         // 2
 ```
 
-### Dynamic Property Access
-
-Use dot notation for properties:
-
-```vscript
-user.name
-product.price
-order.item.quantity
-```
-
 ---
 
 ## Comments
@@ -465,23 +454,6 @@ arr = {1, 2, 3}
 arr[10]              // May return null or throw error
 arr[10]?-1           // Safe with default: -1
 ```
-
-### Best Practices
-
-1. **Use null substitution for safety:**
-   ```vscript
-   value?0              // Provide sensible defaults
-   ```
-
-2. **Validate before operations:**
-   ```vscript
-   if(is_numeric(input), input * 2, 0)
-   ```
-
-3. **Check array bounds:**
-   ```vscript
-   if(index < size(arr), arr[index], -1)
-   ```
 
 ---
 

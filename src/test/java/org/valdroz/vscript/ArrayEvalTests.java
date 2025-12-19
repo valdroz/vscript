@@ -130,7 +130,7 @@ public class ArrayEvalTests {
     }
 
     @Test
-    public void testToArrayAssigmentFunction() {
+    public void testToArrayAssignmentFunction() {
         DefaultVariantContainer container = new DefaultVariantContainer();
 
         Variant var = new EquationEval("arr = {1,2,\"3\",true} + \"added to the end\"; is_size_4 = size(arr); arr == 3").eval(container);

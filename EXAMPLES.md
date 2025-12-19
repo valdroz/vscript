@@ -27,7 +27,7 @@ Add vscript to your `pom.xml`:
 <dependency>
     <groupId>org.valdroz.vscript</groupId>
     <artifactId>vscript</artifactId>
-    <version>3.12.1</version>
+    <version>3.13.0</version>
 </dependency>
 ```
 
