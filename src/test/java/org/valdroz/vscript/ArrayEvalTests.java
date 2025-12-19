@@ -128,4 +128,20 @@ public class ArrayEvalTests {
 
         assertThat(result, booleanOf(true));
     }
+
+    @Test
+    public void testToArrayAssigmentFunction() {
+        DefaultVariantContainer container = new DefaultVariantContainer();
+
+        Variant var = new EquationEval("arr = {1,2,\"3\",true} + \"added to the end\"; is_size_4 = size(arr); arr == 3").eval(container);
+
+        assertThat("Last evaluation value `true` as arr includes item matching \"3\" == 3", var, booleanOf(true));
+        assertThat(container.getVariant("arr"), arrayOf(
+                fromInt(1),
+                fromInt(2),
+                fromString("3"),
+                fromBoolean(true),
+                fromString("added to the end")
+        ));
+    }
 }

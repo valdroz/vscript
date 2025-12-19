@@ -402,6 +402,15 @@ class EquationParser implements Constants {
      */
     private BaseNode parseEqFactor() {
         skipSpaces();
+
+        if (currentCharCheckExpSeparator() == '{') {
+            // Use built-in to_array function code to represent a literal array
+            BaseNode node = newNode().withNodeOperation(NT_MF_TO_ARRAY);
+            // parseParamsFor will consume '{' and '}' and populate parameters
+            parseParamsFor(node, '{', '}', ',');
+            return node;
+        }
+
         if (currentCharCheckExpSeparator() == '(') {
             BaseNode node;
             forwardPosition();

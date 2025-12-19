@@ -623,8 +623,8 @@ public class EquationEvalTests {
         Variant var = new EquationEval("true == true", trace::add).eval();
         assertThat(var.isBoolean(), is(true));
         assertThat(var.asBoolean(), is(true));
-        assertThat(trace.size(), is(1));
-        assertThat(trace.get(0), containsString("true EQUALS TO true YIELDS true"));
+        assertThat(trace.size(), is(2));
+        assertThat(trace.get(1), containsString("true EQUALS TO true YIELDS true"));
     }
 
 
@@ -853,7 +853,7 @@ public class EquationEvalTests {
         assertThat(new EquationEval("min(3, to_array(\"-100\", 234, 234.1, null), 7, null, 8, 9)").eval(), VariantMatchers.numericOf(-100));
         assertThat(new EquationEval("min(to_array(-100, null, 234, 234.1))").eval(), VariantMatchers.numericOf(-100));
         assertThat(new EquationEval("min(to_array(\"-100\", null, \"-100.1\", 234, 234.1))").eval(), VariantMatchers.numericOf(-100.1));
-        assertThat(new EquationEval("max(\"a\",\"x\",\"c\")").eval(), VariantMatchers.nullVariant());
+        assertThat(new EquationEval("min(\"a\",\"x\",\"c\")").eval(), VariantMatchers.nullVariant());
     }
 
     @Test

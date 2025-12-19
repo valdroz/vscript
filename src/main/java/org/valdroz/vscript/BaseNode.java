@@ -454,7 +454,7 @@ class BaseNode implements Node, Constants {
                 _paramCount = getParameterCount();
                 if (_paramCount > 0) {
                     Variant _v = params.get(0).execute(variantContainer);
-                    result = (_v.isArray()) ? min(_v.asArray()) : _v;
+                    result = (_v.isArray()) ? min(_v.asArray()) : toNumeric(_v);
                     for (int i = 1; i < _paramCount; ++i) {
                         _v = params.get(i).execute(variantContainer);
                         _v = (_v.isArray()) ? min(_v.asArray()) : toNumeric(_v);

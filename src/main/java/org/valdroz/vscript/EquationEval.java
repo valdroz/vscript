@@ -41,7 +41,9 @@ public final class EquationEval {
      */
     public EquationEval(String equation, TraceListener traceListener) {
         EquationParser parser = new EquationParser(equation, traceListener);
-
+        if (traceListener != null) {
+            traceListener.trace("DSL: " + equation);
+        }
         this.node = new CompositeNode();
         String leftover = "";
         int pos = 0;
