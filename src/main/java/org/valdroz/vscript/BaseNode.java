@@ -74,19 +74,9 @@ class BaseNode implements Node, Constants {
         return this;
     }
 
-    BaseNode setLeftNode(BaseNode leftNode) {
-        this.leftNode = leftNode;
-        return leftNode;
-    }
-
     BaseNode withRightNode(BaseNode rightNode) {
         this.rightNode = rightNode;
         return this;
-    }
-
-    BaseNode setRightNode(BaseNode rightNode) {
-        this.rightNode = rightNode;
-        return rightNode;
     }
 
     void setValueSubstitution(BaseNode node) {
@@ -432,7 +422,7 @@ class BaseNode implements Node, Constants {
             }
             break;
 
-            case NT_MF_MAX:
+            case NT_MF_MAX: {
                 int _paramCount = getParameterCount();
                 if (_paramCount > 0) {
                     Variant _v = params.get(0).execute(variantContainer);
@@ -445,11 +435,11 @@ class BaseNode implements Node, Constants {
                         }
                     }
                 }
+            }
+            break;
 
-                break;
-
-            case NT_MF_MIN:
-                _paramCount = getParameterCount();
+            case NT_MF_MIN: {
+                int _paramCount = getParameterCount();
                 if (_paramCount > 0) {
                     Variant _v = params.get(0).execute(variantContainer);
                     result = (_v.isArray()) ? min(_v.asArray()) : toNumeric(_v);
@@ -461,7 +451,8 @@ class BaseNode implements Node, Constants {
                         }
                     }
                 }
-                break;
+            }
+            break;
 
             case NT_MF_AVERAGE:
                 if (params != null) {
@@ -598,10 +589,11 @@ class BaseNode implements Node, Constants {
                         break;
                     }
                 }
-                if (result2.isNull() && params.size() % 2 == 0)
+                if (result2.isNull() && params.size() % 2 == 0) {
                     result = params.get(params.size() - 1).execute(variantContainer);
-                else
+                } else {
                     result = result2;
+                }
                 break;
 
             case NT_MF_ROUND: {
@@ -612,7 +604,6 @@ class BaseNode implements Node, Constants {
                 Variant value = getParameterOrNullNode(0).execute(variantContainer);
                 int decimalPlaces = getParameterOrNullNode(1).execute(variantContainer).asNumeric().intValue();
                 result = Variant.round(value, decimalPlaces);
-
             }
             break;
 

@@ -190,7 +190,7 @@ class EquationParser implements Constants {
                     .withNodeOperation(currentCharCheckExpSeparator());
             forwardPosition();
             skipSpaces();
-            if (node.setRightNode(parseLogicOrNode()) == null) {
+            if (node.withRightNode(parseLogicOrNode()) == null) {
                 return null;
             }
             left = node;
@@ -216,7 +216,7 @@ class EquationParser implements Constants {
             forwardPosition();
             forwardPosition();
             skipSpaces();
-            if (node.setRightNode(parseLogicAndNode()) == null) {
+            if (node.withRightNode(parseLogicAndNode()) == null) {
                 return null;
             }
             left = node;
@@ -239,7 +239,7 @@ class EquationParser implements Constants {
             forwardPosition();
             forwardPosition();
             skipSpaces();
-            if (node.setRightNode(parseComparisonOperator()) == null) {
+            if (node.withRightNode(parseComparisonOperator()) == null) {
                 return null;
             }
             left = node;
@@ -265,7 +265,7 @@ class EquationParser implements Constants {
 
             forwardPosition();
             skipSpaces();
-            if (node.setRightNode(parseMultiplicationDivisionOperator()) == null) {
+            if (node.withRightNode(parseMultiplicationDivisionOperator()) == null) {
                 throw new EvaluationException(CE_INCOMPLETE, currentLineNumber(), currentPosition());
             }
             left = node;
@@ -287,7 +287,7 @@ class EquationParser implements Constants {
                     .withNodeOperation(currentCharCheckExpSeparator());
             forwardPosition();
             skipSpaces();
-            if (node.setRightNode(parseBinAndOrOperator()) == null) {
+            if (node.withRightNode(parseBinAndOrOperator()) == null) {
                 return null;
             }
             left = node;
@@ -337,7 +337,7 @@ class EquationParser implements Constants {
             forwardPosition();
             skipSpaces();
 
-            if (node.setRightNode(parsePlusMinus()) == null) {
+            if (node.withRightNode(parsePlusMinus()) == null) {
                 return null;
             }
             return node;
@@ -366,7 +366,7 @@ class EquationParser implements Constants {
             forwardPosition();
             skipSpaces();
 
-            if (node.setRightNode(parseNotOperator()) == null) {
+            if (node.withRightNode(parseNotOperator()) == null) {
                 return null;
             }
             left = node;
@@ -387,7 +387,7 @@ class EquationParser implements Constants {
                     .withNodeOperation(currentCharCheckExpSeparator());
             forwardPosition();
             skipSpaces();
-            if (node.setLeftNode(parseNotOperator()) == null) {
+            if (node.withLeftNode(parseNotOperator()) == null) {
                 return null;
             }
             return node;
