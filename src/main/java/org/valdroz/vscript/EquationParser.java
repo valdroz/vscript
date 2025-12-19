@@ -29,9 +29,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 class EquationParser implements Constants {
     private String source;
-    private int currentLine = 0;
-    private int position = 0;
-    private int stopAt = -1;
+    private int currentLine;
+    private int position;
+    private int stopAt;
     private final AtomicInteger idgen = new AtomicInteger(1);
 
     private final Tracer tracer;
@@ -93,7 +93,7 @@ class EquationParser implements Constants {
             this.tracer = null;
         }
         this.source = Optional.ofNullable(source).orElse(Variant.EMPTY_STRING).trim();
-        if (this.source.length() == 0) {
+        if (this.source.isEmpty()) {
             this.source = Configuration.getExpressionForEmptyEval();
         }
         currentLine = 1;
@@ -467,7 +467,7 @@ class EquationParser implements Constants {
             node = newConstantNode(Variant.fromString(text));
         } else if (isLiteralChar()) {
             String word = readWord();
-            if (word.length() == 0) return null;
+            if (word.isEmpty()) return null;
 
             skipSpaces();
             boolean isFunction = currentCharCheckExpSeparator() == '(';
@@ -664,27 +664,27 @@ class EquationParser implements Constants {
      * end of returned word.
      */
     private String readWord() {
-        String ret = "";
+        StringBuilder ret = new StringBuilder();
         skipSpaces();
 
         if (isDigit()) {
             while (isDigit()) {
-                ret += currentCharCheckExpSeparator();
+                ret.append(currentCharCheckExpSeparator());
                 forwardPosition();
             }
         } else if (isLiteralChar()) {
             while (isLiteralChar() || isDigit()) {
-                ret += currentCharCheckExpSeparator();
+                ret.append(currentCharCheckExpSeparator());
                 forwardPosition();
             }
         } else if (isOperatorSymbol()) {
             while (isOperatorSymbol()) {
-                ret += currentCharCheckExpSeparator();
+                ret.append(currentCharCheckExpSeparator());
                 forwardPosition();
             }
         }
 
-        return ret;
+        return ret.toString();
     }
 
     /**
@@ -739,13 +739,13 @@ class EquationParser implements Constants {
      *
      */
     private String readTextSequence() {
-        String text = "";
+        StringBuilder text = new StringBuilder();
 
         if (isText()) {
             forwardPosition();
             boolean next = true;
             boolean specialChar = false;
-            char ch = '\0';
+            char ch;
             while (next) {
                 ch = currentChar();
                 forwardPosition();
@@ -755,7 +755,7 @@ class EquationParser implements Constants {
                     throw new EvaluationException(CE_MISSING_QUOTATION, currentLineNumber(), currentPosition());
                 }
 
-                if (ch == '\\' && !specialChar) {
+                if (ch == '\\') {
                     ch = currentChar();
                     forwardPosition();
                     specialChar = true;
@@ -763,22 +763,22 @@ class EquationParser implements Constants {
 
                 if (specialChar)
                     if (ch == 'n') {
-                        text += (char) 13;
-                        text += (char) 10;
+                        text.append((char) 13);
+                        text.append((char) 10);
                     } else if (ch == 't')
-                        text += (char) 9;
+                        text.append((char) 9);
                     else
-                        text += ch;
+                        text.append(ch);
                 else if (ch == '"')
                     next = false;
                 else
-                    text += ch;
+                    text.append(ch);
 
                 specialChar = false;
             }
         }
 
-        return text;
+        return text.toString();
     }
 
     /**

@@ -45,7 +45,7 @@ public final class EquationEval {
             traceListener.trace("DSL: " + equation);
         }
         this.node = new CompositeNode();
-        String leftover = "";
+        String leftover;
         int pos = 0;
         do {
             node.addNode(parser.parse(pos));
@@ -53,11 +53,9 @@ public final class EquationEval {
             leftover = parser.unprocessedSource();
         } while (leftover.length() > 1 && leftover.startsWith(";"));
 
-        if (leftover.length() > 0) {
-            StringBuilder errorMsg = new StringBuilder("Expression error: Unexpected text \"");
-            errorMsg.append(leftover);
-            errorMsg.append("\"");
-            throw new EvaluationException(errorMsg.toString(), parser.currentLineNumber(), parser.currentPosition());
+        if (!leftover.isEmpty()) {
+            String errorMsg = "Expression error: Unexpected text \"" + leftover + "\"";
+            throw new EvaluationException(errorMsg, parser.currentLineNumber(), parser.currentPosition());
         }
     }
 

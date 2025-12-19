@@ -155,9 +155,7 @@ class BaseNode implements Node, Constants {
 
             case '!':
                 leftNodeResult = leftNode.execute(variantContainer);
-                if (leftNodeResult.isNull()) {
-                    result = Variant.nullVariant();
-                } else {
+                if (!leftNodeResult.isNull()) {
                     result = Variant.fromBoolean(!leftNodeResult.asBoolean());
                 }
                 break;
@@ -469,8 +467,8 @@ class BaseNode implements Node, Constants {
                 if (params != null) {
                     BigDecimal sum = BigDecimal.ZERO;
                     int _c = 0;
-                    for (int i = 0; i < params.size(); ++i) {
-                        Variant _v = params.get(i).execute(variantContainer);
+                    for (BaseNode param : params) {
+                        Variant _v = param.execute(variantContainer);
                         if (_v.isNumeric()) {
                             _c += 1;
                             sum = sum.add(_v.asNumeric());
@@ -478,19 +476,15 @@ class BaseNode implements Node, Constants {
                     }
                     if (_c > 0) {
                         result = Variant.fromBigDecimal(sum).divide(Variant.fromInt(_c));
-                    } else {
-                        result = Variant.nullVariant();
                     }
-                } else {
-                    result = Variant.nullVariant();
                 }
                 break;
 
             case NT_MF_MEDIAN:
                 if (params != null) {
                     List<BigDecimal> _values = Lists.newArrayList();
-                    for (int i = 0; i < params.size(); ++i) {
-                        Variant _v = params.get(i).execute(variantContainer);
+                    for (BaseNode param : params) {
+                        Variant _v = param.execute(variantContainer);
                         if (_v.isNumeric()) {
                             _values.add(_v.asNumeric());
                         }
@@ -505,11 +499,7 @@ class BaseNode implements Node, Constants {
                                                     .add(_values.get(_values.size() / 2 - 1)))
                                     .divide(Variant.fromInt(2));
                         }
-                    } else {
-                        result = Variant.nullVariant();
                     }
-                } else {
-                    result = Variant.nullVariant();
                 }
                 break;
 
@@ -581,7 +571,7 @@ class BaseNode implements Node, Constants {
                      pidx < Math.min(params.size(), parameterNames.size());
                      ++pidx) {
                     String fpn = parameterNames.get(pidx);
-                    if (fpn.length() > 0) {
+                    if (!fpn.isEmpty()) {
                         lvc.setVariant(fpn, params.get(pidx).execute(variantContainer));
                     }
                 }
