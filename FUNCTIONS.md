@@ -1,5 +1,3 @@
-List# vscript Built-in Functions Reference
-
 Complete reference for all built-in functions available in vscript.
 
 ## Table of Contents
