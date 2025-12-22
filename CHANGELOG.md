@@ -1,5 +1,19 @@
 # Changes
 
+### \[v3.13.0\] 2025-12-22
+
+Enhancements and Fixes:
+
+- Enhance numeric comparison logic in BaseNode: 
+  - handle null variants in max and min calculations; 
+  - add new tests for edge cases in EquationEvalTests.
+- Improved documentation.
+- Enhance equation evaluation and parsing: 
+  - add tracing for DSL input; 
+  - improve numeric conversion; 
+  - implement array literal support and other small improvements.
+- Update Maven plugin version to 0.9.0; enhance auto-publishing configuration.
+
 ### \[v3.12.0\] 2025-07-18
 
 Added:
