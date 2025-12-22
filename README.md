@@ -120,3 +120,4 @@ For more information:
 - Check the comprehensive [examples](EXAMPLES.md)
 - Review function documentation in [FUNCTIONS.md](FUNCTIONS.md)
 - Understand syntax details in [SYNTAX.md](SYNTAX.md)
+- Change log [CHANGELOG.md](CHANGELOG.md)
