@@ -1,10 +1,10 @@
 # Changes
 
-### \[v3.13.0\] 2025-12-22
+## [v3.13.0] - 2025-12-22
 
-Enhancements and Fixes:
+### Enhancements and Fixes
 
-- Enhance numeric comparison logic in BaseNode: 
+- Fix numeric comparison logic in BaseNode: 
   - handle null variants in max and min calculations; 
   - add new tests for edge cases in EquationEvalTests.
 - Improved documentation.
@@ -14,43 +14,43 @@ Enhancements and Fixes:
   - implement array literal support and other small improvements.
 - Update Maven plugin version to 0.9.0; enhance auto-publishing configuration.
 
-### \[v3.12.0\] 2025-07-18
+## [v3.12.0] 2025-07-18
 
-Added:
+### Added
 
 - Math function `round` is added. Ex: `round(numberToBeRounded, numberOfDecimalPlaces)`
 
-### \[v3.11.0\] 2025-02-24
+## [v3.11.0] 2025-02-24
 
-Added:
+### Added
 
 - `switch` function is added. Sample `switch(expression , case 1, value/expression, case 2, value/expression , default_value/expression)`
 
-### \[v3.10.0\] 2023-05-12
+## [v3.10.0] 2023-05-12
 
-Added:
+### Added
 
 - `format_ts` function is added. Sample `format_ts(timestampToBeFormatted, formatToApply, optionalTimeZone)`
 
-### \[v3.9.0\] 2023-01-26
+## [v3.9.0] 2023-01-26
 
-Added:
+### Added
 
 - Added `days_since_weekday` function for calculating how many days have passed since a provided day.
   - This function recognizes days of the week numerically, ex: Monday = 1, Tuesday = 2. E.g.:
   - `days_since_weekday(1)` will return `0` if it is called on Monday, and will return `1` if it is called on Tuesday.
 - Added `floor_mod` Math function.
 
-### \[v3.8.1\] 2021-09-17
+## [v3.8.1] 2021-09-17
 
-Updated:
+### Updated
 
 - Updated `min`, `max` to support other than numeric types.
 - Corrected defect with error text formatting.  
 
-### \[v3.8.0\] 2021-09-15
+## [v3.8.0] 2021-09-15
 
-Added:
+### Added
 
 - Added `first`, `skip` and `last` new functions for string manipulation. E.g.:
   - `first("text", 2)` takes first two characters and yields `"te"`;
@@ -58,32 +58,32 @@ Added:
   - and `last("text", 2)` takes last two characters and yields `"xt"`.    
 - Added `min`, `max`,`avg` and `median` math functions.
 
-### \[v3.7.0\] 2021-08-16
+## [v3.7.0] 2021-08-16
 
-Added:
+### Added
 
 - `if` function is added. Sample `if(condition , truestatement , falsestatement)`
 
-### \[v3.6.0\] 2021-07-26
+## [v3.6.0] 2021-07-26
 
-Added:
+### Added
 
 - `DataSetIndex` now can let consumer to know if given variable path has multiple data permutations.
   
-### \[v3.5.0\] 2021-07-10
+## [v3.5.0] 2021-07-10
 
-Added:
+### Added
 
 - Implemented a new JSON Data Set indexer `DataSetIndex.index(jsonObject)`. It is a substantially 
   faster alternative to `JsonDataSetMaker`.  
 
-### \[v3.4.0\] 2021-04-16
+## [v3.4.0] 2021-04-16
 
-Updated:
+### Updated
 
 - Operator `!` on `null` values will now yield `null`, as suppose to `true`.
 
-Added:
+### Added
 
 - Added `CHANGELOG.md` file. 
 - KEEP_COMPLEX_ARRAYS mode for JsonDataSetMaker. This mode allows preserving object 
