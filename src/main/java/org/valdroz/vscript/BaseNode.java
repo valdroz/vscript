@@ -289,6 +289,20 @@ class BaseNode implements Node, Constants {
             }
             break;
 
+            case NT_MF_DAY_OF_WEEK: {
+                Variant isoDate = getParameterOrNullNode().execute(variantContainer);
+                if (!isoDate.isString()) {
+                    throw new EvaluationException("ISO-8601 formatted string expected. Got: " + isoDate);
+                }
+                try {
+                    DateTime parsed = ISODateTimeFormat.dateOptionalTimeParser().withOffsetParsed().parseDateTime(isoDate.asString());
+                    result = Variant.fromInt(parsed.getDayOfWeek());
+                } catch (IllegalArgumentException iae) {
+                    throw new EvaluationException("Invalid ISO-8601 timestamp. Got: " + isoDate.asString());
+                }
+            }
+            break;
+
             case NT_MF_NOW:
                 result = Variant.fromLong(currentTime.get());
                 break;

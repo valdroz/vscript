@@ -81,6 +81,7 @@ public interface Constants {
     int NT_MF_FORMAT_TS = 180;
     int NT_MF_SWITCH = 181;
     int NT_MF_ROUND = 182;
+    int NT_MF_DAY_OF_WEEK = 183;
 
 
     int NT_LOP_AND = 128;

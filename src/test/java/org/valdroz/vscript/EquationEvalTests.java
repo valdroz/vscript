@@ -230,6 +230,19 @@ public class EquationEvalTests {
     }
 
     @Test
+    public void testDayOfWeekFunc() {
+        assertThat(new EquationEval("day_of_week(\"2010-02-05T17:31:15Z\")").eval().asNumeric().intValue(), is(5));
+        assertThat(new EquationEval("day_of_week(\"2024-01-05T23:30:00-05:00\")").eval().asNumeric().intValue(), is(5));
+        assertThat(new EquationEval("day_of_week(\"2024-01-06T04:30:00Z\")").eval().asNumeric().intValue(), is(6));
+    }
+
+    @Test
+    public void testDayOfWeekFuncInvalidInput() {
+        assertThrows(EvaluationException.class, () -> new EquationEval("day_of_week(123)").eval());
+        assertThrows(EvaluationException.class, () -> new EquationEval("day_of_week(\"not-a-date\")").eval());
+    }
+
+    @Test
     public void testNowFunc() throws InterruptedException {
         VariantContainer container = new DefaultVariantContainer();
         long t1 = DateTime.now().getMillis();

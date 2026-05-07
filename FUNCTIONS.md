@@ -639,6 +639,26 @@ iso("2024-12-25T12:00:00.000Z")
 
 ---
 
+#### `day_of_week(str)`
+
+Returns the day of week for an ISO8601 timestamp.
+
+**Parameters:**
+- `str` (String): ISO8601 formatted date-time string
+
+**Returns:** Numeric (1 = Monday, 7 = Sunday)
+
+**Examples:**
+```vscript
+day_of_week("2010-02-05T17:31:15Z")        // 5 (Friday)
+day_of_week("2024-01-05T23:30:00-05:00")   // 5 (Friday)
+day_of_week("2024-01-06T04:30:00Z")        // 6 (Saturday)
+```
+
+The timezone/offset inside the ISO timestamp is respected when determining the day.
+
+---
+
 #### `format_ts(x, y [, z])`
 
 Formats a timestamp using the specified pattern and optional timezone.
