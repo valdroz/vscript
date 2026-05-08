@@ -40,7 +40,7 @@ public class JsonDataSetMakerTest {
     @Test
     public void getDataSetsKeepPrimitiveArrays() throws Exception {
         String json = IOUtils.toString(JsonDataSetMaker.class.getResource("/test-data-set.json"), Charset.defaultCharset());
-        JsonElement je = new JsonParser().parse(json);
+        JsonElement je = JsonParser.parseString(json);
 
         JsonDataSetMaker dm = new JsonDataSetMaker(je.getAsJsonObject(), "pref", JsonDataSetMaker.Mode.KEEP_ARRAYS_FOR_PRIMITIVES);
 
@@ -54,7 +54,7 @@ public class JsonDataSetMakerTest {
     @Test
     public void getDataSets() throws Exception {
         String json = IOUtils.toString(JsonDataSetMaker.class.getResource("/test-data-set.json"), Charset.defaultCharset());
-        JsonElement je = new JsonParser().parse(json);
+        JsonElement je = JsonParser.parseString(json);
 
         JsonDataSetMaker dm = new JsonDataSetMaker(je.getAsJsonObject(), JsonDataSetMaker.Mode.ALL_FLATTENED);
 
@@ -65,7 +65,7 @@ public class JsonDataSetMakerTest {
     @Test
     public void getDataSets2() throws Exception {
         String json = IOUtils.toString(JsonDataSetMaker.class.getResource("/test-data-set-2.json"), Charset.defaultCharset());
-        JsonElement je = new JsonParser().parse(json);
+        JsonElement je = JsonParser.parseString(json);
 
         JsonDataSetMaker dm = new JsonDataSetMaker(je.getAsJsonObject(), JsonDataSetMaker.Mode.KEEP_ARRAYS_FOR_PRIMITIVES);
 
@@ -74,7 +74,7 @@ public class JsonDataSetMakerTest {
         assertThat(dataSets.size(), is(4));
 
         json = IOUtils.toString(JsonDataSetMaker.class.getResource("/test-data-set-2-result.json"), Charset.defaultCharset());
-        JsonArray ja = new JsonParser().parse(json).getAsJsonArray();
+        JsonArray ja = JsonParser.parseString(json).getAsJsonArray();
 
         assertThat(dataSets, containsInAnyOrder(Lists.newArrayList(ja.iterator()).toArray()));
 
@@ -83,7 +83,7 @@ public class JsonDataSetMakerTest {
     @Test
     public void getDataSets3() throws Exception {
         String json = IOUtils.toString(JsonDataSetMaker.class.getResource("/test-data-set-3.json"), Charset.defaultCharset());
-        JsonElement je = new JsonParser().parse(json);
+        JsonElement je = JsonParser.parseString(json);
 
         JsonDataSetMaker dm = new JsonDataSetMaker(je.getAsJsonObject(), JsonDataSetMaker.Mode.KEEP_ARRAYS_FOR_PRIMITIVES);
 
@@ -92,7 +92,7 @@ public class JsonDataSetMakerTest {
         assertThat(dataSets.size(), is(6));
 
         json = IOUtils.toString(JsonDataSetMaker.class.getResource("/test-data-set-3-result.json"), Charset.defaultCharset());
-        JsonArray ja = new JsonParser().parse(json).getAsJsonArray();
+        JsonArray ja = JsonParser.parseString(json).getAsJsonArray();
 
         assertThat(dataSets, containsInAnyOrder(Lists.newArrayList(ja.iterator()).toArray()));
 
@@ -102,7 +102,7 @@ public class JsonDataSetMakerTest {
     @Test
     public void getDataSets4a() throws Exception {
         String json = IOUtils.toString(JsonDataSetMaker.class.getResource("/test-data-set-4.json"), Charset.defaultCharset());
-        JsonElement je = new JsonParser().parse(json);
+        JsonElement je = JsonParser.parseString(json);
 
         JsonDataSetMaker dm = new JsonDataSetMaker(je.getAsJsonObject(),
                 JsonDataSetMaker.Mode.KEEP_ARRAYS_FOR_PRIMITIVES);
@@ -112,7 +112,7 @@ public class JsonDataSetMakerTest {
         assertThat(dataSets.size(), is(24));
 
         json = IOUtils.toString(JsonDataSetMaker.class.getResource("/test-data-set-4a-result.json"), Charset.defaultCharset());
-        JsonArray ja = new JsonParser().parse(json).getAsJsonArray();
+        JsonArray ja = JsonParser.parseString(json).getAsJsonArray();
 
         assertThat(dataSets, containsInAnyOrder(Lists.newArrayList(ja.iterator()).toArray()));
     }
@@ -120,7 +120,7 @@ public class JsonDataSetMakerTest {
     @Test
     public void getDataSets4b() throws Exception {
         String json = IOUtils.toString(JsonDataSetMaker.class.getResource("/test-data-set-4.json"), Charset.defaultCharset());
-        JsonElement je = new JsonParser().parse(json);
+        JsonElement je = JsonParser.parseString(json);
 
         JsonDataSetMaker dm = new JsonDataSetMaker(je.getAsJsonObject(),
                 JsonDataSetMaker.Mode.KEEP_ARRAYS_FOR_PRIMITIVES,
@@ -131,7 +131,7 @@ public class JsonDataSetMakerTest {
         assertThat(dataSets.size(), is(24));
 
         json = IOUtils.toString(JsonDataSetMaker.class.getResource("/test-data-set-4b-result.json"), Charset.defaultCharset());
-        JsonArray ja = new JsonParser().parse(json).getAsJsonArray();
+        JsonArray ja = JsonParser.parseString(json).getAsJsonArray();
 
         assertThat(dataSets, containsInAnyOrder(Lists.newArrayList(ja.iterator()).toArray()));
     }

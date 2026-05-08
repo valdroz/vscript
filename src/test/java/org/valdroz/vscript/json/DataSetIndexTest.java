@@ -23,7 +23,7 @@ public class DataSetIndexTest {
     public void testJsonWithMultipleArrayLevels() throws Exception {
         String json = IOUtils.toString(JsonDataSetMaker.class.getResource("/test-data-set-3.json"), Charset.defaultCharset());
 
-        JsonElement je = new JsonParser().parse(json);
+        JsonElement je = JsonParser.parseString(json);
 
         DataSetIndex dsi = DataSetIndex.index(je.getAsJsonObject());
 
@@ -69,7 +69,7 @@ public class DataSetIndexTest {
     @Test
     public void getDataSets4b() throws Exception {
         String json = IOUtils.toString(JsonDataSetMaker.class.getResource("/test-data-set-4.json"), Charset.defaultCharset());
-        JsonElement je = new JsonParser().parse(json);
+        JsonElement je = JsonParser.parseString(json);
 
         DataSetIndex dsi = DataSetIndex.index(je.getAsJsonObject());
 
