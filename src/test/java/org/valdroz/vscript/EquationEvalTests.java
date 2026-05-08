@@ -230,6 +230,32 @@ public class EquationEvalTests {
     }
 
     @Test
+    public void testDayOfWeekFunc() {
+        DateTimeZone previousDefault = DateTimeZone.getDefault();
+        DateTimeZone.setDefault(DateTimeZone.UTC);
+        try {
+            VariantContainer container = new DefaultVariantContainer();
+            container.setVariant("isoDate", Variant.fromString("2010-02-05T17:31:15Z"));
+            container.setVariant("millisDate", Variant.fromLong(1265391075000L));
+
+            assertThat(new EquationEval("day_of_week(\"2010-02-05T17:31:15Z\")").eval().asNumeric().intValue(), is(5));
+            assertThat(new EquationEval("day_of_week(isoDate)").eval(container).asNumeric().intValue(), is(5));
+            assertThat(new EquationEval("day_of_week(1265391075000)").eval().asNumeric().intValue(), is(5));
+            assertThat(new EquationEval("day_of_week(millisDate)").eval(container).asNumeric().intValue(), is(5));
+            assertThat(new EquationEval("day_of_week(\"2024-01-05T23:30:00-05:00\")").eval().asNumeric().intValue(), is(5));
+            assertThat(new EquationEval("day_of_week(\"2024-01-06T04:30:00Z\")").eval().asNumeric().intValue(), is(6));
+        } finally {
+            DateTimeZone.setDefault(previousDefault);
+        }
+    }
+
+    @Test
+    public void testDayOfWeekFuncInvalidInput() {
+        assertThrows(EvaluationException.class, () -> new EquationEval("day_of_week(false)").eval());
+        assertThrows(EvaluationException.class, () -> new EquationEval("day_of_week(\"not-a-date\")").eval());
+    }
+
+    @Test
     public void testNowFunc() throws InterruptedException {
         VariantContainer container = new DefaultVariantContainer();
         long t1 = DateTime.now().getMillis();

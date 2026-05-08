@@ -289,6 +289,12 @@ class BaseNode implements Node, Constants {
             }
             break;
 
+            case NT_MF_DAY_OF_WEEK: {
+                Variant timestamp = getParameterOrNullNode().execute(variantContainer);
+                result = Variant.fromInt(parseDayOfWeekTimestamp(timestamp).getDayOfWeek());
+            }
+            break;
+
             case NT_MF_NOW:
                 result = Variant.fromLong(currentTime.get());
                 break;
@@ -725,6 +731,33 @@ class BaseNode implements Node, Constants {
         }
 
         throw new RuntimeException("ISO string date or millis is expected as input."); 
+    }
+
+    private static DateTime parseDayOfWeekTimestamp(Variant timestamp) {
+        if (timestamp.isString()) {
+            try {
+                return ISODateTimeFormat.dateOptionalTimeParser().withOffsetParsed().parseDateTime(timestamp.asString());
+            } catch (IllegalArgumentException e) {
+                throw invalidDayOfWeekTimestamp(timestamp);
+            }
+        } else if (timestamp.isNumeric()) {
+            try {
+                return new DateTime(timestamp.asNumeric().longValue());
+            } catch (IllegalArgumentException e) {
+                throw invalidDayOfWeekTimestamp(timestamp);
+            }
+        } else if (timestamp.isNull()) {
+            throw invalidDayOfWeekTimestamp(timestamp);
+        }
+
+        throw invalidDayOfWeekTimestamp(timestamp);
+    }
+
+    private static EvaluationException invalidDayOfWeekTimestamp(Variant timestamp) {
+        return new EvaluationException(
+                "Invalid timestamp. Function day_of_week(x) takes timestamp parameter " +
+                        "in String ISO format or numeric milliseconds from 1/1/1970. Provided x: " +
+                        timestamp.asString());
     }
 
     static DateTime now() {
