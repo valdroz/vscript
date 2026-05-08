@@ -290,16 +290,8 @@ class BaseNode implements Node, Constants {
             break;
 
             case NT_MF_DAY_OF_WEEK: {
-                Variant isoDate = getParameterOrNullNode().execute(variantContainer);
-                if (!isoDate.isString()) {
-                    throw new EvaluationException("ISO-8601 formatted string expected. Got: " + isoDate);
-                }
-                try {
-                    DateTime parsed = ISODateTimeFormat.dateOptionalTimeParser().withOffsetParsed().parseDateTime(isoDate.asString());
-                    result = Variant.fromInt(parsed.getDayOfWeek());
-                } catch (IllegalArgumentException iae) {
-                    throw new EvaluationException("Invalid ISO-8601 timestamp. Got: " + isoDate.asString());
-                }
+                Variant timestamp = getParameterOrNullNode().execute(variantContainer);
+                result = Variant.fromInt(parseDayOfWeekTimestamp(timestamp).getDayOfWeek());
             }
             break;
 
@@ -739,6 +731,33 @@ class BaseNode implements Node, Constants {
         }
 
         throw new RuntimeException("ISO string date or millis is expected as input."); 
+    }
+
+    private static DateTime parseDayOfWeekTimestamp(Variant timestamp) {
+        if (timestamp.isString()) {
+            try {
+                return ISODateTimeFormat.dateOptionalTimeParser().withOffsetParsed().parseDateTime(timestamp.asString());
+            } catch (IllegalArgumentException e) {
+                throw invalidDayOfWeekTimestamp(timestamp);
+            }
+        } else if (timestamp.isNumeric()) {
+            try {
+                return new DateTime(timestamp.asNumeric().longValue());
+            } catch (IllegalArgumentException e) {
+                throw invalidDayOfWeekTimestamp(timestamp);
+            }
+        } else if (timestamp.isNull()) {
+            throw invalidDayOfWeekTimestamp(timestamp);
+        }
+
+        throw invalidDayOfWeekTimestamp(timestamp);
+    }
+
+    private static EvaluationException invalidDayOfWeekTimestamp(Variant timestamp) {
+        return new EvaluationException(
+                "Invalid timestamp. Function day_of_week(x) takes timestamp parameter " +
+                        "in String ISO format or numeric milliseconds from 1/1/1970. Provided x: " +
+                        timestamp.asString());
     }
 
     static DateTime now() {
