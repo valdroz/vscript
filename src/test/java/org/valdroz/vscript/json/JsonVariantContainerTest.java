@@ -41,7 +41,7 @@ public class JsonVariantContainerTest {
         Configuration.setDecimalScale(3);
 
         String json = IOUtils.resourceToString("/test-data-set.json", Charset.defaultCharset());
-        JsonElement je = new JsonParser().parse(json);
+        JsonElement je = JsonParser.parseString(json);
 
         List<JsonVariantContainer> variantContainers = JsonVariantContainer.jsonToVariantContainers(je.getAsJsonObject());
 
@@ -104,7 +104,7 @@ public class JsonVariantContainerTest {
     public void testLeafArrayInterpretation() throws Exception {
 
         String json =  IOUtils.resourceToString("/test-data-array-interpretation.json", Charset.defaultCharset());
-        JsonElement je = new JsonParser().parse(json);
+        JsonElement je = JsonParser.parseString(json);
 
         List<JsonVariantContainer> containers = JsonVariantContainer.jsonToVariantContainers(je.getAsJsonObject());
 
